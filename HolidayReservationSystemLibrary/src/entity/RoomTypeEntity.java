@@ -6,10 +6,14 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -17,8 +21,6 @@ import javax.persistence.Id;
  */
 @Entity
 public class RoomTypeEntity implements Serializable {
-
-    
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -31,7 +33,10 @@ public class RoomTypeEntity implements Serializable {
     private Integer capacity;
     private String amenities;
     private Boolean disabled;
-    
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomTypeEntity")
+    @JoinColumn(nullable = false)
+    private List<RoomRateEntity> roomRateEntities;
 
     public Long getRoomTypeId() {
         return roomTypeId;
@@ -40,6 +45,7 @@ public class RoomTypeEntity implements Serializable {
     public void setRoomTypeId(Long roomTypeId) {
         this.roomTypeId = roomTypeId;
     }
+
     /**
      * @return the name
      */
@@ -138,6 +144,20 @@ public class RoomTypeEntity implements Serializable {
         this.disabled = disabled;
     }
 
+    /**
+     * @return the roomRateEntities
+     */
+    public List<RoomRateEntity> getRoomRateEntities() {
+        return roomRateEntities;
+    }
+
+    /**
+     * @param roomRateEntities the roomRateEntities to set
+     */
+    public void setRoomRateEntities(List<RoomRateEntity> roomRateEntities) {
+        this.roomRateEntities = roomRateEntities;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -162,5 +182,5 @@ public class RoomTypeEntity implements Serializable {
     public String toString() {
         return "entity.RoomTypeEntity[ id=" + roomTypeId + " ]";
     }
-    
+
 }

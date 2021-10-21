@@ -6,10 +6,14 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -18,10 +22,19 @@ import javax.persistence.Id;
 @Entity
 public class ExceptionReportEntity implements Serializable {
 
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long exceptionReportId;
+    
+    @OneToMany(mappedBy = "exceptionReportEntity", fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private List<ReservationEntity> firstTypeExceptionReservations;
+    
+    @OneToMany(mappedBy = "exceptionReportEntity", fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private List<ReservationEntity> secondTypeExceptionReservations;
 
     public Long getExceptionReportId() {
         return exceptionReportId;
@@ -29,6 +42,34 @@ public class ExceptionReportEntity implements Serializable {
 
     public void setExceptionReportId(Long exceptionReportId) {
         this.exceptionReportId = exceptionReportId;
+    }
+    
+    /**
+     * @return the firstTypeExceptionReservations
+     */
+    public List<ReservationEntity> getFirstTypeExceptionReservations() {
+        return firstTypeExceptionReservations;
+    }
+
+    /**
+     * @param firstTypeExceptionReservations the firstTypeExceptionReservations to set
+     */
+    public void setFirstTypeExceptionReservations(List<ReservationEntity> firstTypeExceptionReservations) {
+        this.firstTypeExceptionReservations = firstTypeExceptionReservations;
+    }
+
+    /**
+     * @return the secondTypeExceptionReservations
+     */
+    public List<ReservationEntity> getSecondTypeExceptionReservations() {
+        return secondTypeExceptionReservations;
+    }
+
+    /**
+     * @param secondTypeExceptionReservations the secondTypeExceptionReservations to set
+     */
+    public void setSecondTypeExceptionReservations(List<ReservationEntity> secondTypeExceptionReservations) {
+        this.secondTypeExceptionReservations = secondTypeExceptionReservations;
     }
 
     @Override

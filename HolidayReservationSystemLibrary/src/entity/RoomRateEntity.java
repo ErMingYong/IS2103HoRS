@@ -7,11 +7,13 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -26,9 +28,12 @@ public class RoomRateEntity implements Serializable {
     private Long roomRateId;
     private String roomRateType;
     private BigDecimal ratePerNight;
-    private Date validPeriodFrom;
-    private Date validPeriodTo;
+    private LocalDateTime validPeriodFrom;
+    private LocalDateTime validPeriodTo;
     private Boolean isDisabled;
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private RoomTypeEntity roomTypeEntity;
 
     public String getRoomRateType() {
         return roomRateType;
@@ -45,20 +50,31 @@ public class RoomRateEntity implements Serializable {
     public void setRatePerNight(BigDecimal ratePerNight) {
         this.ratePerNight = ratePerNight;
     }
-
-    public Date getValidPeriodFrom() {
+    /**
+     * @return the validPeriodFrom
+     */
+    public LocalDateTime getValidPeriodFrom() {
         return validPeriodFrom;
     }
 
-    public void setValidPeriodFrom(Date validPeriodFrom) {
+    /**
+     * @param validPeriodFrom the validPeriodFrom to set
+     */
+    public void setValidPeriodFrom(LocalDateTime validPeriodFrom) {
         this.validPeriodFrom = validPeriodFrom;
     }
 
-    public Date getValidPeriodTo() {
+    /**
+     * @return the validPeriodTo
+     */
+    public LocalDateTime getValidPeriodTo() {
         return validPeriodTo;
     }
 
-    public void setValidPeriodTo(Date validPeriodTo) {
+    /**
+     * @param validPeriodTo the validPeriodTo to set
+     */
+    public void setValidPeriodTo(LocalDateTime validPeriodTo) {
         this.validPeriodTo = validPeriodTo;
     }
 
@@ -76,6 +92,19 @@ public class RoomRateEntity implements Serializable {
 
     public void setRoomRateId(Long roomRateId) {
         this.roomRateId = roomRateId;
+    }
+        /**
+     * @return the roomTypeEntity
+     */
+    public RoomTypeEntity getRoomTypeEntity() {
+        return roomTypeEntity;
+    }
+
+    /**
+     * @param roomTypeEntity the roomTypeEntity to set
+     */
+    public void setRoomTypeEntity(RoomTypeEntity roomTypeEntity) {
+        this.roomTypeEntity = roomTypeEntity;
     }
 
     @Override

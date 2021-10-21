@@ -7,11 +7,15 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -24,23 +28,39 @@ public class TransactionEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionId;
-    private Date transactionDate;
-    private Date transactionTime;
+    private LocalDateTime transactionDate;
+    private LocalDateTime transactionTime;
     private BigDecimal transactionAmount;
 
-    public Date getTransactionDate() {
+    @OneToMany(mappedBy = "transactionEntity", fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private List<ReservationEntity> reservationEntities;
+            
+    /**
+     * @return the transactionDate
+     */
+    public LocalDateTime getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(Date transactionDate) {
+    /**
+     * @param transactionDate the transactionDate to set
+     */
+    public void setTransactionDate(LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
     }
 
-    public Date getTransactionTime() {
+    /**
+     * @return the transactionTime
+     */
+    public LocalDateTime getTransactionTime() {
         return transactionTime;
     }
 
-    public void setTransactionTime(Date transactionTime) {
+    /**
+     * @param transactionTime the transactionTime to set
+     */
+    public void setTransactionTime(LocalDateTime transactionTime) {
         this.transactionTime = transactionTime;
     }
 
@@ -58,6 +78,21 @@ public class TransactionEntity implements Serializable {
 
     public void setTransactionId(Long transactionId) {
         this.transactionId = transactionId;
+    }
+    
+    
+    /**
+     * @return the reservationEntities
+     */
+    public List<ReservationEntity> getReservationEntities() {
+        return reservationEntities;
+    }
+
+    /**
+     * @param reservationEntities the reservationEntities to set
+     */
+    public void setReservationEntities(List<ReservationEntity> reservationEntities) {
+        this.reservationEntities = reservationEntities;
     }
 
     @Override

@@ -6,7 +6,11 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import util.enumeration.EmployeeAccessRightEnum;
 
 /**
@@ -21,6 +25,10 @@ public class EmployeeEntity extends UserEntity implements Serializable {
     
     private EmployeeAccessRightEnum employeeAccessRightEnum;
     
+    @OneToMany(mappedBy= "employeeEntity", fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private List<ExceptionReportEntity> exceptionReportEntities;
+    
     /**
      * @return the employeeAccessRightEnum
      */
@@ -33,6 +41,21 @@ public class EmployeeEntity extends UserEntity implements Serializable {
      */
     public void setEmployeeAccessRightEnum(EmployeeAccessRightEnum employeeAccessRightEnum) {
         this.employeeAccessRightEnum = employeeAccessRightEnum;
+    }
+    
+    
+    /**
+     * @return the exceptionReportEntities
+     */
+    public List<ExceptionReportEntity> getExceptionReportEntities() {
+        return exceptionReportEntities;
+    }
+
+    /**
+     * @param exceptionReportEntities the exceptionReportEntities to set
+     */
+    public void setExceptionReportEntities(List<ExceptionReportEntity> exceptionReportEntities) {
+        this.exceptionReportEntities = exceptionReportEntities;
     }
 
     @Override

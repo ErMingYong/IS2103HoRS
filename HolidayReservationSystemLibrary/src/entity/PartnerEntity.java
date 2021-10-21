@@ -6,7 +6,11 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -16,7 +20,25 @@ import javax.persistence.Entity;
 public class PartnerEntity extends UserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
+    @OneToMany(mappedBy = "partnerEntity", fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private List<ReservationEntity> reservationEntities;
 
+        /**
+     * @return the reservationEntities
+     */
+    public List<ReservationEntity> getReservationEntities() {
+        return reservationEntities;
+    }
+
+    /**
+     * @param reservationEntities the reservationEntities to set
+     */
+    public void setReservationEntities(List<ReservationEntity> reservationEntities) {
+        this.reservationEntities = reservationEntities;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

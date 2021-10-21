@@ -7,9 +7,11 @@ package entity;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import util.enumeration.RoomStatusEnum;
 
 /**
@@ -26,6 +28,9 @@ public class RoomEntity implements Serializable {
     private Integer roomFloor;
     private Integer roomNumber;
     private RoomStatusEnum roomStatusEnum;
+    
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "roomEntity")
+    private RoomTypeEntity roomTypeEntity;
 
     public Integer getRoomFloor() {
         return roomFloor;
@@ -57,6 +62,20 @@ public class RoomEntity implements Serializable {
 
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
+    }
+    
+        /**
+     * @return the roomTypeEntity
+     */
+    public RoomTypeEntity getRoomTypeEntity() {
+        return roomTypeEntity;
+    }
+
+    /**
+     * @param roomTypeEntity the roomTypeEntity to set
+     */
+    public void setRoomTypeEntity(RoomTypeEntity roomTypeEntity) {
+        this.roomTypeEntity = roomTypeEntity;
     }
 
     @Override

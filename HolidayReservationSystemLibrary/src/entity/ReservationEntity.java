@@ -6,11 +6,15 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 
 /**
@@ -20,18 +24,24 @@ import javax.persistence.Temporal;
 @Entity
 public class ReservationEntity implements Serializable {
 
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long resversationEntityId;
-    private Date reservationDate;
+    private LocalDateTime reservationDate;
     private Boolean checkedIn;
     private String firstName;
     private String lastName;
     private String email;
     private String contactNumber;
     private String passportNumber;
+    
+    @OneToOne(mappedBy = "reservationEntity", fetch = FetchType.LAZY)
+    private RoomEntity roomEntity;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private TransactionEntity transactionEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GuestEntity guestEntity;
 
     public Long getResversationEntityId() {
         return resversationEntityId;
@@ -44,14 +54,14 @@ public class ReservationEntity implements Serializable {
     /**
      * @return the reservationDate
      */
-    public Date getReservationDate() {
+    public LocalDateTime getReservationDate() {
         return reservationDate;
     }
 
     /**
      * @param reservationDate the reservationDate to set
      */
-    public void setReservationDate(Date reservationDate) {
+    public void setReservationDate(LocalDateTime reservationDate) {
         this.reservationDate = reservationDate;
     }
 
@@ -138,6 +148,48 @@ public class ReservationEntity implements Serializable {
      */
     public void setPassportNumber(String passportNumber) {
         this.passportNumber = passportNumber;
+    }
+    
+    /**
+     * @return the roomEntity
+     */
+    public RoomEntity getRoomEntity() {
+        return roomEntity;
+    }
+
+    /**
+     * @param roomEntity the roomEntity to set
+     */
+    public void setRoomEntity(RoomEntity roomEntity) {
+        this.roomEntity = roomEntity;
+    }
+
+    /**
+     * @return the transactionEntity
+     */
+    public TransactionEntity getTransactionEntity() {
+        return transactionEntity;
+    }
+
+    /**
+     * @param transactionEntity the transactionEntity to set
+     */
+    public void setTransactionEntity(TransactionEntity transactionEntity) {
+        this.transactionEntity = transactionEntity;
+    }
+
+    /**
+     * @return the guestEntity
+     */
+    public GuestEntity getGuestEntity() {
+        return guestEntity;
+    }
+
+    /**
+     * @param guestEntity the guestEntity to set
+     */
+    public void setGuestEntity(GuestEntity guestEntity) {
+        this.guestEntity = guestEntity;
     }
 
     @Override
