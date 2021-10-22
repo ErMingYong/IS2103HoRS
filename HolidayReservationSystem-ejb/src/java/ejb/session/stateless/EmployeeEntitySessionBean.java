@@ -14,6 +14,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.EmployeeNotFoundException;
+import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -64,6 +65,18 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     }
 
     @Override
+    public EmployeeEntity retrieveEmployeeByUsername(String employeeUsername) throws EmployeeNotFoundException {
+        EmployeeEntity employee = em.find(EmployeeEntity.class, employeeUsername);
+
+        if (employee != null) {
+            //DID NOT DO FETCHING FOR LIST OF RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
+            return employee;
+        } else {
+            throw new EmployeeNotFoundException("Employee Username " + employeeUsername + " does not exist");
+        }
+    }
+
+    @Override
     public void deleteEmployee(Long employeeId) throws EmployeeNotFoundException {
         EmployeeEntity employee = em.find(EmployeeEntity.class, employeeId);
 
@@ -88,6 +101,26 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
             throw new UnknownPersistenceException(ex.getMessage());
         } catch (EmployeeNotFoundException ex) {
             throw new EmployeeNotFoundException("Employee ID " + oldEmployeeId + " does not exist");
+        }
+    }
+
+    @Override
+    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws EmployeeNotFoundException, InvalidLoginCredentialException {
+
+        try {
+            EmployeeEntity employee = retrieveEmployeeByUsername(employeeUsername);
+
+            if (employee != null) {
+                if (employee.getPassword().equals(employeePassword)) {
+                    return employee;
+                } else {
+                    throw new InvalidLoginCredentialException("Password do not match");
+                }
+            } else {
+                throw new InvalidLoginCredentialException("Username does not exist");
+            }
+        } catch (EmployeeNotFoundException ex) {
+            throw new EmployeeNotFoundException("Employee Username: " + employeeUsername + " does not exist");
         }
     }
 }
