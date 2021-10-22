@@ -53,7 +53,7 @@ public class FrontOfficeModule {
         this.currentEmployee = currentEmployee;
     }
 
-    public void menuFrontOfficer() throws InvalidAccessRightException {
+    public void menuFrontOfficeOperation() throws InvalidAccessRightException {
         if (currentEmployee.getEmployeeAccessRightEnum() != EmployeeAccessRightEnum.GUEST_RELATION_OFFICER) {
             throw new InvalidAccessRightException("You dont have GUEST RELATION OFFICER rights to access the System Administration Module");
         }
