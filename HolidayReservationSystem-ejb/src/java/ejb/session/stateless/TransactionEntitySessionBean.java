@@ -89,6 +89,8 @@ public class TransactionEntitySessionBean implements TransactionEntitySessionBea
             for (ReservationEntity reservation : oldTransaction.getReservationEntities()) {
                 reservation.setTransactionEntity(newTransaction);
             }
+            
+            em.remove(oldTransaction);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }

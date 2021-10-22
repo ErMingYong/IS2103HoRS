@@ -5,7 +5,11 @@
  */
 package ejb.session.stateless;
 
+import entity.ExceptionReportEntity;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.ExceptionReportNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -13,5 +17,15 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface ExceptionReportEntitySessionBeanRemote {
-    
+
+    public Long createNewExceptionReport(ExceptionReportEntity newExceptionReport) throws UnknownPersistenceException;
+
+    public List<ExceptionReportEntity> retrieveAllExceptionReport();
+
+    public ExceptionReportEntity retrieveExceptionReportById(Long exceptionReportId) throws ExceptionReportNotFoundException;
+
+    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException;
+
+    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException;
+
 }

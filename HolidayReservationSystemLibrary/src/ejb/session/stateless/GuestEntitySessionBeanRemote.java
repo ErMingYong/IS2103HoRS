@@ -5,7 +5,11 @@
  */
 package ejb.session.stateless;
 
+import entity.GuestEntity;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.GuestNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -13,5 +17,15 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface GuestEntitySessionBeanRemote {
+
+    public Long createNewGuest(GuestEntity newGuest) throws UnknownPersistenceException;
+
+    public List<GuestEntity> retrieveAllGuest();
+
+    public GuestEntity retrieveGuestById(Long guestId) throws GuestNotFoundException;
+
+    public void deleteGuest(Long guestId) throws GuestNotFoundException;
+
+    public void updateGuest(Long oldGuestId, GuestEntity newGuest) throws GuestNotFoundException, UnknownPersistenceException;
     
 }

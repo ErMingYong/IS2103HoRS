@@ -88,6 +88,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
             }
             
             oldRoomType.getRoomRateEntities().clear();
+            em.remove(oldRoomType);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }

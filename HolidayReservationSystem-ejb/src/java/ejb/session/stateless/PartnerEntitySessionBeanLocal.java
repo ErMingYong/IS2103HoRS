@@ -5,7 +5,11 @@
  */
 package ejb.session.stateless;
 
+import entity.PartnerEntity;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.PartnerNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -13,5 +17,15 @@ import javax.ejb.Local;
  */
 @Local
 public interface PartnerEntitySessionBeanLocal {
+
+    public Long createNewPartner(PartnerEntity newPartner) throws UnknownPersistenceException;
+
+    public List<PartnerEntity> retrieveAllPartner();
+
+    public PartnerEntity retrievePartnerById(Long partnerId) throws PartnerNotFoundException;
+
+    public void deletePartner(Long partnerId) throws PartnerNotFoundException;
+
+    public void updatePartner(Long oldPartnerId, PartnerEntity newPartner) throws UnknownPersistenceException;
     
 }

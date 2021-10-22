@@ -99,7 +99,8 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
             RoomTypeEntity taggedRoomType = oldRoomRate.getRoomTypeEntity();
             taggedRoomType.getRoomRateEntities().remove(oldRoomRate);
             taggedRoomType.getRoomRateEntities().add(newRoomRate);
-
+            
+            em.remove(oldRoomRate);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }

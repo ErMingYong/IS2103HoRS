@@ -85,6 +85,8 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             
             newRoom.setRoomTypeEntity(oldRoom.getRoomTypeEntity());
             
+            em.remove(oldRoom);
+            
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());            
         }
