@@ -15,14 +15,15 @@ import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
+import entity.RoomEntity;
 import entity.RoomTypeEntity;
+import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.EmployeeAccessRightEnum;
+import util.enumeration.RoomStatusEnum;
 import util.exception.InvalidAccessRightException;
 
 /**
@@ -89,22 +90,22 @@ public class HotelOperationModule {
                 response = scanner.nextInt();
 
                 if (response == 1) {
-                    //CREATE NEW ROOM TYPE
                     doCreateNewRoomType();
                 } else if (response == 2) {
                     //VIEW ROOM TYPE DETAILS
+                    doViewRoomTypeDetails();
                     //INCLUDES -> UPDATE ROOM TYPE
                     //INCLUDES -> DELETE ROOM TYPE
                 } else if (response == 3) {
-                    //VIEW ALL ROOM TYPES
+                    doViewAllRoomTypes();
                 } else if (response == 4) {
-                    //CREATE NEW ROOM
+                    doCreateNewRoom();
                 } else if (response == 5) {
-                    //UPDATE ROOM
+                    //doUpdateRoom();
                 } else if (response == 6) {
                     //DELETE ROOM
                 } else if (response == 7) {
-                    //VIEW ALL ROOM
+                    doViewAllRoom();
                 } else if (response == 8) {
                     //VIEW ROOM ALLOCATION EXCEPTION REPORT
                 } else if (response == 9) {
@@ -124,7 +125,7 @@ public class HotelOperationModule {
         Scanner scanner = new Scanner(System.in);
         RoomTypeEntity newRoomType = new RoomTypeEntity();
 
-        System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New New Room Type ***\n");
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New Room Type ***\n");
         System.out.print("Enter Room Type Name> ");
         newRoomType.setName(scanner.nextLine().trim());
 
@@ -143,7 +144,7 @@ public class HotelOperationModule {
         System.out.println("Enter Room Type Amenities");
         newRoomType.setAmenities(scanner.nextLine().trim());
 
-        System.out.println("Is Roomm Type Disabled(0)/Enabled(1)");
+        System.out.println("Enable/Disable Room Type (0: Enabled, 1: Disabled)> ");
         Integer response = scanner.nextInt();
         while (true) {
             if (response == 0) {
@@ -157,6 +158,7 @@ public class HotelOperationModule {
             }
         }
 
+        /*
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomType);
         
         if (constraintViolations.isEmpty()) {
@@ -165,6 +167,102 @@ public class HotelOperationModule {
                 System.out.println("Room Type created successfully!: " + roomTypeId + "\n");
             } catch ()
                 // TO DO CONTINUED HERE
+        }*/
+        //BEAN VALIDATION CHECKS
+    }
+    
+    public void doViewRoomTypeDetails() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View Room Type Details ***\n");
+    }
+
+    private void doViewAllRoomTypes() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Types ***\n");
+
+        List<RoomTypeEntity> roomTypeEntities = roomTypeEntitySessionBeanRemote.retrieveAllRoomType();
+        System.out.printf("%s%s%s%s%d%s%b\n", "Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
+
+        for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
+            System.out.printf("%s%s%s%s%d%s%b\n", roomTypeEntity.getName().toString(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed().toString(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getDisabled());
         }
+
+        System.out.print("Press any key to continue...> ");
+        scanner.nextLine();
+    }
+
+    public void doCreateNewRoom() {
+        Scanner scanner = new Scanner(System.in);
+        RoomEntity newRoom = new RoomEntity();
+
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New Room ***\n");
+        System.out.print("Enter Room  Floor> ");
+        newRoom.setRoomFloor(scanner.nextInt());
+
+        System.out.print("Enter Room Number> ");
+        newRoom.setRoomNumber(scanner.nextInt());
+
+        System.out.println("Select Room Status (0: Unavailable, 1: Available, 2: Disabled)> ");
+        Integer response = scanner.nextInt();
+        while (true) {
+            if (response == 0) {
+                newRoom.setRoomStatusEnum(RoomStatusEnum.UNAVAILABLE);
+                break;
+            } else if (response == 1) {
+                newRoom.setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+                break;
+            } else if (response == 2) {
+                newRoom.setRoomStatusEnum(RoomStatusEnum.DISABLED);
+                break;
+            } else {
+                System.out.println("Invalid option, please try again!\n");
+            }
+        }
+
+        /*
+        Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(newRoom);
+        
+        if (constraintViolations.isEmpty()) {
+            try {
+                Long roomId = roomEntitySessionBeanRemote.createNewRoom(newRoom);
+                System.out.println("Room created successfully!: " + roomId + "\n");
+            } catch ()
+                // TO DO CONTINUED HERE
+        }*/
+        //BEAN VALIDATION CHECKS
+    }
+
+    /*
+    private void doUpdateRoom() {
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Update Room ***\n");
+        
+        System.out.print("Enter Room Floor (blank if no change)> ");
+        input = scanner.nextLine().trim();
+        
+        if (input.length() > 0) {
+            
+        }
+    }*/
+    
+    
+    private void doViewAllRoom() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room ***\n");
+
+        List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRoom();
+        System.out.printf("%d%d\n", "Room Floor", "Room Number");
+
+        for (RoomEntity roomEntity : roomEntities) {
+            System.out.printf("%d%d\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
+        }
+
+        System.out.print("Press any key to continue...> ");
+        scanner.nextLine();
     }
 }
