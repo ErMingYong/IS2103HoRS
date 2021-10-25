@@ -14,6 +14,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.exception.RoomRateNotFoundException;
 import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
@@ -30,10 +33,15 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
+    
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     public RoomRateEntitySessionBean() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Override

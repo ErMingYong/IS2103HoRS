@@ -15,7 +15,13 @@ import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
+import entity.RoomTypeEntity;
 import java.util.Scanner;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.InvalidAccessRightException;
 
@@ -36,11 +42,17 @@ public class HotelOperationModule {
     private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     private EmployeeEntity currentEmployee;
-    
+
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
+
     public HotelOperationModule() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     public HotelOperationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+        this();
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
         this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
@@ -75,9 +87,10 @@ public class HotelOperationModule {
 
             while (response < 1 || response > 9) {
                 response = scanner.nextInt();
-                
+
                 if (response == 1) {
                     //CREATE NEW ROOM TYPE
+                    doCreateNewRoomType();
                 } else if (response == 2) {
                     //VIEW ROOM TYPE DETAILS
                     //INCLUDES -> UPDATE ROOM TYPE
@@ -100,10 +113,58 @@ public class HotelOperationModule {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
-            
+
             if (response == 9) {
                 break;
             }
+        }
+    }
+
+    public void doCreateNewRoomType() {
+        Scanner scanner = new Scanner(System.in);
+        RoomTypeEntity newRoomType = new RoomTypeEntity();
+
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New New Room Type ***\n");
+        System.out.print("Enter Room Type Name> ");
+        newRoomType.setName(scanner.nextLine().trim());
+
+        System.out.print("Enter Room Type Description> ");
+        newRoomType.setDescription(scanner.nextLine().trim());
+
+        System.out.println("Enter Room Type Size");
+        newRoomType.setSize(scanner.nextLine().trim());
+
+        System.out.println("Enter Room Type Bed");
+        newRoomType.setBed(scanner.nextLine().trim());
+
+        System.out.println("Enter Room Type Capacity");
+        newRoomType.setCapacity(scanner.nextInt());
+
+        System.out.println("Enter Room Type Amenities");
+        newRoomType.setAmenities(scanner.nextLine().trim());
+
+        System.out.println("Is Roomm Type Disabled(0)/Enabled(1)");
+        Integer response = scanner.nextInt();
+        while (true) {
+            if (response == 0) {
+                newRoomType.setDisabled(Boolean.TRUE);
+                break;
+            } else if (response == 1) {
+                newRoomType.setDisabled(Boolean.FALSE);
+                break;
+            } else {
+                System.out.println("Invalid option, please try again!\n");
+            }
+        }
+
+        Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomType);
+        
+        if (constraintViolations.isEmpty()) {
+            try {
+                Long roomTypeId = roomTypeEntitySessionBeanRemote.createNewRoomType(newRoomType);
+                System.out.println("Room Type created successfully!: " + roomTypeId + "\n");
+            } catch ()
+                // TO DO CONTINUED HERE
         }
     }
 }

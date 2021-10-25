@@ -13,6 +13,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.exception.TransactionNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -25,10 +28,15 @@ public class TransactionEntitySessionBean implements TransactionEntitySessionBea
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
+    
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     public TransactionEntitySessionBean() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Override

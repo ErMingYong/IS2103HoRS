@@ -6,15 +6,16 @@
 package ejb.session.stateless;
 
 import entity.RoomEntity;
-import entity.RoomTypeEntity;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.exception.RoomNotFoundException;
-import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -26,10 +27,15 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
+    
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     public RoomEntitySessionBean() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Override

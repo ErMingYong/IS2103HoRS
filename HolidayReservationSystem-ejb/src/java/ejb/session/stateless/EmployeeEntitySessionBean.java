@@ -12,7 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import util.enumeration.EmployeeAccessRightEnum;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+import javax.validation.Validator;
 import util.exception.EmployeeNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -26,10 +28,15 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
+    
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     public EmployeeEntitySessionBean() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Override

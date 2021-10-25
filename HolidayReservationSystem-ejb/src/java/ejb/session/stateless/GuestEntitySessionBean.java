@@ -13,6 +13,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.exception.GuestNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -26,10 +29,15 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
+    
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     public GuestEntitySessionBean() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Override
@@ -64,13 +72,13 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
     }
     
     @Override
-    public GuestEntity retrieveGuestByUsername(String username) throws GuestNotFoundException {
-        GuestEntity guest = em.find(GuestEntity.class, username);
+    public GuestEntity retrieveGuestByUsername(String guestUsername) throws GuestNotFoundException {
+        GuestEntity guest = em.find(GuestEntity.class, guestUsername);
         
         if (guest != null) {
             return guest;
         } else {
-            throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
+            throw new GuestNotFoundException("Guest Username " + guestUsername + " does not exist");
         }
     }
 
@@ -120,7 +128,7 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
                 throw new InvalidLoginCredentialException("Username does not exist");
             }
         } catch (GuestNotFoundException ex) {
-            throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
+            throw new GuestNotFoundException("Guest Username " + guestUsername + " does not exist");
         }
     }
 }
