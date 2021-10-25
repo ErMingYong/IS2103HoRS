@@ -14,7 +14,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.DecimalMax;
@@ -60,16 +59,15 @@ public class RoomRateEntity implements Serializable {
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {
-        this.isDisabled = false;
+                this.isDisabled = false;
     }
 
-    public RoomRateEntity(String roomRateType, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo, RoomTypeEntity roomTypeEntity) {
+    public RoomRateEntity(String roomRateType, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo) {
         this();
         this.roomRateType = roomRateType;
         this.ratePerNight = ratePerNight;
         this.validPeriodFrom = validPeriodFrom;
         this.validPeriodTo = validPeriodTo;
-        this.roomTypeEntity = roomTypeEntity;
     }
 
     public String getRoomRateType() {

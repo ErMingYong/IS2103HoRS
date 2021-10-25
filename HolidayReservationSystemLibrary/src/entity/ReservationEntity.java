@@ -71,7 +71,7 @@ public class ReservationEntity implements Serializable {
         this.isCheckedIn = false;
     }
 
-    public ReservationEntity(LocalDateTime reservationDate, String firstName, String lastName, String email, String contactNumber, String passportNumber, RoomEntity roomEntity, TransactionEntity transactionEntity) {
+    public ReservationEntity(LocalDateTime reservationDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
         this();
         this.reservationDate = reservationDate;
         this.firstName = firstName;
@@ -79,8 +79,6 @@ public class ReservationEntity implements Serializable {
         this.email = email;
         this.contactNumber = contactNumber;
         this.passportNumber = passportNumber;
-        this.roomEntity = roomEntity;
-        this.transactionEntity = transactionEntity;
     }
 
     /**
