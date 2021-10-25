@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,6 +36,11 @@ public class ExceptionReportEntity implements Serializable {
     @OneToMany(mappedBy = "exceptionReportEntity", fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ReservationEntity> secondTypeExceptionReservations;
+
+    public ExceptionReportEntity() {
+        this.firstTypeExceptionReservations = new ArrayList<ReservationEntity>();
+        this.secondTypeExceptionReservations = new ArrayList<ReservationEntity>();
+    }
 
     public Long getExceptionReportId() {
         return exceptionReportId;

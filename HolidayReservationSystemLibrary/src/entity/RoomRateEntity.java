@@ -8,12 +8,20 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -26,14 +34,43 @@ public class RoomRateEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomRateId;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
     private String roomRateType;
+    @DecimalMin("10.00")
+    @DecimalMax("9999.00")
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal ratePerNight;
+    @Future
+    @NotNull
+    @Column(nullable = false)
     private LocalDateTime validPeriodFrom;
+    @Future
+    @NotNull
+    @Column(nullable = false)
     private LocalDateTime validPeriodTo;
+    @AssertFalse
+    @NotNull
+    @Column(nullable = false)
     private Boolean isDisabled;
-    
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private RoomTypeEntity roomTypeEntity;
+
+    public RoomRateEntity() {
+        this.isDisabled = false;
+    }
+
+    public RoomRateEntity(String roomRateType, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo, RoomTypeEntity roomTypeEntity) {
+        this();
+        this.roomRateType = roomRateType;
+        this.ratePerNight = ratePerNight;
+        this.validPeriodFrom = validPeriodFrom;
+        this.validPeriodTo = validPeriodTo;
+        this.roomTypeEntity = roomTypeEntity;
+    }
 
     public String getRoomRateType() {
         return roomRateType;
@@ -50,6 +87,7 @@ public class RoomRateEntity implements Serializable {
     public void setRatePerNight(BigDecimal ratePerNight) {
         this.ratePerNight = ratePerNight;
     }
+
     /**
      * @return the validPeriodFrom
      */
@@ -93,7 +131,8 @@ public class RoomRateEntity implements Serializable {
     public void setRoomRateId(Long roomRateId) {
         this.roomRateId = roomRateId;
     }
-        /**
+
+    /**
      * @return the roomTypeEntity
      */
     public RoomTypeEntity getRoomTypeEntity() {
@@ -131,5 +170,5 @@ public class RoomRateEntity implements Serializable {
     public String toString() {
         return "entity.RoomRateEntity[ id=" + roomRateId + " ]";
     }
-    
+
 }

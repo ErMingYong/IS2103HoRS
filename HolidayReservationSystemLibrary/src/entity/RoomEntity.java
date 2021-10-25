@@ -6,12 +6,18 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import util.enumeration.RoomStatusEnum;
 
 /**
@@ -25,12 +31,33 @@ public class RoomEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
+    @NotNull
+    @Column(nullable = false)
+    @Max(99)
+    @Min(1)
     private Integer roomFloor;
+    @NotNull
+    @Column(nullable = false)
+    @Max(99)
+    @Min(1)
     private Integer roomNumber;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
     private RoomStatusEnum roomStatusEnum;
-    
+
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "roomEntity")
     private RoomTypeEntity roomTypeEntity;
+
+    public RoomEntity() {
+    }
+
+    public RoomEntity(Integer roomFloor, Integer roomNumber, RoomStatusEnum roomStatusEnum, RoomTypeEntity roomTypeEntity) {
+        this.roomFloor = roomFloor;
+        this.roomNumber = roomNumber;
+        this.roomStatusEnum = roomStatusEnum;
+        this.roomTypeEntity = roomTypeEntity;
+    }
 
     public Integer getRoomFloor() {
         return roomFloor;
@@ -63,8 +90,8 @@ public class RoomEntity implements Serializable {
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
     }
-    
-        /**
+
+    /**
      * @return the roomTypeEntity
      */
     public RoomTypeEntity getRoomTypeEntity() {
@@ -102,5 +129,5 @@ public class RoomEntity implements Serializable {
     public String toString() {
         return "entity.RoomEntity[ id=" + roomId + " ]";
     }
-    
+
 }

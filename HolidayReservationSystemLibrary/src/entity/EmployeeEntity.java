@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,7 +29,17 @@ public class EmployeeEntity extends UserEntity implements Serializable {
     @OneToMany(mappedBy= "employeeEntity", fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ExceptionReportEntity> exceptionReportEntities;
-    
+
+    public EmployeeEntity() {
+        this.exceptionReportEntities = new ArrayList<ExceptionReportEntity> ();
+    }
+
+    public EmployeeEntity(String firstName, String lastName, String userName, String password) {
+        super(firstName, lastName, userName, password);
+        this.exceptionReportEntities = new ArrayList<ExceptionReportEntity> ();
+        
+    }
+
     /**
      * @return the employeeAccessRightEnum
      */

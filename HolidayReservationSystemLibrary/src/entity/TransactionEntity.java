@@ -8,7 +8,10 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,6 +19,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -24,46 +29,51 @@ import javax.persistence.OneToMany;
 @Entity
 public class TransactionEntity implements Serializable {
 
+
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionId;
-    private LocalDateTime transactionDate;
-    private LocalDateTime transactionTime;
+    @NotNull
+    @Column(nullable = false)
+    private LocalDateTime transactionDateTime;
+    @DecimalMin("0.00")
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal transactionAmount;
 
     @OneToMany(mappedBy = "transactionEntity", fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ReservationEntity> reservationEntities;
-            
-    /**
-     * @return the transactionDate
+
+    public TransactionEntity() {
+        this.reservationEntities = new ArrayList<ReservationEntity>();
+    }
+
+    public TransactionEntity(LocalDateTime transactionDateTime, BigDecimal transactionAmount) {
+        this();
+        this.transactionDateTime = transactionDateTime;
+        this.transactionAmount = transactionAmount;
+    }
+    
+    
+           
+    
+    
+       /**
+     * @return the transactionDateTime
      */
-    public LocalDateTime getTransactionDate() {
-        return transactionDate;
+    public LocalDateTime getTransactionDateTime() {
+        return transactionDateTime;
     }
 
     /**
-     * @param transactionDate the transactionDate to set
+     * @param transactionDateTime the transactionDateTime to set
      */
-    public void setTransactionDate(LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+        this.transactionDateTime = transactionDateTime;
     }
-
-    /**
-     * @return the transactionTime
-     */
-    public LocalDateTime getTransactionTime() {
-        return transactionTime;
-    }
-
-    /**
-     * @param transactionTime the transactionTime to set
-     */
-    public void setTransactionTime(LocalDateTime transactionTime) {
-        this.transactionTime = transactionTime;
-    }
-
     public BigDecimal getTransactionAmount() {
         return transactionAmount;
     }

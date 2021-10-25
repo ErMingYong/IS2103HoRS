@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +25,16 @@ public class PartnerEntity extends UserEntity implements Serializable {
     @OneToMany(mappedBy = "partnerEntity", fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ReservationEntity> reservationEntities;
+
+    public PartnerEntity() {
+        this.reservationEntities = new ArrayList<ReservationEntity>();
+    }
+
+    public PartnerEntity(List<ReservationEntity> reservationEntities, String firstName, String lastName, String userName, String password) {
+        super(firstName, lastName, userName, password);
+        this.reservationEntities = reservationEntities;
+    }
+    
 
         /**
      * @return the reservationEntities

@@ -6,14 +6,16 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -26,17 +28,49 @@ public class RoomTypeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomTypeId;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
     private String name;
+    @Column(nullable = false, length = 400)
+    @NotNull
+    @Size(min = 1, max = 400)
     private String description;
+    @Column(nullable = false, length = 400)
+    @NotNull
+    @Size(min = 1, max = 400)
     private String size;
+    @Column(nullable = false, length = 400)
+    @NotNull
+    @Size(min = 1, max = 400)
     private String bed;
+    @Max(8)
+    @Min(1)
+    @NotNull
+    @Column(nullable = false)
     private Integer capacity;
+    @Column(nullable = false, length = 400)
+    @NotNull
+    @Size(min = 1, max = 400)
     private String amenities;
-    private Boolean disabled;
+    @AssertFalse
+    @NotNull
+    @Column(nullable = false)
+    private Boolean isDisabled;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomTypeEntity")
-    @JoinColumn(nullable = false)
-    private List<RoomRateEntity> roomRateEntities;
+    public RoomTypeEntity() {
+        this.isDisabled = false;
+    }
+
+    public RoomTypeEntity(String name, String description, String size, String bed, Integer capacity, String amenities) {
+        this();
+        this.name = name;
+        this.description = description;
+        this.size = size;
+        this.bed = bed;
+        this.capacity = capacity;
+        this.amenities = amenities;
+    }
 
     public Long getRoomTypeId() {
         return roomTypeId;
@@ -131,31 +165,17 @@ public class RoomTypeEntity implements Serializable {
     }
 
     /**
-     * @return the disabled
+     * @return the isDisabled
      */
-    public Boolean getDisabled() {
-        return disabled;
+    public Boolean getIsDisabled() {
+        return isDisabled;
     }
 
     /**
-     * @param disabled the disabled to set
+     * @param isDisabled the isDisabled to set
      */
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    /**
-     * @return the roomRateEntities
-     */
-    public List<RoomRateEntity> getRoomRateEntities() {
-        return roomRateEntities;
-    }
-
-    /**
-     * @param roomRateEntities the roomRateEntities to set
-     */
-    public void setRoomRateEntities(List<RoomRateEntity> roomRateEntities) {
-        this.roomRateEntities = roomRateEntities;
+    public void setIsDisabled(Boolean isDisabled) {
+        this.isDisabled = isDisabled;
     }
 
     @Override

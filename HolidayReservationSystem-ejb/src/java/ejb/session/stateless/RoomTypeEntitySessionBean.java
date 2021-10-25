@@ -5,7 +5,6 @@
  */
 package ejb.session.stateless;
 
-import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -65,7 +64,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
 
         if (roomType != null) {
-            roomType.getRoomRateEntities().size();
             return roomType;
         } else {
             throw new RoomTypeNotFoundException("Room Type ID " + roomTypeId + " does not exist");
@@ -78,7 +76,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeName);
 
         if (roomType != null) {
-            roomType.getRoomRateEntities().size();
             return roomType;
         } else {
             throw new RoomTypeNotFoundException("Room Type Name " + roomTypeName + " does not exist");
@@ -91,7 +88,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
 
         if (roomType != null) {
-            roomType.getRoomRateEntities().clear();
             em.remove(roomType);
         } else {
             throw new RoomTypeNotFoundException("Room Type ID " + roomTypeId + " does not exist");
@@ -103,12 +99,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         try {
             RoomTypeEntity oldRoomType = em.find(RoomTypeEntity.class, oldRoomTypeId);
             Long newRoomTypeId = createNewRoomType(newRoomType);
-
-            for (RoomRateEntity roomRate : oldRoomType.getRoomRateEntities()) {
-                roomRate.setRoomTypeEntity(newRoomType);
-            }
-
-            oldRoomType.getRoomRateEntities().clear();
             em.remove(oldRoomType);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());

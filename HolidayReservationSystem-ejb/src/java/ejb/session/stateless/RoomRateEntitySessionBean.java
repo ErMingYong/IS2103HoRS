@@ -33,7 +33,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
@@ -78,36 +78,24 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
 
     @Override
     public void deleteRoomRate(Long roomRateId) throws RoomRateNotFoundException {
-        try {
-            RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
 
-            if (roomRate != null) {
-                //DO WE NEED TO REMOVE ROOMRATE FROM ROOMRATETYPE?
-                RoomTypeEntity taggedRoomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeById(roomRate.getRoomTypeEntity().getRoomTypeId());
-                for (RoomRateEntity roomRateEntity : taggedRoomType.getRoomRateEntities()) {
-                    if (roomRateEntity.equals(roomRate)) {
-                        taggedRoomType.getRoomRateEntities().remove(roomRateEntity);
-                    }
-                }
-                em.remove(roomRate);
-            } else {
-                throw new RoomRateNotFoundException("Room Rate ID " + roomRateId + " does not exist");
-            }
-        } catch (RoomTypeNotFoundException ex) {
-            System.out.println("Room Type tagged to Room Rate does not exist");
+        RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
+
+        if (roomRate != null) {
+            em.remove(roomRate);
+        } else {
+            throw new RoomRateNotFoundException("Room Rate ID " + roomRateId + " does not exist");
         }
+
     }
 
+    //ISSUE HERE, MIGHT NOT BE ABLE TO UPDATE PROPERLY
     @Override
     public void updateRoomRate(Long oldRoomRateId, RoomRateEntity newRoomRate) throws UnknownPersistenceException {
         try {
             RoomRateEntity oldRoomRate = em.find(RoomRateEntity.class, oldRoomRateId);
             Long newRoomRateId = createNewRoomRate(newRoomRate);
 
-            RoomTypeEntity taggedRoomType = oldRoomRate.getRoomTypeEntity();
-            taggedRoomType.getRoomRateEntities().remove(oldRoomRate);
-            taggedRoomType.getRoomRateEntities().add(newRoomRate);
-            
             em.remove(oldRoomRate);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());

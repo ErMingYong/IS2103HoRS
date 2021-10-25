@@ -6,11 +6,16 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 
 /**
@@ -22,14 +27,36 @@ public class GuestEntity extends UserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Email
+    @NotNull
+    @Column(nullable = false)
     private String email;
+    @NotNull
+    @Column(nullable = false, length = 8)
+    @Size(min = 8, max = 8)
     private String contactNumber;
+    @NotNull
+    @Column(nullable = false, length = 8)
+    @Size(min = 8, max = 8)
     private String passportNumber;
     
     @OneToMany(mappedBy = "guestEntity", fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ReservationEntity> reservationEntities;
 
+    public GuestEntity() {
+        this.reservationEntities = new ArrayList<ReservationEntity>();
+    }
+
+
+    public GuestEntity(String email, String contactNumber, String passportNumber, String firstName, String lastName, String userName, String password) {
+        super(firstName, lastName, userName, password);
+        this.email = email;
+        this.contactNumber = contactNumber;
+        this.passportNumber = passportNumber;
+        this.reservationEntities = new ArrayList<ReservationEntity>();
+    }
+    
  @Override
     public String toString() {
         return "entity.GuestEntity[ id=" + this.getUserEntityId() + " ]";

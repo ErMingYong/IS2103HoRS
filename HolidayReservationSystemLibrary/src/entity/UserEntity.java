@@ -6,12 +6,15 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -21,17 +24,38 @@ import javax.persistence.InheritanceType;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class UserEntity implements Serializable {
 
-    
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userEntityId;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
     private String firstName;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
     private String lastName;
+    @Column(nullable = false, unique = true, length = 32)
+    @NotNull
+    @Size(min = 6, max = 32)
     private String userName;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 8, max = 32)
     private String password;
-            
+
+    public UserEntity() {
+    }
+
+    public UserEntity(String firstName, String lastName, String userName, String password) {
+        this();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.password = password;
+    }
+
     public Long getUserEntityId() {
         return userEntityId;
     }
@@ -39,6 +63,7 @@ public abstract class UserEntity implements Serializable {
     public void setUserEntityId(Long userEntityId) {
         this.userEntityId = userEntityId;
     }
+
     /**
      * @return the firstName
      */
@@ -119,5 +144,5 @@ public abstract class UserEntity implements Serializable {
     public String toString() {
         return "entity.UserEntity[ id=" + userEntityId + " ]";
     }
-    
+
 }

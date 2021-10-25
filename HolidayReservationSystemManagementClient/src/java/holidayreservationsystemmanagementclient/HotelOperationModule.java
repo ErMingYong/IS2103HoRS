@@ -155,10 +155,10 @@ public class HotelOperationModule {
         Integer response = scanner.nextInt();
         while (true) {
             if (response == 0) {
-                newRoomType.setDisabled(Boolean.TRUE);
+                newRoomType.setIsDisabled(Boolean.TRUE);
                 break;
             } else if (response == 1) {
-                newRoomType.setDisabled(Boolean.FALSE);
+                newRoomType.setIsDisabled(Boolean.FALSE);
                 break;
             } else {
                 System.out.println("Invalid option, please try again!\n");
@@ -189,7 +189,7 @@ public class HotelOperationModule {
         try {
             RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
             System.out.printf("%s%s%s%s%d%s%b\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
-            System.out.printf("%s%s%s%s%d%s%b\n", roomType.getName().toString(), roomType.getDescription(), roomType.getSize(), roomType.getBed().toString(), roomType.getCapacity(), roomType.getAmenities(), roomType.getDisabled());
+            System.out.printf("%s%s%s%s%d%s%b\n", roomType.getName().toString(), roomType.getDescription(), roomType.getSize(), roomType.getBed().toString(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled());
             System.out.println("------------------------");
             System.out.println("1: Update Room Type");
             System.out.println("2: Delete Room Type");
@@ -217,7 +217,7 @@ public class HotelOperationModule {
         System.out.printf("%s%s%s%s%d%s%b\n", "Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
 
         for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
-            System.out.printf("%s%s%s%s%d%s%b\n", roomTypeEntity.getName().toString(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed().toString(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getDisabled());
+            System.out.printf("%s%s%s%s%d%s%b\n", roomTypeEntity.getName().toString(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed().toString(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled());
         }
 
         System.out.print("Press any key to continue...> ");
@@ -400,10 +400,10 @@ public class HotelOperationModule {
             Integer roomDisabled = scanner.nextInt();
 
             if (roomDisabled == 0) {
-                roomType.setDisabled(Boolean.TRUE);
+                roomType.setIsDisabled(Boolean.TRUE);
                 break;
             } else if (roomDisabled == 1) {
-                roomType.setDisabled(Boolean.FALSE);
+                roomType.setIsDisabled(Boolean.FALSE);
                 break;
             } else {
                 System.out.println("Invalid option, please try again!\n");

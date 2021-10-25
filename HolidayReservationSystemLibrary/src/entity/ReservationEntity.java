@@ -8,6 +8,7 @@ package entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,7 +16,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -27,30 +32,71 @@ public class ReservationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long resversationEntityId;
+    private Long reservationEntityId;
+    @Future
+    @NotNull
+    @Column(nullable = false)
     private LocalDateTime reservationDate;
-    private Boolean checkedIn;
+    @NotNull
+    @Column(nullable = false)
+    @AssertFalse
+    private Boolean isCheckedIn;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
     private String firstName;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
     private String lastName;
+    @Email
+    @NotNull
+    @Column(nullable = false)
     private String email;
+    @NotNull
+    @Column(nullable = false, length = 8)
+    @Size(min = 8, max = 8)
     private String contactNumber;
+    @NotNull
+    @Column(nullable = false, length = 8)
+    @Size(min = 8, max = 8)
     private String passportNumber;
-    
-    @OneToOne(mappedBy = "reservationEntity", fetch = FetchType.LAZY)
+
+    @OneToOne(mappedBy = "reservationEntity", fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private TransactionEntity transactionEntity;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private GuestEntity guestEntity;
 
-    public Long getResversationEntityId() {
-        return resversationEntityId;
+    public ReservationEntity() {
+        this.isCheckedIn = false;
     }
 
-    public void setResversationEntityId(Long resversationEntityId) {
-        this.resversationEntityId = resversationEntityId;
+    public ReservationEntity(LocalDateTime reservationDate, String firstName, String lastName, String email, String contactNumber, String passportNumber, RoomEntity roomEntity, TransactionEntity transactionEntity) {
+        this();
+        this.reservationDate = reservationDate;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.contactNumber = contactNumber;
+        this.passportNumber = passportNumber;
+        this.roomEntity = roomEntity;
+        this.transactionEntity = transactionEntity;
     }
-    
+
+    /**
+     * @return the reservationEntityId
+     */
+    public Long getReservationEntityId() {
+        return reservationEntityId;
+    }
+
+    /**
+     * @param reservationEntityId the reservationEntityId to set
+     */
+    public void setReservationEntityId(Long reservationEntityId) {
+        this.reservationEntityId = reservationEntityId;
+    }
+
     /**
      * @return the reservationDate
      */
@@ -65,19 +111,18 @@ public class ReservationEntity implements Serializable {
         this.reservationDate = reservationDate;
     }
 
-
     /**
      * @return the checkedIn
      */
-    public Boolean getCheckedIn() {
-        return checkedIn;
+    public Boolean getIsCheckedIn() {
+        return isCheckedIn;
     }
 
     /**
      * @param checkedIn the checkedIn to set
      */
-    public void setCheckedIn(Boolean checkedIn) {
-        this.checkedIn = checkedIn;
+    public void setIsCheckedIn(Boolean isCheckedIn) {
+        this.isCheckedIn = isCheckedIn;
     }
 
     /**
@@ -149,7 +194,7 @@ public class ReservationEntity implements Serializable {
     public void setPassportNumber(String passportNumber) {
         this.passportNumber = passportNumber;
     }
-    
+
     /**
      * @return the roomEntity
      */
@@ -178,24 +223,10 @@ public class ReservationEntity implements Serializable {
         this.transactionEntity = transactionEntity;
     }
 
-    /**
-     * @return the guestEntity
-     */
-    public GuestEntity getGuestEntity() {
-        return guestEntity;
-    }
-
-    /**
-     * @param guestEntity the guestEntity to set
-     */
-    public void setGuestEntity(GuestEntity guestEntity) {
-        this.guestEntity = guestEntity;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (resversationEntityId != null ? resversationEntityId.hashCode() : 0);
+        hash += (reservationEntityId != null ? reservationEntityId.hashCode() : 0);
         return hash;
     }
 
@@ -206,7 +237,7 @@ public class ReservationEntity implements Serializable {
             return false;
         }
         ReservationEntity other = (ReservationEntity) object;
-        if ((this.resversationEntityId == null && other.resversationEntityId != null) || (this.resversationEntityId != null && !this.resversationEntityId.equals(other.resversationEntityId))) {
+        if ((this.reservationEntityId == null && other.reservationEntityId != null) || (this.reservationEntityId != null && !this.reservationEntityId.equals(other.reservationEntityId))) {
             return false;
         }
         return true;
@@ -214,7 +245,7 @@ public class ReservationEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.ReservationEntity[ id=" + resversationEntityId + " ]";
+        return "entity.ReservationEntity[ id=" + reservationEntityId + " ]";
     }
-    
+
 }

@@ -23,6 +23,10 @@ import util.exception.UnknownPersistenceException;
  *
  * @author mingy
  */
+
+
+
+//definitely a stateful session bean, will update when i work nearer to this because i need time to see how the system will flow
 @Stateless
 public class TransactionEntitySessionBean implements TransactionEntitySessionBeanRemote, TransactionEntitySessionBeanLocal {
 

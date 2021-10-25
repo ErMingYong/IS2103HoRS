@@ -87,10 +87,6 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
         GuestEntity guest = em.find(GuestEntity.class, guestId);
 
         if (guest != null) {
-            for (ReservationEntity reservation : guest.getReservationEntities()) {
-                reservation.setGuestEntity(null);
-            }
-
             em.remove(guest);
         } else {
             throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
