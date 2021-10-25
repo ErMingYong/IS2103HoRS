@@ -27,7 +27,7 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
@@ -71,6 +71,18 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     }
 
     @Override
+    public RoomEntity retrieveRoomByRoomFloorAndRoomNumber(Integer roomFloor, Integer roomNumber) throws RoomNotFoundException {
+
+        RoomEntity room = (RoomEntity) em.createQuery(
+                "SELECT r FROM Room r WHERE r.roomFloor = :rmFloor AND r.roomNumber = :rmNumber")
+                .setParameter("rmFloor", roomFloor)
+                .setParameter("rmNumber", roomNumber)
+                .getSingleResult();
+        
+        return room;
+    }
+
+    @Override
     public void deleteRoom(Long roomId) throws RoomNotFoundException {
         RoomEntity room = retrieveRoomById(roomId);
         if (room != null) {
@@ -81,20 +93,19 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             throw new RoomNotFoundException("Room ID " + roomId + " does not exist");
         }
     }
-    
-    
+
     @Override
     public void updateRoom(Long oldRoomId, RoomEntity newRoom) throws UnknownPersistenceException {
         try {
             RoomEntity oldRoom = em.find(RoomEntity.class, oldRoomId);
             Long newRoomId = createNewRoom(newRoom);
-            
+
             newRoom.setRoomTypeEntity(oldRoom.getRoomTypeEntity());
-            
+
             em.remove(oldRoom);
-            
+
         } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());            
+            throw new UnknownPersistenceException(ex.getMessage());
         }
     }
 }

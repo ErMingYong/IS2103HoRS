@@ -28,7 +28,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatoryFactory;
     private final Validator validator;
 
@@ -73,6 +73,19 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     @Override
+    public RoomTypeEntity retrieveRoomTypeByName(String roomTypeName) throws RoomTypeNotFoundException {
+
+        RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeName);
+
+        if (roomType != null) {
+            roomType.getRoomRateEntities().size();
+            return roomType;
+        } else {
+            throw new RoomTypeNotFoundException("Room Type Name " + roomTypeName + " does not exist");
+        }
+    }
+
+    @Override
     public void deleteRoomType(Long roomTypeId) throws RoomTypeNotFoundException {
 
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
@@ -90,11 +103,11 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         try {
             RoomTypeEntity oldRoomType = em.find(RoomTypeEntity.class, oldRoomTypeId);
             Long newRoomTypeId = createNewRoomType(newRoomType);
-            
+
             for (RoomRateEntity roomRate : oldRoomType.getRoomRateEntities()) {
                 roomRate.setRoomTypeEntity(newRoomType);
             }
-            
+
             oldRoomType.getRoomRateEntities().clear();
             em.remove(oldRoomType);
         } catch (PersistenceException ex) {

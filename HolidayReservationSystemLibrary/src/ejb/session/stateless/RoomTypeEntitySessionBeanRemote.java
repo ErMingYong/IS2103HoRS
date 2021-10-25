@@ -24,6 +24,8 @@ public interface RoomTypeEntitySessionBeanRemote {
 
     public RoomTypeEntity retrieveRoomTypeById(Long roomTypeId) throws RoomTypeNotFoundException;
 
+    public RoomTypeEntity retrieveRoomTypeByName(String roomTypeName) throws RoomTypeNotFoundException;
+
     public void deleteRoomType(Long roomTypeId) throws RoomTypeNotFoundException;
 
     public void updateRoomType(Long oldRoomTypeId, RoomTypeEntity newRoomType) throws RoomTypeNotFoundException, UnknownPersistenceException;
