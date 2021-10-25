@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.GuestNotFoundException;
+import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -61,6 +62,17 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
             throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
         }
     }
+    
+    @Override
+    public GuestEntity retrieveGuestByUsername(String username) throws GuestNotFoundException {
+        GuestEntity guest = em.find(GuestEntity.class, username);
+        
+        if (guest != null) {
+            return guest;
+        } else {
+            throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
+        }
+    }
 
     @Override
     public void deleteGuest(Long guestId) throws GuestNotFoundException {
@@ -90,6 +102,25 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
             throw new UnknownPersistenceException(ex.getMessage());
         } catch (GuestNotFoundException ex) {
             throw new GuestNotFoundException("Guest ID " + oldGuestId + " does not exist");
+        }
+    }
+    
+    @Override
+    public GuestEntity guestLogin(String guestUsername, String guestPassword) throws GuestNotFoundException, InvalidLoginCredentialException {
+        try {
+            GuestEntity guest = retrieveGuestByUsername(guestUsername);
+            
+            if (guest != null) {
+                if (guest.getPassword().equals(guestPassword)) {
+                    return guest;
+                } else {
+                    throw new InvalidLoginCredentialException("Password do not match");
+                }
+            } else {
+                throw new InvalidLoginCredentialException("Username does not exist");
+            }
+        } catch (GuestNotFoundException ex) {
+            throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
         }
     }
 }

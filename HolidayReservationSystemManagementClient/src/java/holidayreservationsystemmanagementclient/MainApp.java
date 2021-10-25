@@ -161,7 +161,7 @@ public class MainApp {
         Integer response = 0;
 
         while (true) {
-            System.out.println("*** Point-of-Sale (POS) System (v4.1) ***\n");
+            System.out.println("*** Hotel Reservation System Management Client ***\n");
             System.out.println("You are login as " + currentEmployee.getFirstName() + " " + currentEmployee.getLastName() + " with " + currentEmployee.getEmployeeAccessRightEnum().toString() + " rights\n");
             System.out.println("1: System Administration Operation");
             System.out.println("2: Hotel Operation");
@@ -190,7 +190,7 @@ public class MainApp {
                     }
                 } else if (response == 4) {
                     try {
-                        frontOfficeModule.menuFrontOfficerOperation();
+                        frontOfficeModule.menuFrontOfficeOperation();
                     } catch (InvalidAccessRightException ex) {
                         System.out.println("Invalid option, please try again!: " + ex.getMessage() + "\n");
                     }
