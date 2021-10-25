@@ -8,8 +8,11 @@ package ejb.session.stateless;
 import entity.PartnerEntity;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
 import util.exception.PartnerNotFoundException;
+import util.exception.PartnerUsernameExistException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdatePartnerException;
 
 /**
  *
@@ -18,14 +21,14 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface PartnerEntitySessionBeanLocal {
 
-    public Long createNewPartner(PartnerEntity newPartner) throws UnknownPersistenceException;
+    public Long createNewPartner(PartnerEntity newPartnerEntity) throws UnknownPersistenceException, PartnerUsernameExistException, InputDataValidationException;
 
-    public List<PartnerEntity> retrieveAllPartner();
+    public List<PartnerEntity> retrieveAllPartners();
 
-    public PartnerEntity retrievePartnerById(Long partnerId) throws PartnerNotFoundException;
+    public PartnerEntity retrievePartnerByPartnerId(Long partnerId) throws PartnerNotFoundException;
 
     public void deletePartner(Long partnerId) throws PartnerNotFoundException;
 
-    public void updatePartner(Long oldPartnerId, PartnerEntity newPartner) throws UnknownPersistenceException;
-    
+    public void updatePartner(PartnerEntity partnerEntity) throws PartnerNotFoundException, UpdatePartnerException, InputDataValidationException;
+
 }

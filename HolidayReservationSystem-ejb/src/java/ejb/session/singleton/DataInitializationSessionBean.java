@@ -7,6 +7,8 @@ package ejb.session.singleton;
 
 import ejb.session.stateless.EmployeeEntitySessionBeanLocal;
 import entity.EmployeeEntity;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -15,6 +17,7 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.exception.EmployeeNotFoundException;
+import util.exception.EmployeeUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.UnknownPersistenceException;
 
@@ -51,10 +54,10 @@ public class DataInitializationSessionBean {
         {
             employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("manager", "1", "manager", "password"));
         }
-        catch(UnknownPersistenceException ex)
+        catch(UnknownPersistenceException|InputDataValidationException|EmployeeUsernameExistException ex)
         {
             ex.printStackTrace();
-        }
+        } 
     }
     
 }

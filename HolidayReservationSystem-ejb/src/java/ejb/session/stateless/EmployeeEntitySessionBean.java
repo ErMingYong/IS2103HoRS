@@ -7,17 +7,22 @@ package ejb.session.stateless;
 
 import entity.EmployeeEntity;
 import java.util.List;
+import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import util.exception.EmployeeNotFoundException;
+import util.exception.EmployeeUsernameExistException;
+import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateEmployeeException;
 
 /**
  *
@@ -28,7 +33,7 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
@@ -40,15 +45,28 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     }
 
     @Override
-    public Long createNewEmployee(EmployeeEntity newEmployee) throws UnknownPersistenceException {
-        try {
-            em.persist(newEmployee);
-            em.flush();
+    public Long createNewEmployee(EmployeeEntity newEmployeeEntity) throws InputDataValidationException, EmployeeUsernameExistException, UnknownPersistenceException {
+        Set<ConstraintViolation<EmployeeEntity>> constraintViolations = validator.validate(newEmployeeEntity);
 
-            //uses .getUserEntity() as employee is an inheritance of User Entity
-            return newEmployee.getUserEntityId();
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
+        if (constraintViolations.isEmpty()) {
+            try {
+                em.persist(newEmployeeEntity);
+                em.flush();
+
+                return newEmployeeEntity.getUserEntityId();
+            } catch (PersistenceException ex) {
+                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
+                        throw new EmployeeUsernameExistException(ex.getMessage());
+                    } else {
+                        throw new UnknownPersistenceException(ex.getMessage());
+                    }
+                } else {
+                    throw new UnknownPersistenceException(ex.getMessage());
+                }
+            }
+        } else {
+            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
     }
 
@@ -60,7 +78,7 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     }
 
     @Override
-    public EmployeeEntity retrieveEmployeeById(Long employeeId) throws EmployeeNotFoundException {
+    public EmployeeEntity retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException {
         EmployeeEntity employee = em.find(EmployeeEntity.class, employeeId);
 
         if (employee != null) {
@@ -95,19 +113,43 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
         }
     }
 
-    @Override
-    public void updateEmployee(Long oldEmployeeId, EmployeeEntity newEmployee) throws EmployeeNotFoundException, UnknownPersistenceException {
-        try {
-            EmployeeEntity oldEmployee = retrieveEmployeeById(oldEmployeeId);
-            Long newEmployeeId = createNewEmployee(newEmployee);
-            newEmployee.setExceptionReportEntities(oldEmployee.getExceptionReportEntities());
+//    @Override
+//    public void updateEmployee(Long oldEmployeeId, EmployeeEntity newEmployee) throws EmployeeNotFoundException, UnknownPersistenceException {
+//        try {
+//            EmployeeEntity oldEmployee = retrieveEmployeeById(oldEmployeeId);
+//            Long newEmployeeId = createNewEmployee(newEmployee);
+//            newEmployee.setExceptionReportEntities(oldEmployee.getExceptionReportEntities());
+//
+//            //DID NOT DO HANDLING OF RELATIONSHIP TO RESERVATIONS AS RELATIONSHIP IS STILL UNNDER CONSIDERATION
+//            em.remove(oldEmployee);
+//        } catch (PersistenceException ex) {
+//            throw new UnknownPersistenceException(ex.getMessage());
+//        } catch (EmployeeNotFoundException ex) {
+//            throw new EmployeeNotFoundException("Employee ID " + oldEmployeeId + " does not exist");
+//        }
+//    }
 
-            //DID NOT DO HANDLING OF RELATIONSHIP TO RESERVATIONS AS RELATIONSHIP IS STILL UNNDER CONSIDERATION
-            em.remove(oldEmployee);
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
-        } catch (EmployeeNotFoundException ex) {
-            throw new EmployeeNotFoundException("Employee ID " + oldEmployeeId + " does not exist");
+    @Override
+    public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException {
+        if (employeeEntity != null && employeeEntity.getUserEntityId() != null) {
+            Set<ConstraintViolation<EmployeeEntity>> constraintViolations = validator.validate(employeeEntity);
+
+            if (constraintViolations.isEmpty()) {
+                EmployeeEntity employeeEntityToUpdate = retrieveEmployeeByEmployeeId(employeeEntity.getUserEntityId());
+
+                if (employeeEntityToUpdate.getUserName().equals(employeeEntity.getUserName())) {
+                    employeeEntityToUpdate.setFirstName(employeeEntity.getFirstName());
+                    employeeEntityToUpdate.setLastName(employeeEntity.getLastName());
+                    employeeEntityToUpdate.setEmployeeAccessRightEnum(employeeEntity.getEmployeeAccessRightEnum());
+                    // Username and password are deliberately NOT updated to demonstrate that client is not allowed to update account credential through this business method
+                } else {
+                    throw new UpdateEmployeeException("Username of employee record to be updated does not match the existing record");
+                }
+            } else {
+                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+            }
+        } else {
+            throw new EmployeeNotFoundException("Employee ID not provided for employee to be updated");
         }
     }
 
@@ -129,5 +171,15 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
         } catch (EmployeeNotFoundException ex) {
             throw new EmployeeNotFoundException("Employee Username: " + employeeUsername + " does not exist");
         }
+    }
+
+    private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<EmployeeEntity>> constraintViolations) {
+        String msg = "Input data validation error!:";
+
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
+        }
+
+        return msg;
     }
 }
