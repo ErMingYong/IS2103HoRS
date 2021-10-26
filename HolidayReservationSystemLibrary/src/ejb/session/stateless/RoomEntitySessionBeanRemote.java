@@ -9,9 +9,11 @@ import entity.RoomEntity;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.InputDataValidationException;
+import util.exception.RoomFloorAndNumberExistException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateRoomException;
 
 /**
  *
@@ -20,9 +22,9 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface RoomEntitySessionBeanRemote {
 
-    public Long createNewRoom(RoomEntity newRoomEntity) throws InputDataValidationException, UnknownPersistenceException, RoomTypeNameExistException;
+    public Long createNewRoom(RoomEntity newRoomEntity) throws InputDataValidationException, UnknownPersistenceException, RoomFloorAndNumberExistException;
 
-    public List<RoomEntity> retrieveAllRoom();
+    public List<RoomEntity> retrieveAllRooms() ;
 
     public RoomEntity retrieveRoomByRoomId(Long roomId) throws RoomNotFoundException;
 
@@ -30,6 +32,6 @@ public interface RoomEntitySessionBeanRemote {
 
     public void deleteRoom(Long roomId) throws RoomNotFoundException;
 
-    public void updateRoom(Long oldRoomId, RoomEntity newRoom) throws RoomTypeNameExistException, InputDataValidationException, UnknownPersistenceException;
+    public void updateRoom(RoomEntity roomEntity) throws RoomNotFoundException, UpdateRoomException, InputDataValidationException;
 
 }

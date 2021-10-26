@@ -50,12 +50,13 @@ public class RoomEntity implements Serializable {
     private RoomTypeEntity roomTypeEntity;
 
     public RoomEntity() {
+        this.roomStatusEnum = RoomStatusEnum.AVAILABLE;
     }
 
-    public RoomEntity(Integer roomFloor, Integer roomNumber, RoomStatusEnum roomStatusEnum, RoomTypeEntity roomTypeEntity) {
+    public RoomEntity(Integer roomFloor, Integer roomNumber, RoomTypeEntity roomTypeEntity) {
+        this();
         this.roomFloor = roomFloor;
         this.roomNumber = roomNumber;
-        this.roomStatusEnum = roomStatusEnum;
         this.roomTypeEntity = roomTypeEntity;
     }
 

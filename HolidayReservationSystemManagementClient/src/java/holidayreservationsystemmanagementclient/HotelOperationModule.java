@@ -31,10 +31,12 @@ import util.enumeration.EmployeeAccessRightEnum;
 import util.enumeration.RoomStatusEnum;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidAccessRightException;
+import util.exception.RoomFloorAndNumberExistException;
 import util.exception.RoomNotFoundException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateRoomException;
 import util.exception.UpdateRoomTypeException;
 
 /**
@@ -254,21 +256,6 @@ public class HotelOperationModule {
         if (input.length() > 0) {
             roomType.setAmenities(input);
         }
-// shouldnt be allowed to set disabled or not via update
-//        while (true) {
-//            System.out.print("Select Room 's Status (0: Disable, 1: Enable)> ");
-//            Integer roomDisabled = scanner.nextInt();
-//
-//            if (roomDisabled == 0) {
-//                roomType.setIsDisabled(Boolean.TRUE);
-//                break;
-//            } else if (roomDisabled == 1) {
-//                roomType.setIsDisabled(Boolean.FALSE);
-//                break;
-//            } else {
-//                System.out.println("Invalid option, please try again!\n");
-//            }
-//        }
 
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomType);
 
@@ -304,7 +291,7 @@ public class HotelOperationModule {
                 System.out.println("An error has occurred while deleting the room type: " + ex.getMessage() + "\n");
             }
         } else {
-            System.out.println("Staff NOT deleted!\n");
+            System.out.println("Room NOT deleted!\n");
         }
     }
 
@@ -325,86 +312,169 @@ public class HotelOperationModule {
     }
 
     public void doCreateNewRoom() {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            RoomEntity newRoom = new RoomEntity();
 
-            System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New Room ***\n");
-            System.out.print("Enter Room  Floor> ");
-            newRoom.setRoomFloor(scanner.nextInt());
+        Scanner scanner = new Scanner(System.in);
+        RoomEntity newRoom = new RoomEntity();
+
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New Room ***\n");
+
+        int roomFloor;
+        int roomNumber;
+        while (true) {
+            System.out.print("Enter Room Floor> ");
+            roomFloor = scanner.nextInt();
 
             System.out.print("Enter Room Number> ");
-            newRoom.setRoomNumber(scanner.nextInt());
+            roomNumber = scanner.nextInt();
 
-            //Cannot set disabled, by default in creation should be false for isDisabled
-            //Need to include room type
+            try {
+                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+            } catch (RoomNotFoundException ex) {
+                newRoom.setRoomFloor(scanner.nextInt());
+                newRoom.setRoomNumber(scanner.nextInt());
+                break;
+            }
+
+            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
+
+        }
+        System.out.println("-------------------------------");
+        //Cannot set disabled, by default in creation should be false for isDisabled
+        //Need to include room type
+        RoomTypeEntity retrievedRoomType = null;
+        while (true) {
             System.out.print("Enter Room Type Name> ");
             String roomType = scanner.nextLine();
-            RoomTypeEntity retrievedRoomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomType);
+            try {
+                retrievedRoomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomType);
+            } catch (RoomTypeNotFoundException ex) {
+                System.out.println("Room Type Name not found, please try again!");
+            }
 
-//            Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(newRoom);
-//
-//            if (constraintViolations.isEmpty()) {
-//                try {
-//                    Long roomId = roomEntitySessionBeanRemote.createNewRoom(newRoom);
-//                    System.out.println("Room created successfully!: " + roomId + "\n");
-//                } catch () // TO DO CONTINUED HERE
-//                
-//                }
-//                //BEAN VALIDATION CHECKS
-//            }
-        } catch (RoomTypeNotFoundException ex) {
-            Logger.getLogger(HotelOperationModule.class.getName()).log(Level.SEVERE, null, ex);
+            if (retrievedRoomType.getIsDisabled() == true) {
+                System.out.println("Cannot create new room of disabled room type!");
+                retrievedRoomType = null;
+                continue;
+            }
+            if (retrievedRoomType != null) {
+                break;
+            }
+        }
+        newRoom.setRoomTypeEntity(retrievedRoomType);
+
+        Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(newRoom);
+
+        if (constraintViolations.isEmpty()) {
+            try {
+                Long newRoomId = roomEntitySessionBeanRemote.createNewRoom(newRoom);
+                System.out.println("New room created successfully!: " + newRoomId + "\n");
+            } catch (RoomFloorAndNumberExistException ex) {
+                System.out.println("An error has occurred while creating the new room!: The room number and floor already exist\n");
+            } catch (UnknownPersistenceException ex) {
+                System.out.println("An unknown error has occurred while creating the new room!: " + ex.getMessage() + "\n");
+            } catch (InputDataValidationException ex) {
+                System.out.println(ex.getMessage() + "\n");
+            }
+        } else {
+            showInputDataValidationErrorsForRoomEntity(constraintViolations);
         }
     }
 
     private void doUpdateRoom() throws UnknownPersistenceException {
         Scanner scanner = new Scanner(System.in);
         Integer input = 0;
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Update Room ***\n");
 
-        try {
-            System.out.println("*** Hotel Management Client :: Hotel Operation :: Update Room ***\n");
+        int roomFloor;
+        int roomNumber;
+        RoomEntity roomToUpdate;
+        while (true) {
+            System.out.print("Enter Room Floor> ");
+            roomFloor = scanner.nextInt();
 
-            System.out.println("Enter Room Number");
-            input = scanner.nextInt();
+            System.out.print("Enter Room Number> ");
+            roomNumber = scanner.nextInt();
 
-            Integer roomNumber = input / 100;
-            Integer roomFloor = input % 100;
+            try {
+                roomToUpdate = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+            } catch (RoomNotFoundException ex) {
+                System.out.println("Room cannot be Found! Please key in correct room floor and number");
+                continue;
+            }
+            break;
+        }
 
-            RoomEntity oldRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
-            Long oldRoomId = oldRoom.getRoomId();
-            RoomEntity newRoom = new RoomEntity();
+        while (true) {
+            System.out.print("Enter New Room Floor> ");
+            roomFloor = scanner.nextInt();
 
-            System.out.println("Enter new Room Floor (leave blank if no change)");
-            Integer newRoomFloor = scanner.nextInt();
-            if (newRoomFloor != null) {
-                newRoom.setRoomFloor(newRoomFloor);
+            System.out.print("Enter New Room Number> ");
+            roomNumber = scanner.nextInt();
+
+            try {
+                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+            } catch (RoomNotFoundException ex) {
+                roomToUpdate.setRoomFloor(scanner.nextInt());
+                roomToUpdate.setRoomNumber(scanner.nextInt());
+                break;
             }
 
-            System.out.println("Enter new Room Number (leave blank if no change)");
-            Integer newRoomNumber = scanner.nextInt();
-            if (newRoomNumber != null) {
-                newRoom.setRoomNumber(newRoomNumber);
+            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
+        }
+
+        RoomTypeEntity retrievedRoomType = null;
+        scanner.nextLine();
+        while (true) {
+            System.out.print("Enter Room Type Name> ");
+            String roomType = scanner.nextLine();
+            try {
+                retrievedRoomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomType);
+            } catch (RoomTypeNotFoundException ex) {
+                System.out.println("Room Type Name not found, please try again!");
             }
 
-            //roomEntitySessionBeanRemote.updateRoom(oldRoomId, newRoom);
+            if (retrievedRoomType.getIsDisabled() == true) {
+                System.out.println("Cannot update room using disabled room type!");
+                retrievedRoomType = null;
+                continue;
+            }
+            if (retrievedRoomType != null) {
+                break;
+            }
+        }
 
-            /*
-            Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(room);
+        roomToUpdate.setRoomTypeEntity(retrievedRoomType);
 
-            if (constraintViolations.isEmpty()) {
-                try {
-                    roomEntitySessionBeanRemote.updateRoom(room);
-                    Long updatedRoomId = room.getRoomId();
-                    System.out.println("Room updated successfully!: " + updatedRoomId + "\n");
-                } catch () // TO DO CONTINUED HERE
-                
-                }*/
-            //BEAN VALIDATION CHECKS
-        } catch (RoomNotFoundException ex) {
-            System.out.println("Room Number: " + input + " does not exist");
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
+        while (true) {
+            System.out.print("Select Room Status> ");
+            System.out.println("------------------------");
+            System.out.println("1: Available");
+            System.out.println("2: Not Available");
+            System.out.println("3: Disabled");
+            System.out.println("------------------------");
+
+            Integer roomStatus = scanner.nextInt();
+
+            if (roomStatus >= 1 && roomStatus <= 3) {
+                roomToUpdate.setRoomStatusEnum(RoomStatusEnum.values()[roomStatus - 1]);
+                break;
+            } else {
+                System.out.println("Invalid option, please try again!\n");
+            }
+        }
+        Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(roomToUpdate);
+
+        if (constraintViolations.isEmpty()) {
+            try {
+                roomEntitySessionBeanRemote.updateRoom(roomToUpdate);
+                System.out.println("Room updated successfully!\n");
+            } catch (RoomNotFoundException | UpdateRoomException ex) {
+                System.out.println("An error has occurred while updating Room: " + ex.getMessage() + "\n");
+            } catch (InputDataValidationException ex) {
+                System.out.println(ex.getMessage() + "\n");
+            }
+        } else {
+            showInputDataValidationErrorsForRoomEntity(constraintViolations);
         }
     }
 
@@ -435,7 +505,7 @@ public class HotelOperationModule {
 
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room ***\n");
 
-        List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRoom();
+        List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRooms();
         System.out.printf("%d%d\n", "Room Floor", "Room Number");
 
         for (RoomEntity roomEntity : roomEntities) {
@@ -447,6 +517,16 @@ public class HotelOperationModule {
     }
 
     private void showInputDataValidationErrorsForRoomTypeEntity(Set<ConstraintViolation<RoomTypeEntity>> constraintViolations) {
+        System.out.println("\nInput data validation error!:");
+
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            System.out.println("\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage());
+        }
+
+        System.out.println("\nPlease try again......\n");
+    }
+
+    private void showInputDataValidationErrorsForRoomEntity(Set<ConstraintViolation<RoomEntity>> constraintViolations) {
         System.out.println("\nInput data validation error!:");
 
         for (ConstraintViolation constraintViolation : constraintViolations) {
