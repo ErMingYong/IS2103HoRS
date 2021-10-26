@@ -27,71 +27,74 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-
     public ExceptionReportEntitySessionBean() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
-    
+
     @Override
     public Long createNewExceptionReport(ExceptionReportEntity newExceptionReport) throws UnknownPersistenceException {
         try {
             em.persist(newExceptionReport);
             em.flush();
-            
+
             return newExceptionReport.getExceptionReportId();
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }
     }
-    
+
     @Override
     public List<ExceptionReportEntity> retrieveAllExceptionReport() {
         Query query = em.createQuery("SELECT er FROM ExceptionReportEntity er");
-        
-        return query.getResultList();
+        List<ExceptionReportEntity> listOfExceptionReportEntities = query.getResultList();
+        for (ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
+            exceptionReportEntity.getFirstTypeExceptionReservations().size();
+            exceptionReportEntity.getSecondTypeExceptionReservations().size();
+        }
+        return listOfExceptionReportEntities;
     }
-    
+
     @Override
     public ExceptionReportEntity retrieveExceptionReportById(Long exceptionReportId) throws ExceptionReportNotFoundException {
         ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
-        
+
         if (exceptionReport != null) {
-            exceptionReport.getFirstTypeExceptionReservations();
-            exceptionReport.getSecondTypeExceptionReservations();
-            
+            exceptionReport.getFirstTypeExceptionReservations().size();
+            exceptionReport.getSecondTypeExceptionReservations().size();
+
             return exceptionReport;
         } else {
             throw new ExceptionReportNotFoundException("Exception Report ID " + exceptionReportId + " does not exist");
         }
     }
-    
+
     @Override
     public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException {
         ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
-        
+
         if (exceptionReport != null) {
             exceptionReport.setFirstTypeExceptionReservations(null);
             exceptionReport.setSecondTypeExceptionReservations(null);
-            
+
             em.remove(exceptionReport);
         } else {
             throw new ExceptionReportNotFoundException("Exception Report IDD " + exceptionReportId + " does not exist");
         }
     }
-    
+
     @Override
     public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException {
         try {
             ExceptionReportEntity oldExceptionReport = retrieveExceptionReportById(oldExceptionReportId);
             Long newExceptionReportId = createNewExceptionReport(newExceptionReport);
-            
+
             newExceptionReport.setFirstTypeExceptionReservations(oldExceptionReport.getFirstTypeExceptionReservations());
             newExceptionReport.setSecondTypeExceptionReservations(oldExceptionReport.getSecondTypeExceptionReservations());
             em.remove(oldExceptionReport);

@@ -73,14 +73,17 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     @Override
     public List<EmployeeEntity> retrieveAllEmployees() {
         Query query = em.createQuery("SELECT e FROM EmployeeEntity e");
-
-        return query.getResultList();
+        List<EmployeeEntity> listOfEmployeeEntities = query.getResultList();
+        for (EmployeeEntity employee : listOfEmployeeEntities) {
+            employee.getExceptionReportEntities().size();
+        }
+        return listOfEmployeeEntities;
     }
 
     @Override
     public EmployeeEntity retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException {
         EmployeeEntity employee = em.find(EmployeeEntity.class, employeeId);
-
+        employee.getExceptionReportEntities().size();
         if (employee != null) {
             //DID NOT DO FETCHING FOR LIST OF RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
             return employee;
@@ -92,6 +95,7 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     @Override
     public EmployeeEntity retrieveEmployeeByUsername(String employeeUsername) throws EmployeeNotFoundException {
         EmployeeEntity employee = em.find(EmployeeEntity.class, employeeUsername);
+        employee.getExceptionReportEntities().size();
 
         if (employee != null) {
             //DID NOT DO FETCHING FOR LIST OF RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
@@ -128,7 +132,6 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
 //            throw new EmployeeNotFoundException("Employee ID " + oldEmployeeId + " does not exist");
 //        }
 //    }
-
     @Override
     public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException {
         if (employeeEntity != null && employeeEntity.getUserEntityId() != null) {

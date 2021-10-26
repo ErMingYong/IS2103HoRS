@@ -73,14 +73,18 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     @Override
     public List<RoomEntity> retrieveAllRooms() {
         Query query = em.createQuery("SELECT r FROM RoomEntity r");
-
-        return query.getResultList();
+        List<RoomEntity> listOfRoomEntities = query.getResultList();
+        for (RoomEntity roomEntity : listOfRoomEntities) {
+            roomEntity.getRoomTypeEntity();
+        }
+        return listOfRoomEntities;
     }
 
     @Override
     public RoomEntity retrieveRoomByRoomId(Long roomId) throws RoomNotFoundException {
 
         RoomEntity room = em.find(RoomEntity.class, roomId);
+        room.getRoomTypeEntity();
 
         if (room != null) {
             room.getRoomTypeEntity();
@@ -98,19 +102,20 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
                 .setParameter("rmFloor", roomFloor)
                 .setParameter("rmNumber", roomNumber)
                 .getSingleResult();
-
+        room.getRoomTypeEntity();
+        
         return room;
     }
 
     @Override
-    public void deleteRoom(Long roomId) throws RoomNotFoundException {
-        RoomEntity room = retrieveRoomByRoomId(roomId);
+    public void deleteRoom(RoomEntity roomToDelete) throws RoomNotFoundException {
+        RoomEntity room = retrieveRoomByRoomId(roomToDelete.getRoomId());
         if (room != null) {
             room.setRoomTypeEntity(null);
 
             em.remove(room);
         } else {
-            throw new RoomNotFoundException("Room ID " + roomId + " does not exist");
+            throw new RoomNotFoundException("Room ID " + room.getRoomId() + " does not exist");
         }
     }
 
@@ -125,9 +130,12 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             if(constraintViolations.isEmpty())
             {
                 RoomEntity roomEntityToUpdate = retrieveRoomByRoomId(roomEntity.getRoomId());
-
-                if(roomEntityToUpdate.getRoomFloor().equals(roomEntity.getRoomFloor()) && roomEntityToUpdate.getRoomNumber().equals(roomEntity.getRoomNumber()))
+                
+                //Because we are allowing room floor and number to be changed, i am not sure what to use to do the checking here so i will use primary key
+                if(roomEntityToUpdate.getRoomId().equals(roomEntity.getRoomId()))
                 {
+                    roomEntityToUpdate.setRoomFloor(roomEntity.getRoomFloor());
+                    roomEntityToUpdate.setRoomNumber(roomEntity.getRoomNumber());
                     roomEntityToUpdate.setRoomStatusEnum(roomEntity.getRoomStatusEnum());
                     roomEntityToUpdate.setRoomTypeEntity(roomEntity.getRoomTypeEntity());
 
@@ -147,6 +155,7 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             throw new RoomNotFoundException("Room ID not provided for room to be updated");
         }
     }
+    
     
 
 

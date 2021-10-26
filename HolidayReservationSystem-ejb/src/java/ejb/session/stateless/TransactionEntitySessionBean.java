@@ -58,8 +58,11 @@ public class TransactionEntitySessionBean implements TransactionEntitySessionBea
     @Override
     public List<TransactionEntity> retrieveAllTransaction() {
         Query query = em.createQuery("SELECT t FROM TransactionEntity t");
-
-        return query.getResultList();
+           List<TransactionEntity> listOfTransactionEntities = query.getResultList();
+           for (TransactionEntity transactionEntity : listOfTransactionEntities) {
+               transactionEntity.getReservationEntities().size();
+           }
+        return listOfTransactionEntities;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class TransactionEntitySessionBean implements TransactionEntitySessionBea
         TransactionEntity transaction = em.find(TransactionEntity.class, transactionId);
 
         if (transaction != null) {
-            transaction.getReservationEntities();
+            transaction.getReservationEntities().size();
             return transaction;
         } else {
             throw new TransactionNotFoundException("Transaction ID " + transactionId + " does not exist");

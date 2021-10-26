@@ -29,7 +29,7 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
@@ -55,28 +55,34 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
     @Override
     public List<GuestEntity> retrieveAllGuest() {
         Query query = em.createQuery("SELECT g FROM GuestEntity g");
-
+        List<GuestEntity> listOfGuestEntities = query.getResultList();
+        for (GuestEntity guestEntity : listOfGuestEntities) {
+            guestEntity.getReservationEntities().size();
+        }
         return query.getResultList();
     }
 
     @Override
     public GuestEntity retrieveGuestById(Long guestId) throws GuestNotFoundException {
-        GuestEntity guest = em.find(GuestEntity.class, guestId);
+        GuestEntity guestEntity = em.find(GuestEntity.class, guestId);
+        guestEntity.getReservationEntities().size();
 
-        if (guest != null) {
-            guest.getReservationEntities();
-            return guest;
+        if (guestEntity != null) {
+            guestEntity.getReservationEntities();
+            return guestEntity;
         } else {
             throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
         }
     }
-    
+
     @Override
     public GuestEntity retrieveGuestByUsername(String guestUsername) throws GuestNotFoundException {
-        GuestEntity guest = em.find(GuestEntity.class, guestUsername);
-        
-        if (guest != null) {
-            return guest;
+        GuestEntity guestEntity = em.find(GuestEntity.class, guestUsername);
+
+        if (guestEntity != null) {
+            guestEntity.getReservationEntities();
+
+            return guestEntity;
         } else {
             throw new GuestNotFoundException("Guest Username " + guestUsername + " does not exist");
         }
@@ -108,12 +114,12 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
             throw new GuestNotFoundException("Guest ID " + oldGuestId + " does not exist");
         }
     }
-    
+
     @Override
     public GuestEntity guestLogin(String guestUsername, String guestPassword) throws GuestNotFoundException, InvalidLoginCredentialException {
         try {
             GuestEntity guest = retrieveGuestByUsername(guestUsername);
-            
+
             if (guest != null) {
                 if (guest.getPassword().equals(guestPassword)) {
                     return guest;

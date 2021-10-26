@@ -86,8 +86,12 @@ public class PartnerEntitySessionBean implements PartnerEntitySessionBeanRemote,
     @Override
     public List<PartnerEntity> retrieveAllPartners() {
         Query query = em.createQuery("SELECT p FROM PartnerEntity p");
-        
-        return query.getResultList();
+        List<PartnerEntity> listOfPartnerEntities = query.getResultList();
+        for (PartnerEntity partnerEntity : listOfPartnerEntities) {
+            partnerEntity.getReservationEntities().size();
+        }
+                
+        return listOfPartnerEntities;
     }
     
     @Override
@@ -95,7 +99,7 @@ public class PartnerEntitySessionBean implements PartnerEntitySessionBeanRemote,
         PartnerEntity partner = em.find(PartnerEntity.class, partnerId);
         
         if (partner != null) {
-            partner.getReservationEntities();
+            partner.getReservationEntities().size();
             return partner;
         } else {
             throw new PartnerNotFoundException("Partner ID " + partnerId + " does not exist");

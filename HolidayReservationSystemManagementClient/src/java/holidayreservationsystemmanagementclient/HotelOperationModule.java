@@ -122,9 +122,10 @@ public class HotelOperationModule {
                 } else if (response == 6) {
                     doDeleteRoom();
                 } else if (response == 7) {
-                    doViewAllRoom();
+                    doViewAllRooms();
                 } else if (response == 8) {
                     //VIEW ROOM ALLOCATION EXCEPTION REPORT
+                    doViewRoomAllocationExceptionReport();
                 } else if (response == 9) {
                     break;
                 } else {
@@ -480,30 +481,56 @@ public class HotelOperationModule {
 
     private void doDeleteRoom() {
         Scanner scanner = new Scanner(System.in);
-        Integer input = 0;
+        System.out.println("*** Hotel Management Client :: Hotel Operation :: Delete Room ***\n");
 
-        try {
-            System.out.println("*** Hotel Management Client :: Hotel Operation :: Delete Room ***\n");
+        int roomFloor;
+        int roomNumber;
+        RoomEntity roomToDelete;
+        while (true) {
+            System.out.print("Enter Room Floor> ");
+            roomFloor = scanner.nextInt();
 
-            System.out.println("Enter Room Number");
-            input = scanner.nextInt();
+            System.out.print("Enter Room Number> ");
+            roomNumber = scanner.nextInt();
 
-            Integer roomNumber = input / 100;
-            Integer roomFloor = input % 100;
-
-            RoomEntity oldRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
-            Long oldRoomid = oldRoom.getRoomId();
-
-            roomEntitySessionBeanRemote.deleteRoom(oldRoomid);
-        } catch (RoomNotFoundException ex) {
-            System.out.println("Room Number: " + input + " does not exist");
+            try {
+                roomToDelete = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+            } catch (RoomNotFoundException ex) {
+                System.out.println("Room cannot be Found! Please key in correct room floor and number");
+                continue;
+            }
+            break;
         }
+        //check if room has someone staying inside
+        if (roomToDelete.getRoomStatusEnum() == RoomStatusEnum.UNAVAILABLE) {
+            //if have customer staying, DISABLE
+            roomToDelete.setRoomStatusEnum(RoomStatusEnum.DISABLED);
+            try {
+                roomEntitySessionBeanRemote.updateRoom(roomToDelete);
+            } catch (UpdateRoomException ex) {
+                System.out.println("Unable to update Room status to Disabled");
+            } catch (InputDataValidationException ex) {
+                System.out.println(ex.getMessage() + "\n");
+            } catch (RoomNotFoundException ex) {
+                System.out.println("Room to be disabled cannot be found");
+            }
+
+            System.out.println("Room Status has been set to DISABLED as it is currently occupied");
+        } else {
+            try {
+                // can delete
+                roomEntitySessionBeanRemote.deleteRoom(roomToDelete);
+            } catch (RoomNotFoundException ex) {
+                System.out.println("Room to be deleted cannot be found");
+            }
+        }
+
     }
 
-    private void doViewAllRoom() {
+    private void doViewAllRooms() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room ***\n");
+        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Rooms ***\n");
 
         List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRooms();
         System.out.printf("%d%d\n", "Room Floor", "Room Number");
@@ -514,6 +541,41 @@ public class HotelOperationModule {
 
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();
+    }
+    
+    public void doViewRoomAllocationExceptionReport() {
+        Scanner scanner = new Scanner(System.in);
+        Integer response = 0;
+
+        System.out.println("*** Hotel Management Client :: Hotel Operation Module :: View Room Allocation Exception Reports ***\n");
+        System.out.print("Select Type of Exception Report To View> ");
+        String roomTypeName = scanner.nextLine().trim();
+
+        try {
+            RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
+            System.out.printf("%s%s%s%s%d%s%b\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
+            System.out.printf("%s%s%s%s%d%s%b\n", roomType.getName().toString(), roomType.getDescription(), roomType.getSize(), roomType.getBed().toString(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled());
+            System.out.println("------------------------");
+            System.out.println("1: First Type");
+            System.out.println("2: Second Type");
+            System.out.println("3: Back\n");
+            System.out.print("> ");
+            response = scanner.nextInt();
+            while (response < 1 || response > 9) {
+                if (response == 1) {
+                    doUpdateRoomType(roomType);
+                } else if (response == 2) {
+                    doDeleteRoomType(roomType);
+                } else if (response == 3) {
+                    break;
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
+                }
+            }
+
+        } catch (RoomTypeNotFoundException ex) {
+            System.out.println("Room Type Name: " + roomTypeName + " does not exist");
+        }
     }
 
     private void showInputDataValidationErrorsForRoomTypeEntity(Set<ConstraintViolation<RoomTypeEntity>> constraintViolations) {
