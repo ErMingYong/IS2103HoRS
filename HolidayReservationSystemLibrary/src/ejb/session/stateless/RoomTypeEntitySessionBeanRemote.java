@@ -8,8 +8,11 @@ package ejb.session.stateless;
 import entity.RoomTypeEntity;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.InputDataValidationException;
+import util.exception.RoomTypeNameExistException;
 import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateRoomTypeException;
 
 /**
  *
@@ -18,16 +21,17 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface RoomTypeEntitySessionBeanRemote {
 
-    public Long createNewRoomType(RoomTypeEntity newRoomType) throws UnknownPersistenceException;
+    public Long createNewRoomType(RoomTypeEntity newRoomTypeEntity) throws InputDataValidationException, RoomTypeNameExistException, UnknownPersistenceException;
 
-    public List<RoomTypeEntity> retrieveAllRoomType();
+    public List<RoomTypeEntity> retrieveAllRoomTypes();
 
-    public RoomTypeEntity retrieveRoomTypeById(Long roomTypeId) throws RoomTypeNotFoundException;
+    public RoomTypeEntity retrieveRoomTypeByRoomTypeId(Long roomTypeId) throws RoomTypeNotFoundException;
 
     public RoomTypeEntity retrieveRoomTypeByName(String roomTypeName) throws RoomTypeNotFoundException;
 
     public void deleteRoomType(Long roomTypeId) throws RoomTypeNotFoundException;
 
-    public void updateRoomType(Long oldRoomTypeId, RoomTypeEntity newRoomType) throws RoomTypeNotFoundException, UnknownPersistenceException;
+    public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, UpdateRoomTypeException, InputDataValidationException;
 
+    public void disableRoomType(RoomTypeEntity roomTypeToDisable) throws UnknownPersistenceException;
 }

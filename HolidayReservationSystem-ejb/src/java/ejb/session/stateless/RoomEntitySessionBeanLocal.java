@@ -8,6 +8,8 @@ package ejb.session.stateless;
 import entity.RoomEntity;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
+import util.exception.RoomTypeNameExistException;
 import util.exception.RoomNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -18,16 +20,16 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface RoomEntitySessionBeanLocal {
 
-    public Long createNewRoom(RoomEntity newRoom) throws UnknownPersistenceException;
+    public Long createNewRoom(RoomEntity newRoomEntity) throws InputDataValidationException, UnknownPersistenceException, RoomTypeNameExistException;
 
     public List<RoomEntity> retrieveAllRoom();
 
-    public RoomEntity retrieveRoomById(Long roomId) throws RoomNotFoundException;
+    public RoomEntity retrieveRoomByRoomId(Long roomId) throws RoomNotFoundException;
 
     public RoomEntity retrieveRoomByRoomFloorAndRoomNumber(Integer roomFloor, Integer roomNumber) throws RoomNotFoundException;
 
     public void deleteRoom(Long roomId) throws RoomNotFoundException;
 
-    public void updateRoom(Long oldRoomId, RoomEntity newRoom) throws UnknownPersistenceException;
+    public void updateRoom(Long oldRoomId, RoomEntity newRoom) throws RoomTypeNameExistException, InputDataValidationException, UnknownPersistenceException;
     
 }
