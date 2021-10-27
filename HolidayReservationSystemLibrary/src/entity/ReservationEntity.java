@@ -33,13 +33,14 @@ public class ReservationEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationEntityId;
-    @Future
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime reservationDate;
+    private LocalDateTime reservationStartDate;
     @NotNull
     @Column(nullable = false)
-    @AssertFalse
+    private LocalDateTime reservationEndDate;
+    @NotNull
+    @Column(nullable = false)
     private Boolean isCheckedIn;
     @Column(nullable = false, length = 32)
     @NotNull
@@ -71,9 +72,10 @@ public class ReservationEntity implements Serializable {
         this.isCheckedIn = false;
     }
 
-    public ReservationEntity(LocalDateTime reservationDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
+    public ReservationEntity(LocalDateTime reservationStartDate,LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
         this();
-        this.reservationDate = reservationDate;
+        this.reservationStartDate = reservationStartDate;
+        this.reservationEndDate = reservationEndDate;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -96,17 +98,31 @@ public class ReservationEntity implements Serializable {
     }
 
     /**
-     * @return the reservationDate
+     * @return the reservationStartDate
      */
-    public LocalDateTime getReservationDate() {
-        return reservationDate;
+    public LocalDateTime getReservationStartDate() {
+        return reservationStartDate;
     }
 
     /**
-     * @param reservationDate the reservationDate to set
+     * @param reservationStartDate the reservationDate to set
      */
-    public void setReservationDate(LocalDateTime reservationDate) {
-        this.reservationDate = reservationDate;
+    public void setReservationStartDate(LocalDateTime reservationStartDate) {
+        this.reservationStartDate = reservationStartDate;
+    }
+
+    /**
+     * @return the reservationEndDate
+     */
+    public LocalDateTime getReservationEndDate() {
+        return reservationEndDate;
+    }
+
+    /**
+     * @param reservationEndDate the reservationEndDate to set
+     */
+    public void setReservationEndDate(LocalDateTime reservationEndDate) {
+        this.reservationEndDate = reservationEndDate;
     }
 
     /**

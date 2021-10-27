@@ -55,8 +55,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         Query query = em.createQuery("SELECT er FROM ExceptionReportEntity er");
         List<ExceptionReportEntity> listOfExceptionReportEntities = query.getResultList();
         for (ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
-            exceptionReportEntity.getFirstTypeExceptionReservations().size();
-            exceptionReportEntity.getSecondTypeExceptionReservations().size();
+            exceptionReportEntity.getReservationEntity();
         }
         return listOfExceptionReportEntities;
     }
@@ -66,8 +65,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
 
         if (exceptionReport != null) {
-            exceptionReport.getFirstTypeExceptionReservations().size();
-            exceptionReport.getSecondTypeExceptionReservations().size();
+            exceptionReport.getReservationEntity();
 
             return exceptionReport;
         } else {
@@ -80,9 +78,6 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
 
         if (exceptionReport != null) {
-            exceptionReport.setFirstTypeExceptionReservations(null);
-            exceptionReport.setSecondTypeExceptionReservations(null);
-
             em.remove(exceptionReport);
         } else {
             throw new ExceptionReportNotFoundException("Exception Report IDD " + exceptionReportId + " does not exist");
@@ -95,8 +90,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
             ExceptionReportEntity oldExceptionReport = retrieveExceptionReportById(oldExceptionReportId);
             Long newExceptionReportId = createNewExceptionReport(newExceptionReport);
 
-            newExceptionReport.setFirstTypeExceptionReservations(oldExceptionReport.getFirstTypeExceptionReservations());
-            newExceptionReport.setSecondTypeExceptionReservations(oldExceptionReport.getSecondTypeExceptionReservations());
+            newExceptionReport.setReservationEntity(oldExceptionReport.getReservationEntity());
             em.remove(oldExceptionReport);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());

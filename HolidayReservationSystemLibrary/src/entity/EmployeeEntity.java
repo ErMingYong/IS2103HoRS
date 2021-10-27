@@ -6,14 +6,9 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import util.enumeration.EmployeeAccessRightEnum;
 
@@ -22,7 +17,6 @@ import util.enumeration.EmployeeAccessRightEnum;
  * @author Koh Wen Jie
  */
 @Entity
-
 public class EmployeeEntity extends UserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,18 +26,11 @@ public class EmployeeEntity extends UserEntity implements Serializable {
     @Column(nullable = false)
     private EmployeeAccessRightEnum employeeAccessRightEnum;
     
-    @OneToMany(mappedBy= "employeeEntity", fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private List<ExceptionReportEntity> exceptionReportEntities;
-
     public EmployeeEntity() {
-        this.exceptionReportEntities = new ArrayList<ExceptionReportEntity> ();
     }
 
     public EmployeeEntity(String firstName, String lastName, String userName, String password) {
-        super(firstName, lastName, userName, password);
-        this.exceptionReportEntities = new ArrayList<ExceptionReportEntity> ();
-        
+        super(firstName, lastName, userName, password);        
     }
 
     /**
@@ -58,21 +45,6 @@ public class EmployeeEntity extends UserEntity implements Serializable {
      */
     public void setEmployeeAccessRightEnum(EmployeeAccessRightEnum employeeAccessRightEnum) {
         this.employeeAccessRightEnum = employeeAccessRightEnum;
-    }
-    
-    
-    /**
-     * @return the exceptionReportEntities
-     */
-    public List<ExceptionReportEntity> getExceptionReportEntities() {
-        return exceptionReportEntities;
-    }
-
-    /**
-     * @param exceptionReportEntities the exceptionReportEntities to set
-     */
-    public void setExceptionReportEntities(List<ExceptionReportEntity> exceptionReportEntities) {
-        this.exceptionReportEntities = exceptionReportEntities;
     }
 
     @Override

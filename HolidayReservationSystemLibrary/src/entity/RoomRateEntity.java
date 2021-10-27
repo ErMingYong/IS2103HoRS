@@ -33,24 +33,17 @@ public class RoomRateEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomRateId;
-    @Column(nullable = false, length = 32)
-    @NotNull
-    @Size(min = 1, max = 32)
-    private String roomRateType;
     @DecimalMin("10.00")
     @DecimalMax("9999.00")
     @NotNull
     @Column(nullable = false)
     private BigDecimal ratePerNight;
-    @Future
     @NotNull
     @Column(nullable = false)
     private LocalDateTime validPeriodFrom;
-    @Future
     @NotNull
     @Column(nullable = false)
     private LocalDateTime validPeriodTo;
-    @AssertFalse
     @NotNull
     @Column(nullable = false)
     private Boolean isDisabled;
@@ -59,23 +52,14 @@ public class RoomRateEntity implements Serializable {
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {
-                this.isDisabled = false;
+        this.isDisabled = false;
     }
 
-    public RoomRateEntity(String roomRateType, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo) {
+    public RoomRateEntity(BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo) {
         this();
-        this.roomRateType = roomRateType;
         this.ratePerNight = ratePerNight;
         this.validPeriodFrom = validPeriodFrom;
         this.validPeriodTo = validPeriodTo;
-    }
-
-    public String getRoomRateType() {
-        return roomRateType;
-    }
-
-    public void setRoomRateType(String roomRateType) {
-        this.roomRateType = roomRateType;
     }
 
     public BigDecimal getRatePerNight() {

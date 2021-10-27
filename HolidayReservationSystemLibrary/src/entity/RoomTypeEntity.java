@@ -55,7 +55,6 @@ public class RoomTypeEntity implements Serializable {
     @NotNull
     @Size(min = 1, max = 400)
     private String amenities;
-    @AssertFalse
     @NotNull
     @Column(nullable = false)
     private Boolean isDisabled;

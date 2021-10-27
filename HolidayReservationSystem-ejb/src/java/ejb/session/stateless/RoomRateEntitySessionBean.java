@@ -18,7 +18,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.RoomRateNotFoundException;
-import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -69,7 +68,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
 
         if (roomRate != null) {
-            roomRate.getRoomRateType();
+            roomRate.getRoomTypeEntity();
             return roomRate;
         } else {
             throw new RoomRateNotFoundException("Room Rate ID " + roomRateId + " does not exist");
