@@ -15,8 +15,13 @@ import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
+import entity.ExceptionReportEntity;
 import entity.RoomEntity;
 import entity.RoomTypeEntity;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -26,6 +31,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.EmployeeAccessRightEnum;
+import util.enumeration.ExceptionReportTypeEnum;
 import util.enumeration.RoomStatusEnum;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidAccessRightException;
@@ -197,7 +203,7 @@ public class HotelOperationModule {
             System.out.println("3: Back\n");
             System.out.print("> ");
             response = scanner.nextInt();
-            while (response < 1 || response > 9) {
+            while (response < 1 || response > 3) {
                 if (response == 1) {
                     doUpdateRoomType(roomType);
                 } else if (response == 2) {
@@ -540,39 +546,92 @@ public class HotelOperationModule {
         System.out.print("Press any key to continue...> ");
         scanner.nextLine();
     }
-    
+
     public void doViewRoomAllocationExceptionReport() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
-
+        
         System.out.println("*** Hotel Management Client :: Hotel Operation Module :: View Room Allocation Exception Reports ***\n");
-        System.out.print("Select Type of Exception Report To View> ");
-        String roomTypeName = scanner.nextLine().trim();
-
-        try {
-            RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
-            System.out.printf("%s%s%s%s%d%s%b\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
-            System.out.printf("%s%s%s%s%d%s%b\n", roomType.getName().toString(), roomType.getDescription(), roomType.getSize(), roomType.getBed().toString(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled());
+        ExceptionReportTypeEnum exceptionReportTypeEnum = null;
+        while (true) {
+            System.out.print("Select Type of Exception Report To View> ");
             System.out.println("------------------------");
             System.out.println("1: First Type");
             System.out.println("2: Second Type");
-            System.out.println("3: Back\n");
             System.out.print("> ");
             response = scanner.nextInt();
-            while (response < 1 || response > 9) {
+            while (response < 1 || response > 2) {
                 if (response == 1) {
-                    doUpdateRoomType(roomType);
+                    exceptionReportTypeEnum = ExceptionReportTypeEnum.FIRST_TYPE;
                 } else if (response == 2) {
-                    doDeleteRoomType(roomType);
-                } else if (response == 3) {
-                    break;
+                    exceptionReportTypeEnum = ExceptionReportTypeEnum.SECOND_TYPE;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
+            LocalDateTime dateToView;
+            while (true) {
+                System.out.println("Please Enter Date To View> ");
+                System.out.println("------------------------");
+                System.out.print("Please Enter Day of Date To View>   (please select from 01 - 31)");
+                String day = scanner.nextLine();
+                System.out.print("Please Enter Month of Date To View>   (please select from 01 - 12)");
+                String month = scanner.nextLine();
+                System.out.print("Please Enter Year of Date To View>   (please select from 2000 - 2999)");
+                String year = scanner.nextLine();
+                String date = year + "-" + month + "-" + day;
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                try {
+                    dateToView = LocalDateTime.parse(date, formatter);
+                } catch (DateTimeParseException ex) {
+                    System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+                    continue;
+                }
+                break;
+            }
 
-        } catch (RoomTypeNotFoundException ex) {
-            System.out.println("Room Type Name: " + roomTypeName + " does not exist");
+            List<ExceptionReportEntity> listOfReports = exceptionReportEntitySessionBeanRemote.retrieveExceptionReportsByTypeAndDate(exceptionReportTypeEnum, dateToView);
+            while (true) {
+                System.out.println("GENERATED LIST OF REPORTS");
+                System.out.println("----------------------------------------------");
+                System.out.println("Please select report to view");
+                int counter = 1;
+                for (ExceptionReportEntity exceptionReportEntity : listOfReports) {
+                    System.out.println(counter + ": " + exceptionReportEntity.getExceptionReportId());
+                    counter++;
+                }
+                int option = scanner.nextInt();
+                while (option < 1 || option > listOfReports.size()) {
+                    ExceptionReportEntity selectedReport = listOfReports.get(option - 1);
+                    System.out.println("********************");
+                    System.out.println("Exception Report Id: " + selectedReport.getExceptionReportId());
+                    System.out.println("Generated Date: " + selectedReport.getGenerationDate().toString());
+                    System.out.println("Exception Report Type:" + selectedReport.getExceptionReportTypeEnum());
+                    System.out.println("Guest: " + selectedReport.getReservationEntity().getFirstName() + " " + selectedReport.getReservationEntity().getLastName());
+                    System.out.println("Guest passport: " + selectedReport.getReservationEntity().getPassportNumber());
+                    System.out.println("Guest Email: " + selectedReport.getReservationEntity().getEmail());
+                    System.out.println("Room Type: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getName());
+                    System.out.println("********************");
+                    System.out.println("Type anything to exit back to view generated list of reports>");
+                    scanner.nextLine();
+                    break;
+                }
+
+                System.out.println("Press \"1\" to proceed back to list. To exit, press any other key>");
+                String reply = scanner.nextLine();
+                if (reply.equals("1")) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            System.out.println("Press \"1\" to proceed back to generating reports. To exit, press any other key>");
+            String reply = scanner.nextLine();
+            if (reply.equals("1")) {
+                continue;
+            } else {
+                break;
+            }
         }
     }
 

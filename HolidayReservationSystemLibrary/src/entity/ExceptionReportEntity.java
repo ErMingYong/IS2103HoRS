@@ -17,7 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import util.enumeration.ExceptionReportType;
+import util.enumeration.ExceptionReportTypeEnum;
 
 /**
  *
@@ -38,7 +38,7 @@ public class ExceptionReportEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
-    private ExceptionReportType exceptionReportTypeEnum;
+    private ExceptionReportTypeEnum exceptionReportTypeEnum;
     
     @OneToOne(mappedBy = "exceptionReportEntity", fetch = FetchType.LAZY, optional = false)
     private ReservationEntity reservationEntity;
@@ -72,14 +72,14 @@ public class ExceptionReportEntity implements Serializable {
     /**
      * @return the exceptionReportTypeEnum
      */
-    public ExceptionReportType getExceptionReportTypeEnum() {
+    public ExceptionReportTypeEnum getExceptionReportTypeEnum() {
         return exceptionReportTypeEnum;
     }
 
     /**
      * @param exceptionReportTypeEnum the exceptionReportTypeEnum to set
      */
-    public void setExceptionReportTypeEnum(ExceptionReportType exceptionReportTypeEnum) {
+    public void setExceptionReportTypeEnum(ExceptionReportTypeEnum exceptionReportTypeEnum) {
         this.exceptionReportTypeEnum = exceptionReportTypeEnum;
     }
     

@@ -9,7 +9,7 @@ package util.enumeration;
  *
  * @author mingy
  */
-public enum ExceptionReportType {
+public enum ExceptionReportTypeEnum {
     FIRST_TYPE,
     SECOND_TYPE
 }

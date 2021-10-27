@@ -6,8 +6,10 @@
 package ejb.session.stateless;
 
 import entity.ExceptionReportEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.ejb.Remote;
+import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.ExceptionReportNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -27,5 +29,7 @@ public interface ExceptionReportEntitySessionBeanRemote {
     public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException;
 
     public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException;
+
+    public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date);
 
 }

@@ -46,7 +46,7 @@ public class RoomEntity implements Serializable {
     @NotNull
     private RoomStatusEnum roomStatusEnum;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "roomEntity")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "roomEntity", optional = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomEntity() {

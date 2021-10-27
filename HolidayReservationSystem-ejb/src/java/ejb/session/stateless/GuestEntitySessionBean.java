@@ -77,8 +77,10 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
 
     @Override
     public GuestEntity retrieveGuestByUsername(String guestUsername) throws GuestNotFoundException {
-        GuestEntity guestEntity = em.find(GuestEntity.class, guestUsername);
-
+        GuestEntity guestEntity = (GuestEntity) em.createQuery(
+                "SELECT g FROM Guest g WHERE g.userName = :inUserName")
+                .setParameter("inUserName", guestUsername)
+                .getSingleResult();
         if (guestEntity != null) {
             guestEntity.getReservationEntities();
 

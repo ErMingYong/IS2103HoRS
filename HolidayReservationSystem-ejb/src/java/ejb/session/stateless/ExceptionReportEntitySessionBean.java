@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.ExceptionReportEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -15,6 +16,7 @@ import javax.persistence.Query;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.ExceptionReportNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -55,7 +57,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         Query query = em.createQuery("SELECT er FROM ExceptionReportEntity er");
         List<ExceptionReportEntity> listOfExceptionReportEntities = query.getResultList();
         for (ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
-            exceptionReportEntity.getReservationEntity();
+            exceptionReportEntity.getReservationEntity().getRoomEntity();
         }
         return listOfExceptionReportEntities;
     }
@@ -71,6 +73,17 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         } else {
             throw new ExceptionReportNotFoundException("Exception Report ID " + exceptionReportId + " does not exist");
         }
+    }
+    
+    public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date) {
+        List<ExceptionReportEntity> listOfExceptionReportEntities = em.createQuery("SELECT er FROM ExceptionReportEntity er WHERE er.exceptionReportTypeEnum = :inExceptionReportType AND  er.generationDate = :inDate ")
+                .setParameter("exceptionReportTypeEnum", exceptionReportTypeEnum)
+                .setParameter("generationDate", date)
+                .getResultList();
+        for(ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
+            exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity();
+        }
+        return listOfExceptionReportEntities;
     }
 
     @Override

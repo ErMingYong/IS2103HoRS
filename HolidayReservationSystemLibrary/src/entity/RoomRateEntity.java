@@ -15,12 +15,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
@@ -48,7 +45,7 @@ public class RoomRateEntity implements Serializable {
     @Column(nullable = false)
     private Boolean isDisabled;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(mappedBy = "roomTypeEntity", fetch = FetchType.LAZY, optional = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {
