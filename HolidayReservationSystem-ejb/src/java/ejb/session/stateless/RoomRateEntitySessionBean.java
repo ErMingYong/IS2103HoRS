@@ -101,8 +101,8 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
     @Override
     public RoomRateEntity retrieveRoomRateByName(String roomRateName) throws RoomRateNotFoundException {
 
-        Query query = em.createQuery("SELECT r FROM RoomRateEntity r WHERE r.name = :inName");
-        query.setParameter("inName", roomRateName);
+        Query query = em.createQuery("SELECT r FROM RoomRateEntity r WHERE r.roomRateName = : inRoomRateName");
+        query.setParameter("inRoomRateName", roomRateName);
         try {
             return (RoomRateEntity) query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException ex) {
@@ -110,13 +110,17 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         }
     }
 
+    
+    //need to decide how to delete
+    //i think need find rooms that are available and use the room type which the room rate contains
+    //if have then disable
+    //or else delete
     @Override
     public void deleteRoomRate(Long roomRateId) throws RoomRateNotFoundException {
-        //if i not wrong must check through the rooms and make sure none using the roomtype before you can delete
-        //RED FLAG
+
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
 
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.roomRate.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity r WHERE r.roomRate.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
         if (query.getResultList().size() > 0) {
             try {
                 //means roomRate still in use so you should disable it so no new rooms can be created with that room type

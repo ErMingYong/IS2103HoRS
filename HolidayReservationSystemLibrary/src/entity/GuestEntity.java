@@ -36,7 +36,7 @@ public class GuestEntity extends UserEntity implements Serializable {
     @Size(min = 8, max = 8)
     private String contactNumber;
     @NotNull
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 8, unique = true)
     @Size(min = 8, max = 8)
     private String passportNumber;
     

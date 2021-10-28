@@ -164,25 +164,16 @@ public class SalesOperationModule {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             try {
                 dateToView = LocalDateTime.parse(date, formatter);
-                newRoomRate.setValidPeriodTo(dateToView);
             } catch (DateTimeParseException ex) {
                 System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
                 continue;
             }
-            break;
-        }
 
-        System.out.println("Select Room Rate: (0)Disabled/(1)Enabled");
-        while (true) {
-            if (scanner.nextInt() == 0) {
-                newRoomRate.setIsDisabled(Boolean.TRUE);
+            if (dateToView.isAfter(newRoomRate.getValidPeriodFrom()))  {
+                newRoomRate.setValidPeriodTo(dateToView);
                 break;
-            } else if (scanner.nextInt() == 1) {
-                newRoomRate.setIsDisabled(Boolean.FALSE);
-                break;
-            } else {
-                System.out.println("Inavlid option, please try again\n");
             }
+            System.out.println("DATE INVALID! PLEASE KEY IN DATE THAT IS AFTER \"Valid Period From\" ");
         }
 
         Set<ConstraintViolation<RoomRateEntity>> constraintViolations = validator.validate(newRoomRate);
@@ -213,10 +204,10 @@ public class SalesOperationModule {
 
         try {
             RoomRateEntity roomRate = roomRateEntitySessionBeanRemote.retrieveRoomRateByName(roomTypeName);
-            
+
             System.out.printf("%s%s%s%s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
             System.out.printf("%s%s%s%s\n", roomRate.getRoomRateName(), roomRate.getRatePerNight().toString(), roomRate.getValidPeriodFrom().toString(), roomRate.getValidPeriodTo().toString());
-             
+
             System.out.println("------------------------");
             System.out.println("1: Update Room Rate");
             System.out.println("2: Delete Room Rate");
@@ -292,12 +283,16 @@ public class SalesOperationModule {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             try {
                 dateToView = LocalDateTime.parse(date, formatter);
-                roomRate.setValidPeriodTo(dateToView);
             } catch (DateTimeParseException ex) {
                 System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
                 continue;
             }
-            break;
+
+            if (dateToView.isAfter(roomRate.getValidPeriodFrom()))  {
+                roomRate.setValidPeriodTo(dateToView);
+                break;
+            }
+            System.out.println("DATE INVALID! PLEASE KEY IN DATE THAT IS AFTER \"Valid Period From\" ");
         }
 
         Set<ConstraintViolation<RoomRateEntity>> constraintViolations = validator.validate(roomRate);
@@ -337,14 +332,14 @@ public class SalesOperationModule {
             System.out.println("Room NOT deleted!\n");
         }
     }
-    
+
     private void doViewAllRoomRates() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Types ***\n");
 
         List<RoomRateEntity> roomRateEntities = roomRateEntitySessionBeanRemote.retrieveAllRoomRate();
-            System.out.printf("%s%s%s%s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
+        System.out.printf("%s%s%s%s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
 
         for (RoomRateEntity roomRateEntity : roomRateEntities) {
             System.out.printf("%s%s%s%s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toString(), roomRateEntity.getValidPeriodTo().toString());
