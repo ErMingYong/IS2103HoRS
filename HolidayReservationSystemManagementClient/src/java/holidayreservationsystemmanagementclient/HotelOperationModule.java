@@ -148,10 +148,10 @@ public class HotelOperationModule {
 
         System.out.println("*** Hotel Management Client :: Hotel Operation :: Create New Room Type ***\n");
         System.out.println("---------------------------------");
-        System.out.print("Enter Room Type Name> ");
+        System.out.println("Enter Room Type Name> ");
         newRoomType.setRoomTypeName(scanner.nextLine().trim());
 
-        System.out.print("Enter Room Type Description> ");
+        System.out.println("Enter Room Type Description> ");
         newRoomType.setDescription(scanner.nextLine().trim());
 
         System.out.println("Enter Room Type Size");
@@ -627,7 +627,7 @@ public class HotelOperationModule {
                     System.out.println("Rate Per Night: " + selectedReport.getReservationEntity().getRatePerNight());
 
                     if (selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
-                        System.out.println("Room Type: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName());
+                        System.out.println("Room Type Allocated: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName());
                     } else {
                         System.out.println("NO ROOM ALLOCATED");
                     }
