@@ -5,7 +5,13 @@
  */
 package ejb.session.stateless;
 
+import entity.ReservationEntity;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
+import util.exception.ReservationNotFoundException;
+import util.exception.UnknownPersistenceException;
+import util.exception.UpdateReservationException;
 
 /**
  *
@@ -13,5 +19,17 @@ import javax.ejb.Local;
  */
 @Local
 public interface ReservationEntitySessionBeanLocal {
+
+    public Long createNewReservation(ReservationEntity newReservation) throws UnknownPersistenceException, InputDataValidationException;
+
+    public List<ReservationEntity> retrieveAllReservations();
+
+    public ReservationEntity retrieveReservationById(Long reservationId) throws ReservationNotFoundException;
+
+    public ReservationEntity retrieveReservationByPassportNumber(String passportNumber) throws ReservationNotFoundException;
+
+    public void deleteReservation(ReservationEntity reservationToDelete) throws ReservationNotFoundException;
+
+    public void updateReservation(ReservationEntity reservation) throws ReservationNotFoundException, UpdateReservationException, InputDataValidationException;
     
 }

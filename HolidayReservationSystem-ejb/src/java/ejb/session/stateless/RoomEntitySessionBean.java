@@ -157,8 +157,6 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     }
     
     
-
-
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<RoomEntity>> constraintViolations) {
         String msg = "Input data validation error!:";
 
