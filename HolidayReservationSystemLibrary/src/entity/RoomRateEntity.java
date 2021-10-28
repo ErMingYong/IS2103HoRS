@@ -18,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -30,6 +31,10 @@ public class RoomRateEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomRateId;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String roomRateName;
     @DecimalMin("10.00")
     @DecimalMax("9999.00")
     @NotNull
@@ -45,18 +50,33 @@ public class RoomRateEntity implements Serializable {
     @Column(nullable = false)
     private Boolean isDisabled;
 
-    @OneToOne(mappedBy = "roomTypeEntity", fetch = FetchType.LAZY, optional = false)
+    @OneToOne(mappedBy = "roomRateEntity", fetch = FetchType.LAZY, optional = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {
         this.isDisabled = false;
     }
 
-    public RoomRateEntity(BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo) {
+    public RoomRateEntity(String roomRateName, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo) {
         this();
+        this.roomRateName = roomRateName;
         this.ratePerNight = ratePerNight;
         this.validPeriodFrom = validPeriodFrom;
         this.validPeriodTo = validPeriodTo;
+    }
+
+    /**
+     * @return the roomRateName
+     */
+    public String getRoomRateName() {
+        return roomRateName;
+    }
+
+    /**
+     * @param roomRateName the roomRateName to set
+     */
+    public void setRoomRateName(String roomRateName) {
+        this.roomRateName = roomRateName;
     }
 
     public BigDecimal getRatePerNight() {

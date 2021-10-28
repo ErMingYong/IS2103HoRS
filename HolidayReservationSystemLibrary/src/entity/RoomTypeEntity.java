@@ -11,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -33,7 +32,7 @@ public class RoomTypeEntity implements Serializable {
     @Column(nullable = false, length = 32)
     @NotNull
     @Size(min = 1, max = 32)
-    private String name;
+    private String roomTypeName;
     @Column(nullable = false, length = 400)
     @NotNull
     @Size(min = 1, max = 400)
@@ -63,9 +62,9 @@ public class RoomTypeEntity implements Serializable {
         this.isDisabled = false;
     }
 
-    public RoomTypeEntity(String name, String description, String size, String bed, Integer capacity, String amenities) {
+    public RoomTypeEntity(String roomTypeName, String description, String size, String bed, Integer capacity, String amenities) {
         this();
-        this.name = name;
+        this.roomTypeName = roomTypeName;
         this.description = description;
         this.size = size;
         this.bed = bed;
@@ -84,15 +83,15 @@ public class RoomTypeEntity implements Serializable {
     /**
      * @return the name
      */
-    public String getName() {
-        return name;
+    public String getRoomTypeName() {
+        return roomTypeName;
     }
 
     /**
      * @param name the name to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
     }
 
     /**

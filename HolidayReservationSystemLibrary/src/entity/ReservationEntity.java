@@ -6,8 +6,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,9 +16,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -62,6 +62,19 @@ public class ReservationEntity implements Serializable {
     @Column(nullable = false, length = 8)
     @Size(min = 8, max = 8)
     private String passportNumber;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String roomTypeName;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String roomRateName;
+    @DecimalMin("10.00")
+    @DecimalMax("9999.00")
+    @NotNull
+    @Column(nullable = false)
+    private BigDecimal ratePerNight;
 
     @OneToOne(mappedBy = "reservationEntity", fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
@@ -72,7 +85,7 @@ public class ReservationEntity implements Serializable {
         this.isCheckedIn = false;
     }
 
-    public ReservationEntity(LocalDateTime reservationStartDate,LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
+    public ReservationEntity(LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
         this();
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
@@ -207,6 +220,48 @@ public class ReservationEntity implements Serializable {
      */
     public void setPassportNumber(String passportNumber) {
         this.passportNumber = passportNumber;
+    }
+
+    /**
+     * @return the roomTypeName
+     */
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    /**
+     * @param roomTypeName the roomTypeName to set
+     */
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
+    }
+
+    /**
+     * @return the roomRateName
+     */
+    public String getRoomRateName() {
+        return roomRateName;
+    }
+
+    /**
+     * @param roomRateName the roomRateName to set
+     */
+    public void setRoomRateName(String roomRateName) {
+        this.roomRateName = roomRateName;
+    }
+
+    /**
+     * @return the ratePerNight
+     */
+    public BigDecimal getRatePerNight() {
+        return ratePerNight;
+    }
+
+    /**
+     * @param ratePerNight the ratePerNight to set
+     */
+    public void setRatePerNight(BigDecimal ratePerNight) {
+        this.ratePerNight = ratePerNight;
     }
 
     /**

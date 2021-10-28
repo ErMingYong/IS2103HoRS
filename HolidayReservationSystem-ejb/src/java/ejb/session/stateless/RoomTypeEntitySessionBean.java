@@ -8,8 +8,6 @@ package ejb.session.stateless;
 import entity.RoomTypeEntity;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -111,7 +109,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
             if (constraintViolations.isEmpty()) {
                 RoomTypeEntity roomTypeEntityToUpdate = retrieveRoomTypeByRoomTypeId(roomTypeEntity.getRoomTypeId());
 
-                if (roomTypeEntityToUpdate.getName().equals(roomTypeEntity.getName())) {
+                if (roomTypeEntityToUpdate.getRoomTypeName().equals(roomTypeEntity.getRoomTypeName())) {
                     roomTypeEntityToUpdate.setDescription(roomTypeEntity.getDescription());
                     roomTypeEntityToUpdate.setSize(roomTypeEntity.getSize());
                     roomTypeEntityToUpdate.setBed(roomTypeEntity.getBed());
@@ -136,7 +134,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         //RED FLAG
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
 
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.roomType.name = :inName").setParameter("inName", roomType.getName());
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.roomType.roomTypeName = :inName").setParameter("inName", roomType.getRoomTypeName());
         if (query.getResultList().size() > 0) {
             try {
                 //means roomType still in use so you should disable it so no new rooms can be created with that room type
