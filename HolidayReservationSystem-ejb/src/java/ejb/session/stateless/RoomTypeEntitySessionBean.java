@@ -46,15 +46,15 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     @Override
-    public Long createNewRoomType(RoomTypeEntity newRoomTypeEntity) throws InputDataValidationException, RoomTypeNameExistException, UnknownPersistenceException {
-        Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomTypeEntity);
+    public Long createNewRoomType(RoomTypeEntity newRoomType) throws InputDataValidationException, RoomTypeNameExistException, UnknownPersistenceException {
+        Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomType);
 
         if (constraintViolations.isEmpty()) {
             try {
-                em.persist(newRoomTypeEntity);
+                em.persist(newRoomType);
                 em.flush();
 
-                return newRoomTypeEntity.getRoomTypeId();
+                return newRoomType.getRoomTypeId();
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
                     if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
@@ -102,6 +102,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         }
     }
 
+    @Override
     public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, UpdateRoomTypeException, InputDataValidationException {
         if (roomTypeEntity != null && roomTypeEntity.getRoomTypeId() != null) {
             Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomTypeEntity);

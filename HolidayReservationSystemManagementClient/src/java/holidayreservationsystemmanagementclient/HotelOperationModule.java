@@ -166,6 +166,19 @@ public class HotelOperationModule {
         System.out.println("Enter Room Type Amenities");
         newRoomType.setAmenities(scanner.nextLine().trim());
 
+        System.out.println("Select Room Type: (0)Disabled/(1)Enabled");
+        while (true) {
+            if (scanner.nextInt() == 0) {
+                newRoomType.setIsDisabled(Boolean.TRUE);
+                break;
+            } else if (scanner.nextInt() == 1) {
+                newRoomType.setIsDisabled(Boolean.FALSE);
+                break;
+            } else {
+                System.out.println("Inavlid option, please try again\n");
+            }
+        }
+
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomType);
 
         if (constraintViolations.isEmpty()) {

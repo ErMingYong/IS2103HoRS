@@ -8,8 +8,11 @@ package ejb.session.stateless;
 import entity.RoomRateEntity;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.InputDataValidationException;
+import util.exception.RoomRateNameExistException;
 import util.exception.RoomRateNotFoundException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateRoomRateException;
 
 /**
  *
@@ -18,14 +21,18 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface RoomRateEntitySessionBeanRemote {
 
-    public Long createNewRoomRate(RoomRateEntity newRoomRate) throws UnknownPersistenceException;
+    public Long createNewRoomRate(RoomRateEntity newRoomRate) throws InputDataValidationException, RoomRateNameExistException, UnknownPersistenceException;
 
     public List<RoomRateEntity> retrieveAllRoomRate();
 
     public RoomRateEntity retrieveRoomRateById(Long roomRateId) throws RoomRateNotFoundException;
 
+    public RoomRateEntity retrieveRoomRateByName(String roomRateName) throws RoomRateNotFoundException;
+
     public void deleteRoomRate(Long roomRateId) throws RoomRateNotFoundException;
 
-    public void updateRoomRate(Long oldRoomRateId, RoomRateEntity newRoomRate) throws RoomRateNotFoundException, UnknownPersistenceException;
+    public void disableRoomRate(RoomRateEntity roomRateToDisable) throws UnknownPersistenceException;
+
+    public void updateRoomRate(RoomRateEntity roomRate) throws RoomRateNotFoundException, UpdateRoomRateException, InputDataValidationException;
 
 }
