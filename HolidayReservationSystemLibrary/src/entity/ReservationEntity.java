@@ -76,7 +76,7 @@ public class ReservationEntity implements Serializable {
     @Column(nullable = false)
     private BigDecimal ratePerNight;
 
-    @OneToOne(mappedBy = "reservationEntity", fetch = FetchType.LAZY, optional = true)
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private TransactionEntity transactionEntity;

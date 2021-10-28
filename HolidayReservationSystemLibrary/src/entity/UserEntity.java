@@ -39,7 +39,7 @@ public abstract class UserEntity implements Serializable {
     @Column(nullable = false, unique = true, length = 32)
     @NotNull
     @Size(min = 6, max = 32)
-    private String userName;
+    private String username;
     @Column(nullable = false, length = 32)
     @NotNull
     @Size(min = 8, max = 32)
@@ -48,11 +48,11 @@ public abstract class UserEntity implements Serializable {
     public UserEntity() {
     }
 
-    public UserEntity(String firstName, String lastName, String userName, String password) {
+    public UserEntity(String firstName, String lastName, String username, String password) {
         this();
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userName = userName;
+        this.username = username;
         this.password = password;
     }
 
@@ -93,17 +93,17 @@ public abstract class UserEntity implements Serializable {
     }
 
     /**
-     * @return the userName
+     * @return the username
      */
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     /**
-     * @param userName the userName to set
+     * @param username the username to set
      */
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     /**

@@ -84,7 +84,7 @@ public class SalesOperationModule {
         Integer response = 0;
 
         while (true) {
-            System.out.println("*** Hotel Reservation System Management Client  System :: Sales Operation Module ***\n");
+            System.out.println("*** Hotel Reservation System Management Client  System :: Hotel Operation Module :: Sales Operation ***\n");
             System.out.println("1: Create New Room Rate");
             System.out.println("2: View Room Rate Details");
             System.out.println("3: View All Room Rates");

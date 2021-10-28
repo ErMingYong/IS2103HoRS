@@ -34,7 +34,7 @@ import util.exception.UpdateRoomRateException;
 public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemote, RoomRateEntitySessionBeanLocal {
 
     @EJB
-    private RoomTypeEntitySessionBeanLocal roomTypeEntitySessionBeanLocal;
+    private RoomTypeEntitySessionBeanLocal roomRateEntitySessionBeanLocal;
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
@@ -79,7 +79,11 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
     public List<RoomRateEntity> retrieveAllRoomRate() {
         Query query = em.createQuery("SELECT rr FROM RoomRataeEntity rr");
 
-        return query.getResultList();
+        List<RoomRateEntity> listOfRoomRates = query.getResultList();
+        for (RoomRateEntity roomRateEntity : listOfRoomRates) {
+            roomRateEntity.getRoomTypeEntity();
+        }
+        return listOfRoomRates;
     }
 
     @Override
@@ -110,20 +114,20 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
     public void deleteRoomRate(Long roomRateId) throws RoomRateNotFoundException {
         //if i not wrong must check through the rooms and make sure none using the roomtype before you can delete
         //RED FLAG
-        RoomRateEntity roomType = em.find(RoomRateEntity.class, roomRateId);
+        RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
 
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.roomRate.roomRateName = :inName").setParameter("inName", roomType.getRoomRateName());
+        Query query = em.createQuery("SELECT r FROM Room r WHERE r.roomRate.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
         if (query.getResultList().size() > 0) {
             try {
-                //means roomType still in use so you should disable it so no new rooms can be created with that room type
-                disableRoomRate(roomType);
+                //means roomRate still in use so you should disable it so no new rooms can be created with that room type
+                disableRoomRate(roomRate);
             } catch (UnknownPersistenceException ex) {
                 System.out.println("Unknown Error");;
             }
         } else {
 
-            if (roomType != null) {
-                em.remove(roomType);
+            if (roomRate != null) {
+                em.remove(roomRate);
             } else {
                 throw new RoomRateNotFoundException("Room Type ID " + roomRateId + " does not exist");
             }
@@ -161,7 +165,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
         } else {
-            throw new RoomRateNotFoundException("RoomType ID not provided for roomType to be updated");
+            throw new RoomRateNotFoundException("RoomType ID not provided for roomRate to be updated");
         }
     }
 

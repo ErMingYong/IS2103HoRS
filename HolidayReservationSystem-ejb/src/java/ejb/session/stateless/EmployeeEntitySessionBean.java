@@ -90,10 +90,11 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
 
     @Override
     public EmployeeEntity retrieveEmployeeByUsername(String employeeUsername) throws EmployeeNotFoundException {
-        EmployeeEntity employee = em.find(EmployeeEntity.class, employeeUsername);
-        if (employee != null) {
+        Query query = em.createQuery("SELECT e FROM EmployeeEntity e WHERE e.username = :inUsername").setParameter("inUsername", employeeUsername);
+        EmployeeEntity employeeEntity = (EmployeeEntity) query.getSingleResult();
+        if (employeeEntity != null) {
             //DID NOT DO FETCHING FOR LIST OF RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
-            return employee;
+            return employeeEntity;
         } else {
             throw new EmployeeNotFoundException("Employee Username " + employeeUsername + " does not exist");
         }

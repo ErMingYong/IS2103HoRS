@@ -40,7 +40,7 @@ public class GuestEntity extends UserEntity implements Serializable {
     @Size(min = 8, max = 8)
     private String passportNumber;
     
-    @OneToMany(mappedBy = "guestEntity", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ReservationEntity> reservationEntities;
 
@@ -49,8 +49,8 @@ public class GuestEntity extends UserEntity implements Serializable {
     }
 
 
-    public GuestEntity(String email, String contactNumber, String passportNumber, String firstName, String lastName, String userName, String password) {
-        super(firstName, lastName, userName, password);
+    public GuestEntity(String email, String contactNumber, String passportNumber, String firstName, String lastName, String username, String password) {
+        super(firstName, lastName, username, password);
         this.email = email;
         this.contactNumber = contactNumber;
         this.passportNumber = passportNumber;

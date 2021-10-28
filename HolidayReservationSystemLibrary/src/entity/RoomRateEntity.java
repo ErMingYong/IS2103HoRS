@@ -50,7 +50,7 @@ public class RoomRateEntity implements Serializable {
     @Column(nullable = false)
     private Boolean isDisabled;
 
-    @OneToOne(mappedBy = "roomRateEntity", fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {

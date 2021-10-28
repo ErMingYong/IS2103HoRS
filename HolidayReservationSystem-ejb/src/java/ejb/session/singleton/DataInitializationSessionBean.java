@@ -7,8 +7,6 @@ package ejb.session.singleton;
 
 import ejb.session.stateless.EmployeeEntitySessionBeanLocal;
 import entity.EmployeeEntity;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -32,32 +30,25 @@ public class DataInitializationSessionBean {
 
     @EJB
     private EmployeeEntitySessionBeanLocal employeeEntitySessionBeanLocal;
-    
-    @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
-    private EntityManager em;
+
+    public DataInitializationSessionBean() {
+    }
 
     @PostConstruct
-    public void postConstruct()
-    {
-        try
-        {
+    public void postConstruct() {
+        try {
             employeeEntitySessionBeanLocal.retrieveEmployeeByUsername("manager");
-        }
-        catch(EmployeeNotFoundException ex)
-        {
+        } catch (EmployeeNotFoundException ex) {
             initializeData();
         }
     }
-        private void initializeData()
-    {
-        try
-        {
+
+    private void initializeData() {
+        try {
             employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("manager", "1", "manager", "password"));
-        }
-        catch(UnknownPersistenceException|InputDataValidationException|EmployeeUsernameExistException ex)
-        {
+        } catch (UnknownPersistenceException | InputDataValidationException | EmployeeUsernameExistException ex) {
             ex.printStackTrace();
-        } 
+        }
     }
-    
+
 }

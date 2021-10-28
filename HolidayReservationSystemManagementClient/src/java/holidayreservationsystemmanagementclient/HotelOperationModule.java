@@ -91,7 +91,7 @@ public class HotelOperationModule {
         Integer response = 0;
 
         while (true) {
-            System.out.println("*** Hotel Reservation System Management Client System :: Hotel Operation Module ***\n");
+            System.out.println("*** Hotel Reservation System Management Client System :: Hotel Operation Module :: Hotel Operation ***\n");
             System.out.println("1: Create New Room Type");
             System.out.println("2: View Room Type Details");
             System.out.println("3: View All Room Types");

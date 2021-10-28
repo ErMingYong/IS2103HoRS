@@ -40,7 +40,7 @@ public class ExceptionReportEntity implements Serializable {
     @NotNull
     private ExceptionReportTypeEnum exceptionReportTypeEnum;
     
-    @OneToOne(mappedBy = "exceptionReportEntity", fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private ReservationEntity reservationEntity;
     
     public ExceptionReportEntity() {

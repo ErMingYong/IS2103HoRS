@@ -22,7 +22,7 @@ public class PartnerEntity extends UserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
-    @OneToMany(mappedBy = "partnerEntity", fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<ReservationEntity> reservationEntities;
 
@@ -30,8 +30,8 @@ public class PartnerEntity extends UserEntity implements Serializable {
         this.reservationEntities = new ArrayList<ReservationEntity>();
     }
 
-    public PartnerEntity(List<ReservationEntity> reservationEntities, String firstName, String lastName, String userName, String password) {
-        super(firstName, lastName, userName, password);
+    public PartnerEntity(List<ReservationEntity> reservationEntities, String firstName, String lastName, String username, String password) {
+        super(firstName, lastName, username, password);
         this.reservationEntities = reservationEntities;
     }
     
