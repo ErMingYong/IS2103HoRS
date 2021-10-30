@@ -174,9 +174,10 @@ public class MainApp {
             System.out.println("4: Front Office Operation");
             System.out.println("5: Logout\n");
             System.out.println(">");
-            response = scanner.nextInt();
+            response = 0;
 
             while (response < 1 || response > 5) {
+                response = scanner.nextInt();
                 if (response == 1) {
                     try {
                         systemAdministrationModule.menuSystemAdministration();
@@ -207,7 +208,6 @@ public class MainApp {
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
-                    response = 0;
                 }
             }
 
