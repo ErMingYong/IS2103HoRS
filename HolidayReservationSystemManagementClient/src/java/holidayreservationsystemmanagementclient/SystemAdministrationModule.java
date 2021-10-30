@@ -85,6 +85,8 @@ public class SystemAdministrationModule {
             System.out.println("3: Create New Partner");
             System.out.println("4: View All Partners");
             System.out.println("5: Exit");
+            System.out.println(">");
+            response = 0;
 
             while (response < 1 || response > 5) {
                 response = scanner.nextInt();
@@ -176,10 +178,10 @@ public class SystemAdministrationModule {
         System.out.println("*** Hotel Reservation System Management Client  System :: System Administration :: View All Employees ***\n");
 
         List<EmployeeEntity> employeeEntities = employeeEntitySessionBeanRemote.retrieveAllEmployees();
-        System.out.printf("%8s%20s%20s%15s%20s%20s\n", "Employee ID", "First Name", "Last Name", "Access Right", "Username", "Password");
+        System.out.printf("%8s%20s%20s%30s%20s%20s\n", "Employee ID", "First Name", "Last Name", "Access Right", "Username", "Password");
 
         for (EmployeeEntity employeeEntity : employeeEntities) {
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", employeeEntity.getUserEntityId().toString(), employeeEntity.getFirstName(), employeeEntity.getLastName(), employeeEntity.getEmployeeAccessRightEnum().toString(), employeeEntity.getUserName(), employeeEntity.getPassword());
+            System.out.printf("%8s%20s%20s%30s%20s%20s\n", employeeEntity.getUserEntityId().toString(), employeeEntity.getFirstName(), employeeEntity.getLastName(), employeeEntity.getEmployeeAccessRightEnum().toString(), employeeEntity.getUserName(), employeeEntity.getPassword());
         }
 
         System.out.print("Press any key to continue...> ");
@@ -230,10 +232,10 @@ public class SystemAdministrationModule {
         System.out.println("*** Hotel Reservation System Management Client  System :: System Administration :: View All Partners ***\n");
 
         List<PartnerEntity> partnerEntities = partnerEntitySessionBeanRemote.retrieveAllPartners();
-        System.out.printf("%8s%20s%20s%15s%20s%20s\n", "Partner ID", "First Name", "Last Name", "Access Right", "Username", "Password");
+        System.out.printf("%8s%20s%20s%20s%20s\n", "Partner ID", "First Name", "Last Name", "Username", "Password");
 
         for (PartnerEntity partnerEntity : partnerEntities) {
-            System.out.printf("%8s%20s%20s%15s%20s%20s\n", partnerEntity.getUserEntityId().toString(), partnerEntity.getFirstName(), partnerEntity.getLastName(), partnerEntity.getUserName(), partnerEntity.getPassword());
+            System.out.printf("%8s%20s%20s%20s%20s\n", partnerEntity.getUserEntityId().toString(), partnerEntity.getFirstName(), partnerEntity.getLastName(), partnerEntity.getUserName(), partnerEntity.getPassword());
         }
 
         System.out.print("Press any key to continue...> ");
