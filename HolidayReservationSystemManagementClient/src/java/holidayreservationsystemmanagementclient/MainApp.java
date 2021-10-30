@@ -152,7 +152,7 @@ public class MainApp {
         if (username.length() > 0 && password.length() > 0) {
             try {
                 currentEmployee = employeeEntitySessionBeanRemote.employeeLogin(username, password);
-            } catch (EmployeeNotFoundException ex) {
+            } catch (InvalidLoginCredentialException ex) {
                 System.out.println("User account does not exist");
             }
         } else {

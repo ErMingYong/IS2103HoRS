@@ -153,23 +153,20 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     }
 
     @Override
-    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws EmployeeNotFoundException, InvalidLoginCredentialException {
+    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws InvalidLoginCredentialException {
 
         try {
             EmployeeEntity employee = retrieveEmployeeByUsername(employeeUsername);
 
-            if (employee != null) {
-                if (employee.getPassword().equals(employeePassword)) {
+            if (employee.getPassword().equals(employeePassword)) {
                     return employee;
-                } else {
-                    throw new InvalidLoginCredentialException("Password do not match");
-                }
             } else {
-                throw new InvalidLoginCredentialException("Username does not exist");
+                throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
             }
         } catch (EmployeeNotFoundException ex) {
-            throw new EmployeeNotFoundException("Employee Username: " + employeeUsername + " does not exist");
+                throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
         }
+
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<EmployeeEntity>> constraintViolations) {

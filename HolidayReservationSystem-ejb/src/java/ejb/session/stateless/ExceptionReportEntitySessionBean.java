@@ -74,13 +74,13 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
             throw new ExceptionReportNotFoundException("Exception Report ID " + exceptionReportId + " does not exist");
         }
     }
-    
+
     public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date) {
         List<ExceptionReportEntity> listOfExceptionReportEntities = em.createQuery("SELECT er FROM ExceptionReportEntity er WHERE er.exceptionReportTypeEnum = :inExceptionReportType AND  er.generationDate = :inDate ")
-                .setParameter("exceptionReportTypeEnum", exceptionReportTypeEnum)
-                .setParameter("generationDate", date)
+                .setParameter("inExceptionReportType", exceptionReportTypeEnum)
+                .setParameter("inDate", date)
                 .getResultList();
-        for(ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
+        for (ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
             exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity();
         }
         return listOfExceptionReportEntities;

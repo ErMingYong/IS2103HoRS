@@ -34,6 +34,6 @@ public interface EmployeeEntitySessionBeanLocal {
 
     public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException ;
 
-    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws EmployeeNotFoundException, InvalidLoginCredentialException;
+    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws InvalidLoginCredentialException ;
     
 }

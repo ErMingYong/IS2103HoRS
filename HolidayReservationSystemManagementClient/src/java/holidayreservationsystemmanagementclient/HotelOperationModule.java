@@ -18,9 +18,8 @@ import entity.EmployeeEntity;
 import entity.ExceptionReportEntity;
 import entity.RoomEntity;
 import entity.RoomTypeEntity;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -102,6 +101,8 @@ public class HotelOperationModule {
             System.out.println("7: View All Room");
             System.out.println("8: View Room Allocation Exception Report");
             System.out.println("9: Exit");
+            System.out.println(">");
+            response = 0;
 
             while (response < 1 || response > 9) {
                 response = scanner.nextInt();
@@ -162,22 +163,10 @@ public class HotelOperationModule {
 
         System.out.println("Enter Room Type Capacity");
         newRoomType.setCapacity(scanner.nextInt());
+        scanner.nextLine();
 
         System.out.println("Enter Room Type Amenities");
         newRoomType.setAmenities(scanner.nextLine().trim());
-
-        System.out.println("Select Room Type: (0)Disabled/(1)Enabled");
-        while (true) {
-            if (scanner.nextInt() == 0) {
-                newRoomType.setIsDisabled(Boolean.TRUE);
-                break;
-            } else if (scanner.nextInt() == 1) {
-                newRoomType.setIsDisabled(Boolean.FALSE);
-                break;
-            } else {
-                System.out.println("Inavlid option, please try again\n");
-            }
-        }
 
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomType);
 
@@ -207,15 +196,16 @@ public class HotelOperationModule {
 
         try {
             RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
-            System.out.printf("%s%s%s%s%d%s%b\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
-            System.out.printf("%s%s%s%s%d%s%b\n", roomType.getRoomTypeName().toString(), roomType.getDescription(), roomType.getSize(), roomType.getBed().toString(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled());
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b\n", roomType.getRoomTypeName(), roomType.getDescription(), roomType.getSize(), roomType.getBed(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled());
             System.out.println("------------------------");
             System.out.println("1: Update Room Type");
             System.out.println("2: Delete Room Type");
             System.out.println("3: Back\n");
             System.out.print("> ");
-            response = scanner.nextInt();
+            response = 0;
             while (response < 1 || response > 3) {
+                response = scanner.nextInt();
                 if (response == 1) {
                     doUpdateRoomType(roomType);
                 } else if (response == 2) {
@@ -318,10 +308,10 @@ public class HotelOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Types ***\n");
 
         List<RoomTypeEntity> roomTypeEntities = roomTypeEntitySessionBeanRemote.retrieveAllRoomTypes();
-        System.out.printf("%s%s%s%s%s%s%b\n", "Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
+        System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s\n", "Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
 
         for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
-            System.out.printf("%s%s%s%s%s%s%b\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled());
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled());
         }
 
         System.out.print("Press any key to continue...> ");
@@ -337,28 +327,39 @@ public class HotelOperationModule {
 
         int roomFloor;
         int roomNumber;
-        while (true) {
-            System.out.print("Enter Room Floor> ");
-            roomFloor = scanner.nextInt();
 
-            System.out.print("Enter Room Number> ");
-            roomNumber = scanner.nextInt();
+        System.out.print("Enter Room Floor> ");
+        roomFloor = scanner.nextInt();
+        System.out.print("Enter Room Number> ");
+        roomNumber = scanner.nextInt();
 
-            try {
-                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
-            } catch (RoomNotFoundException ex) {
-                newRoom.setRoomFloor(scanner.nextInt());
-                newRoom.setRoomNumber(scanner.nextInt());
-                break;
-            }
-
-            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
-
-        }
+        newRoom.setRoomFloor(roomFloor);
+        newRoom.setRoomNumber(roomNumber);
+//        boolean flag = true;
+//        while (flag) {
+//            System.out.print("Enter Room Floor> ");
+//            roomFloor = scanner.nextInt();
+//
+//            System.out.print("Enter Room Number> ");
+//            roomNumber = scanner.nextInt();
+//
+//            try {
+//                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+//            } catch (RoomNotFoundException ex) {
+//                newRoom.setRoomFloor(roomFloor);
+//                newRoom.setRoomNumber(roomNumber);
+//                flag = false;
+//            }
+//
+//            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
+//
+//        }
+        scanner.nextLine();
         System.out.println("-------------------------------");
         //Cannot set disabled, by default in creation should be false for isDisabled
         //Need to include room type
         RoomTypeEntity retrievedRoomType = null;
+
         while (true) {
             System.out.print("Enter Room Type Name> ");
             String roomType = scanner.nextLine();
@@ -421,24 +422,34 @@ public class HotelOperationModule {
             break;
         }
 
-        while (true) {
-            System.out.print("Enter New Room Floor> ");
-            roomFloor = scanner.nextInt();
+        System.out.print("Enter New Room Floor> ");
+        roomFloor = scanner.nextInt();
 
-            System.out.print("Enter New Room Number> ");
-            roomNumber = scanner.nextInt();
+        System.out.print("Enter New Room Number> ");
+        roomNumber = scanner.nextInt();
 
-            try {
-                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
-            } catch (RoomNotFoundException ex) {
-                roomToUpdate.setRoomFloor(scanner.nextInt());
-                roomToUpdate.setRoomNumber(scanner.nextInt());
-                break;
-            }
+        roomToUpdate.setRoomFloor(roomFloor);
+        roomToUpdate.setRoomNumber(roomNumber);
 
-            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
-        }
-
+//        while (true) {
+//            System.out.print("Enter New Room Floor> ");
+//            roomFloor = scanner.nextInt();
+//
+//            System.out.print("Enter New Room Number> ");
+//            roomNumber = scanner.nextInt();
+//
+//            roomToUpdate.setRoomFloor(roomFloor);
+//            roomToUpdate.setRoomNumber(roomNumber);
+//
+////            try {
+////                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+////            } catch (RoomNotFoundException ex) {
+////                roomToUpdate.setRoomFloor(scanner.nextInt());
+////                roomToUpdate.setRoomNumber(scanner.nextInt());
+////                break;
+////            }
+//            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
+//        }
         RoomTypeEntity retrievedRoomType = null;
         scanner.nextLine();
         while (true) {
@@ -487,7 +498,7 @@ public class HotelOperationModule {
                 System.out.println("Room updated successfully!\n");
             } catch (RoomNotFoundException | UpdateRoomException ex) {
                 System.out.println("An error has occurred while updating Room: " + ex.getMessage() + "\n");
-            } catch (InputDataValidationException ex) {
+            } catch (InputDataValidationException | RoomFloorAndNumberExistException ex) {
                 System.out.println(ex.getMessage() + "\n");
             }
         } else {
@@ -525,7 +536,7 @@ public class HotelOperationModule {
                 roomEntitySessionBeanRemote.updateRoom(roomToDelete);
             } catch (UpdateRoomException ex) {
                 System.out.println("Unable to update Room status to Disabled");
-            } catch (InputDataValidationException ex) {
+            } catch (InputDataValidationException | RoomFloorAndNumberExistException ex) {
                 System.out.println(ex.getMessage() + "\n");
             } catch (RoomNotFoundException ex) {
                 System.out.println("Room to be disabled cannot be found");
@@ -549,10 +560,10 @@ public class HotelOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Rooms ***\n");
 
         List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRooms();
-        System.out.printf("%d%d\n", "Room Floor", "Room Number");
+        System.out.printf("%15s%15s\n", "Room Floor", "Room Number");
 
         for (RoomEntity roomEntity : roomEntities) {
-            System.out.printf("%d%d\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
+            System.out.printf("%15d%15d\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
         }
 
         System.out.print("Press any key to continue...> ");
@@ -562,95 +573,132 @@ public class HotelOperationModule {
     public void doViewRoomAllocationExceptionReport() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
+        boolean doExit = false;
 
         System.out.println("*** Hotel Management Client :: Hotel Operation Module :: View Room Allocation Exception Reports ***\n");
-        ExceptionReportTypeEnum exceptionReportTypeEnum = null;
+        ExceptionReportTypeEnum exceptionReportTypeEnum = ExceptionReportTypeEnum.FIRST_TYPE;
         while (true) {
             System.out.print("Select Type of Exception Report To View> ");
             System.out.println("------------------------");
             System.out.println("1: First Type");
             System.out.println("2: Second Type");
+            System.out.println("3: Exit");
+
             System.out.print("> ");
-            response = scanner.nextInt();
-            while (response < 1 || response > 2) {
+            response = 0;
+
+            while (response < 1 || response > 3) {
+                response = scanner.nextInt();
                 if (response == 1) {
                     exceptionReportTypeEnum = ExceptionReportTypeEnum.FIRST_TYPE;
                 } else if (response == 2) {
                     exceptionReportTypeEnum = ExceptionReportTypeEnum.SECOND_TYPE;
+                }else if (response == 3) {
+                    doExit = true;
+                    break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
+            
+            if (doExit) {
+                break;
+            }
+            
+            scanner.nextLine();
             LocalDateTime dateToView;
             while (true) {
                 System.out.println("Please Enter Date To View> ");
                 System.out.println("------------------------");
-                System.out.print("Please Enter Day of Date To View>   (please select from 01 - 31)");
-                String day = scanner.nextLine();
-                System.out.print("Please Enter Month of Date To View>   (please select from 01 - 12)");
-                String month = scanner.nextLine();
-                System.out.print("Please Enter Year of Date To View>   (please select from 2000 - 2999)");
-                String year = scanner.nextLine();
-                String date = year + "-" + month + "-" + day;
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                System.out.println("Please Enter Day of Date To View>   (please select from 01 - 31)");
+                int day = scanner.nextInt();
+                System.out.println("Please Enter Month of Date To View>   (please select from 01 - 12)");
+                int month = scanner.nextInt();
+                System.out.println("Please Enter Year of Date To View>   (please select from 2000 - 2999)");
+                int year = scanner.nextInt();
                 try {
-                    dateToView = LocalDateTime.parse(date, formatter);
-                } catch (DateTimeParseException ex) {
+                    dateToView = LocalDateTime.of(year, month, day, 0, 0, 0);
+                } catch (DateTimeException ex) {
                     System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
                     continue;
                 }
                 break;
             }
 
+//            while (true) {
+//                System.out.println("Please Enter Date To View> ");
+//                System.out.println("------------------------");
+//                System.out.println("Please Enter Day of Date To View>   (please select from 01 - 31)");
+//                String day = scanner.nextLine();
+//                System.out.println("Please Enter Month of Date To View>   (please select from 01 - 12)");
+//                String month = scanner.nextLine();
+//                System.out.println("Please Enter Year of Date To View>   (please select from 2000 - 2999)");
+//                String year = scanner.nextLine();
+//                String date = year + "-" + month + "-" + day;
+//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//                try {
+//                    dateToView = LocalDateTime.parse(date, formatter);
+//                } catch (DateTimeParseException ex) {
+//                    System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+//                    continue;
+//                }
+//                break;
+//            }
             List<ExceptionReportEntity> listOfReports = exceptionReportEntitySessionBeanRemote.retrieveExceptionReportsByTypeAndDate(exceptionReportTypeEnum, dateToView);
-            while (true) {
-                System.out.println("GENERATED LIST OF REPORTS");
-                System.out.println("----------------------------------------------");
-                System.out.println("Please select report to view");
-                int counter = 1;
-                for (ExceptionReportEntity exceptionReportEntity : listOfReports) {
-                    System.out.println(counter + ": " + exceptionReportEntity.getExceptionReportId());
-                    counter++;
-                }
-                int option = scanner.nextInt();
-                while (option < 1 || option > listOfReports.size()) {
-                    ExceptionReportEntity selectedReport = listOfReports.get(option - 1);
-                    System.out.println("********************");
-                    System.out.println("Exception Report Id: " + selectedReport.getExceptionReportId());
-                    System.out.println("Generated Date: " + selectedReport.getGenerationDate().toString());
-                    System.out.println("Exception Report Type:" + selectedReport.getExceptionReportTypeEnum());
-                    System.out.println("Guest: " + selectedReport.getReservationEntity().getFirstName() + " " + selectedReport.getReservationEntity().getLastName());
-                    System.out.println("Guest passport: " + selectedReport.getReservationEntity().getPassportNumber());
-                    System.out.println("Guest Email: " + selectedReport.getReservationEntity().getEmail());
-                    System.out.println("Room Type Booked: " + selectedReport.getReservationEntity().getRoomTypeName());
-                    System.out.println("Room Rate Booked: " + selectedReport.getReservationEntity().getRoomRateName());
-                    System.out.println("Rate Per Night: " + selectedReport.getReservationEntity().getRatePerNight());
+            if (listOfReports.isEmpty()) {
+                System.out.println("No Exception Report Of " + exceptionReportTypeEnum.name() + " for the date " + dateToView.toString());
+            } else {
 
-                    if (selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
-                        System.out.println("Room Type Allocated: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName());
-                    } else {
-                        System.out.println("NO ROOM ALLOCATED");
+                while (true) {
+                    System.out.println("GENERATED LIST OF REPORTS");
+                    System.out.println("----------------------------------------------");
+                    System.out.println("Please select report to view");
+                    int counter = 1;
+                    for (ExceptionReportEntity exceptionReportEntity : listOfReports) {
+                        System.out.println(counter + ": " + exceptionReportEntity.getExceptionReportId());
+                        counter++;
                     }
-                    System.out.println("********************");
-                    System.out.println("Type anything to exit back to view generated list of reports>");
-                    scanner.nextLine();
-                    break;
-                }
+                    int option = scanner.nextInt();
 
-                System.out.println("Press \"1\" to proceed back to list. To exit, press any other key>");
+                    while (option < 1 || option > listOfReports.size()) {
+                        ExceptionReportEntity selectedReport = listOfReports.get(option - 1);
+                        System.out.println("********************");
+                        System.out.println("Exception Report Id: " + selectedReport.getExceptionReportId());
+                        System.out.println("Generated Date: " + selectedReport.getGenerationDate().toString());
+                        System.out.println("Exception Report Type:" + selectedReport.getExceptionReportTypeEnum());
+                        System.out.println("Guest: " + selectedReport.getReservationEntity().getFirstName() + " " + selectedReport.getReservationEntity().getLastName());
+                        System.out.println("Guest passport: " + selectedReport.getReservationEntity().getPassportNumber());
+                        System.out.println("Guest Email: " + selectedReport.getReservationEntity().getEmail());
+                        System.out.println("Room Type Booked: " + selectedReport.getReservationEntity().getRoomTypeName());
+                        System.out.println("Room Rate Booked: " + selectedReport.getReservationEntity().getRoomRateName());
+                        System.out.println("Rate Per Night: " + selectedReport.getReservationEntity().getRatePerNight());
+
+                        if (selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
+                            System.out.println("Room Type Allocated: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName());
+                        } else {
+                            System.out.println("NO ROOM ALLOCATED");
+                        }
+                        System.out.println("********************");
+                        System.out.println("Type anything to exit back to view generated list of reports>");
+                        scanner.nextLine();
+                        break;
+                    }
+
+                    System.out.println("Press \"1\" to proceed back to list. To exit, press any other key>");
+                    String reply = scanner.nextLine();
+                    if (reply.equals("1")) {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+                System.out.println("Press \"1\" to proceed back to generating reports. To exit, press any other key>");
                 String reply = scanner.nextLine();
                 if (reply.equals("1")) {
                     continue;
                 } else {
                     break;
                 }
-            }
-            System.out.println("Press \"1\" to proceed back to generating reports. To exit, press any other key>");
-            String reply = scanner.nextLine();
-            if (reply.equals("1")) {
-                continue;
-            } else {
-                break;
             }
         }
     }

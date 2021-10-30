@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -18,9 +20,11 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.InputDataValidationException;
+import util.exception.RoomAlreadyExistException;
 import util.exception.RoomFloorAndNumberExistException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomNotFoundException;
+import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateRoomException;
 
@@ -48,6 +52,15 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     public Long createNewRoom(RoomEntity newRoomEntity) throws InputDataValidationException, UnknownPersistenceException, RoomFloorAndNumberExistException {
         Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(newRoomEntity);
 
+        boolean isNotUsed = false;
+        try {
+            RoomEntity room = retrieveRoomByRoomFloorAndRoomNumber(newRoomEntity.getRoomFloor(), newRoomEntity.getRoomNumber());
+        } catch (RoomNotFoundException ex) {
+            isNotUsed = true;
+        }
+        if (isNotUsed == false) {
+            throw new RoomFloorAndNumberExistException("Cannot create room with the inputted room floor and number");
+        }
         if (constraintViolations.isEmpty()) {
             try {
                 em.persist(newRoomEntity);
@@ -97,14 +110,16 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     @Override
     public RoomEntity retrieveRoomByRoomFloorAndRoomNumber(Integer roomFloor, Integer roomNumber) throws RoomNotFoundException {
 
-        RoomEntity room = (RoomEntity) em.createQuery(
-                "SELECT r FROM Room r WHERE r.roomFloor = :rmFloor AND r.roomNumber = :rmNumber")
+        Query query = em.createQuery(
+                "SELECT r FROM RoomEntity r WHERE r.roomFloor = :rmFloor AND r.roomNumber = :rmNumber")
                 .setParameter("rmFloor", roomFloor)
-                .setParameter("rmNumber", roomNumber)
-                .getSingleResult();
-        room.getRoomTypeEntity();
-        
-        return room;
+                .setParameter("rmNumber", roomNumber);
+        try {
+            RoomEntity room = (RoomEntity) query.getSingleResult();
+            return room;
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new RoomNotFoundException("Room Floor " + roomFloor + "and Number " + roomNumber + " does not exist");
+        }
     }
 
     @Override
@@ -119,44 +134,41 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
         }
     }
 
-    
     //updateRoom needs to update room status as well
-    public void updateRoom(RoomEntity roomEntity) throws RoomNotFoundException, UpdateRoomException, InputDataValidationException
-    {
-        if(roomEntity != null && roomEntity.getRoomId()!= null)
-        {
-            Set<ConstraintViolation<RoomEntity>>constraintViolations = validator.validate(roomEntity);
-        
-            if(constraintViolations.isEmpty())
-            {
+    @Override
+    public void updateRoom(RoomEntity roomEntity) throws RoomFloorAndNumberExistException, RoomNotFoundException, UpdateRoomException, InputDataValidationException {
+        if (roomEntity != null && roomEntity.getRoomId() != null) {
+            Set<ConstraintViolation<RoomEntity>> constraintViolations = validator.validate(roomEntity);
+            boolean isNotUsed = false;
+            try {
+                RoomEntity room = retrieveRoomByRoomFloorAndRoomNumber(roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
+            } catch (RoomNotFoundException ex) {
+                isNotUsed = true;
+            }
+            if (isNotUsed == false) {
+                throw new RoomFloorAndNumberExistException("Cannot create room with the inputted room floor and number");
+            }
+            if (constraintViolations.isEmpty()) {
                 RoomEntity roomEntityToUpdate = retrieveRoomByRoomId(roomEntity.getRoomId());
-                
+
                 //Because we are allowing room floor and number to be changed, i am not sure what to use to do the checking here so i will use primary key
-                if(roomEntityToUpdate.getRoomId().equals(roomEntity.getRoomId()))
-                {
+                if (roomEntityToUpdate.getRoomId().equals(roomEntity.getRoomId())) {
                     roomEntityToUpdate.setRoomFloor(roomEntity.getRoomFloor());
                     roomEntityToUpdate.setRoomNumber(roomEntity.getRoomNumber());
                     roomEntityToUpdate.setRoomStatusEnum(roomEntity.getRoomStatusEnum());
                     roomEntityToUpdate.setRoomTypeEntity(roomEntity.getRoomTypeEntity());
 
-                }
-                else
-                {
+                } else {
                     throw new UpdateRoomException("SKU Code of room record to be updated does not match the existing record");
                 }
-            }
-            else
-            {
+            } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
-        }
-        else
-        {
+        } else {
             throw new RoomNotFoundException("Room ID not provided for room to be updated");
         }
     }
-    
-    
+
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<RoomEntity>> constraintViolations) {
         String msg = "Input data validation error!:";
 

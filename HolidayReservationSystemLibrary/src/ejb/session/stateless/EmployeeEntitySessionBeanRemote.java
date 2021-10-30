@@ -6,12 +6,15 @@
 package ejb.session.stateless;
 
 import entity.EmployeeEntity;
+import entity.RoomEntity;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.EmployeeNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.RoomAlreadyExistException;
+import util.exception.RoomFloorAndNumberExistException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateEmployeeException;
 
@@ -22,7 +25,7 @@ import util.exception.UpdateEmployeeException;
 @Remote
 public interface EmployeeEntitySessionBeanRemote {
 
-    public Long createNewEmployee(EmployeeEntity newEmployeeEntity) throws InputDataValidationException, EmployeeUsernameExistException,UnknownPersistenceException; 
+    public Long createNewEmployee(EmployeeEntity newEmployeeEntity) throws InputDataValidationException, EmployeeUsernameExistException, UnknownPersistenceException ;
 
     public List<EmployeeEntity> retrieveAllEmployees();
 
@@ -32,8 +35,7 @@ public interface EmployeeEntitySessionBeanRemote {
 
     public void deleteEmployee(Long employeeId) throws EmployeeNotFoundException;
 
-    public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException ;
+    public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException;
 
-    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws EmployeeNotFoundException, InvalidLoginCredentialException;
-    
+    public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws InvalidLoginCredentialException;
 }

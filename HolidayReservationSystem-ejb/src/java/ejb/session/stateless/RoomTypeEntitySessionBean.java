@@ -93,7 +93,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     @Override
     public RoomTypeEntity retrieveRoomTypeByName(String roomTypeName) throws RoomTypeNotFoundException {
 
-        Query query = em.createQuery("SELECT r FROM RoomTypeEntity r WHERE r.name = :inName");
+        Query query = em.createQuery("SELECT r FROM RoomTypeEntity r WHERE r.roomTypeName = :inName");
         query.setParameter("inName", roomTypeName);
         try {
             return (RoomTypeEntity) query.getSingleResult();
@@ -135,7 +135,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         //RED FLAG
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
 
-        Query query = em.createQuery("SELECT r FROM Room r WHERE r.roomType.roomTypeName = :inName").setParameter("inName", roomType.getRoomTypeName());
+        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomTypeEntity.roomTypeName = :inName").setParameter("inName", roomType.getRoomTypeName());
         if (query.getResultList().size() > 0) {
             try {
                 //means roomType still in use so you should disable it so no new rooms can be created with that room type

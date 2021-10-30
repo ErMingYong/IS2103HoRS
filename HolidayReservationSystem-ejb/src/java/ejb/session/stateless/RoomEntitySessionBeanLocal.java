@@ -9,6 +9,7 @@ import entity.RoomEntity;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.InputDataValidationException;
+import util.exception.RoomAlreadyExistException;
 import util.exception.RoomFloorAndNumberExistException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomNotFoundException;
@@ -32,6 +33,6 @@ public interface RoomEntitySessionBeanLocal {
 
     public void deleteRoom(RoomEntity roomToDelete) throws RoomNotFoundException ;
 
-    public void updateRoom(RoomEntity roomEntity) throws RoomNotFoundException, UpdateRoomException, InputDataValidationException;
+    public void updateRoom(RoomEntity roomEntity) throws RoomFloorAndNumberExistException, RoomNotFoundException, UpdateRoomException, InputDataValidationException ;
     
 }
