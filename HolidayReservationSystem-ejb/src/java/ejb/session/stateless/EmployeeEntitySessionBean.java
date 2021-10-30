@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -91,12 +93,11 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     @Override
     public EmployeeEntity retrieveEmployeeByUsername(String employeeUsername) throws EmployeeNotFoundException {
         Query query = em.createQuery("SELECT e FROM EmployeeEntity e WHERE e.username = :inUsername").setParameter("inUsername", employeeUsername);
-        EmployeeEntity employeeEntity = (EmployeeEntity) query.getSingleResult();
-        if (employeeEntity != null) {
-            //DID NOT DO FETCHING FOR LIST OF RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
-            return employeeEntity;
-        } else {
-            throw new EmployeeNotFoundException("Employee Username " + employeeUsername + " does not exist");
+
+        try {
+            return (EmployeeEntity) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new EmployeeNotFoundException("Staff Username " + employeeUsername + " does not exist!");
         }
     }
 
