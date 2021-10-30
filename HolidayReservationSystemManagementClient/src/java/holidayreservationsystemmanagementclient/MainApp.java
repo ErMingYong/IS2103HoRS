@@ -165,6 +165,7 @@ public class MainApp {
         Integer response = 0;
 
         while (true) {
+
             System.out.println("*** Hotel Reservation System Management Client ***\n");
             System.out.println("You are login as " + currentEmployee.getFirstName() + " " + currentEmployee.getLastName() + " with " + currentEmployee.getEmployeeAccessRightEnum().toString() + " rights\n");
             System.out.println("1: System Administration Operation");
@@ -173,8 +174,8 @@ public class MainApp {
             System.out.println("4: Front Office Operation");
             System.out.println("5: Logout\n");
             System.out.println(">");
-            
             response = scanner.nextInt();
+
             while (response < 1 || response > 5) {
                 if (response == 1) {
                     try {
@@ -206,6 +207,7 @@ public class MainApp {
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
+                    response = 0;
                 }
             }
 
