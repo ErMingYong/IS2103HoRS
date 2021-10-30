@@ -14,6 +14,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.EmployeeNotFoundException;
 import util.exception.EmployeeUsernameExistException;
 import util.exception.InputDataValidationException;
@@ -23,9 +24,10 @@ import util.exception.UnknownPersistenceException;
  *
  * @author Koh Wen Jie
  */
-@Startup
+
 @Singleton
 @LocalBean
+@Startup
 public class DataInitializationSessionBean {
 
     @EJB
@@ -45,7 +47,7 @@ public class DataInitializationSessionBean {
 
     private void initializeData() {
         try {
-            employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("manager", "1", "manager", "password"));
+            employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("manager", "1", "manager", "password", EmployeeAccessRightEnum.SYSTEM_ADMINISTRATOR));
         } catch (UnknownPersistenceException | InputDataValidationException | EmployeeUsernameExistException ex) {
             ex.printStackTrace();
         }

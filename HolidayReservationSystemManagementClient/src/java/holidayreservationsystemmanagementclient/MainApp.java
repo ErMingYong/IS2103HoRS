@@ -128,6 +128,7 @@ public class MainApp {
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
+                    response = 0;
                 }
             }
 
@@ -146,7 +147,7 @@ public class MainApp {
         System.out.println("Enter Username: ");
         username = scanner.nextLine().trim();
         System.out.println("Enter Password: ");
-        username = scanner.nextLine().trim();
+        password = scanner.nextLine().trim();
 
         if (username.length() > 0 && password.length() > 0) {
             try {
@@ -171,8 +172,10 @@ public class MainApp {
             System.out.println("3: Sales Operation");
             System.out.println("4: Front Office Operation");
             System.out.println("5: Logout\n");
-
-            while (response < 1 || response > 3) {
+            System.out.println(">");
+            
+            response = scanner.nextInt();
+            while (response < 1 || response > 5) {
                 if (response == 1) {
                     try {
                         systemAdministrationModule.menuSystemAdministration();

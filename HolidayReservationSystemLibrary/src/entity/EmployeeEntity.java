@@ -29,8 +29,9 @@ public class EmployeeEntity extends UserEntity implements Serializable {
     public EmployeeEntity() {
     }
 
-    public EmployeeEntity(String firstName, String lastName, String username, String password) {
-        super(firstName, lastName, username, password);        
+    public EmployeeEntity(String firstName, String lastName, String username, String password, EmployeeAccessRightEnum employeeAccessRightEnum) {
+        super(firstName, lastName, username, password);      
+        this.setEmployeeAccessRightEnum(employeeAccessRightEnum);
     }
 
     /**
