@@ -407,10 +407,10 @@ public class HotelOperationModule {
         int roomNumber;
         RoomEntity roomToUpdate;
         while (true) {
-            System.out.print("Enter Room Floor> ");
+            System.out.println("Enter Room Floor> ");
             roomFloor = scanner.nextInt();
 
-            System.out.print("Enter Room Number> ");
+            System.out.println("Enter Room Number> ");
             roomNumber = scanner.nextInt();
 
             try {
@@ -422,10 +422,10 @@ public class HotelOperationModule {
             break;
         }
 
-        System.out.print("Enter New Room Floor> ");
+        System.out.println("Enter New Room Floor> ");
         roomFloor = scanner.nextInt();
 
-        System.out.print("Enter New Room Number> ");
+        System.out.println("Enter New Room Number> ");
         roomNumber = scanner.nextInt();
 
         roomToUpdate.setRoomFloor(roomFloor);

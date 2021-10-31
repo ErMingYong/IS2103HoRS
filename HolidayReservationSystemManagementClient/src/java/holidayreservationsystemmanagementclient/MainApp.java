@@ -150,11 +150,7 @@ public class MainApp {
         password = scanner.nextLine().trim();
 
         if (username.length() > 0 && password.length() > 0) {
-            try {
-                currentEmployee = employeeEntitySessionBeanRemote.employeeLogin(username, password);
-            } catch (InvalidLoginCredentialException ex) {
-                System.out.println("User account does not exist");
-            }
+            currentEmployee = employeeEntitySessionBeanRemote.employeeLogin(username, password);
         } else {
             throw new InvalidLoginCredentialException("Missing Login Credentials");
         }

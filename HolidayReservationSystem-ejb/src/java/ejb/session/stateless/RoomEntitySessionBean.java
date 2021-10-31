@@ -20,11 +20,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.InputDataValidationException;
-import util.exception.RoomAlreadyExistException;
 import util.exception.RoomFloorAndNumberExistException;
-import util.exception.RoomTypeNameExistException;
 import util.exception.RoomNotFoundException;
-import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateRoomException;
 

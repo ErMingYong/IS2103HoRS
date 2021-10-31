@@ -76,8 +76,8 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
     }
 
     @Override
-    public List<RoomRateEntity> retrieveAllRoomRate() {
-        Query query = em.createQuery("SELECT rr FROM RoomRataeEntity rr");
+    public List<RoomRateEntity> retrieveAllRoomRates() {
+        Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr");
 
         List<RoomRateEntity> listOfRoomRates = query.getResultList();
         for (RoomRateEntity roomRateEntity : listOfRoomRates) {
@@ -101,7 +101,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
     @Override
     public RoomRateEntity retrieveRoomRateByName(String roomRateName) throws RoomRateNotFoundException {
 
-        Query query = em.createQuery("SELECT r FROM RoomRateEntity r WHERE r.roomRateName = : inRoomRateName");
+        Query query = em.createQuery("SELECT r FROM RoomRateEntity r WHERE r.roomRateName = :inRoomRateName");
         query.setParameter("inRoomRateName", roomRateName);
         try {
             return (RoomRateEntity) query.getSingleResult();

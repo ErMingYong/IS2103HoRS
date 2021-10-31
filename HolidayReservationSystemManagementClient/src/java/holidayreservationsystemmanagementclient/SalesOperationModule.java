@@ -16,7 +16,9 @@ import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.RoomRateEntity;
+import entity.RoomTypeEntity;
 import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -32,6 +34,7 @@ import util.exception.InputDataValidationException;
 import util.exception.InvalidAccessRightException;
 import util.exception.RoomRateNameExistException;
 import util.exception.RoomRateNotFoundException;
+import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateRoomRateException;
 
@@ -89,6 +92,8 @@ public class SalesOperationModule {
             System.out.println("2: View Room Rate Details");
             System.out.println("3: View All Room Rates");
             System.out.println("4: Exit");
+            System.out.println("> ");
+            response = 0;
 
             while (response < 1 || response > 4) {
                 response = scanner.nextInt();
@@ -128,66 +133,95 @@ public class SalesOperationModule {
 
         System.out.print("Enter Room Rate per night> ");
         newRoomRate.setRatePerNight(scanner.nextBigDecimal());
+        scanner.nextLine();
 
         LocalDateTime dateToView;
         while (true) {
-            System.out.println("Please Enter Room Rate Valid Period From> ");
+            System.out.println("");
+            System.out.println("Please Enter Date To View> ");
             System.out.println("------------------------");
-            System.out.print("Please Enter Day of Room Rate Valid Period From>   (please select from 01 - 31)");
-            String day = scanner.nextLine();
-            System.out.print("Please Enter Month of Room Rate Valid Period From>   (please select from 01 - 12)");
-            String month = scanner.nextLine();
-            System.out.print("Please Enter Year of Room Rate Valid Period From>   (please select from 2000 - 2999)");
-            String year = scanner.nextLine();
-            String date = year + "-" + month + "-" + day;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            System.out.println("Please Enter Day of Room Rate Valid Period From>   (please select from 01 - 31)");
+            int day = scanner.nextInt();
+            System.out.println("Please Enter Month of Room Rate Valid Period From>   (please select from 01 - 12)");
+            int month = scanner.nextInt();
+            System.out.println("Please Enter Year of Room Rate Valid Period From>   (please select from 2000 - 2999)");
+            int year = scanner.nextInt();
             try {
-                dateToView = LocalDateTime.parse(date, formatter);
-                newRoomRate.setValidPeriodFrom(dateToView);
-            } catch (DateTimeParseException ex) {
+                dateToView = LocalDateTime.of(year, month, day, 0, 0, 0);
+            } catch (DateTimeException ex) {
                 System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+                System.out.println(":::");
+                System.out.println(":::");
+
                 continue;
             }
+            newRoomRate.setValidPeriodFrom(dateToView);
             break;
         }
 
         while (true) {
+            System.out.println("");
             System.out.println("Please Enter Room Rate Valid Period To> ");
             System.out.println("------------------------");
-            System.out.print("Please Enter Day of Room Rate Valid Period To>   (please select from 01 - 31)");
-            String day = scanner.nextLine();
-            System.out.print("Please Enter Month of Room Rate Valid Period To>   (please select from 01 - 12)");
-            String month = scanner.nextLine();
-            System.out.print("Please Enter Year of Room Rate Valid Period To>   (please select from 2000 - 2999)");
-            String year = scanner.nextLine();
-            String date = year + "-" + month + "-" + day;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            System.out.println("Please Enter Day of Room Rate Valid Period To>   (please select from 01 - 31)");
+            int day = scanner.nextInt();
+            System.out.println("Please Enter Month of Room Rate Valid Period To>   (please select from 01 - 12)");
+            int month = scanner.nextInt();
+            System.out.println("Please Enter Year of Room Rate Valid Period To>   (please select from 2000 - 2999)");
+            int year = scanner.nextInt();
             try {
-                dateToView = LocalDateTime.parse(date, formatter);
-            } catch (DateTimeParseException ex) {
+                dateToView = LocalDateTime.of(year, month, day, 0, 0, 0);
+            } catch (DateTimeException ex) {
                 System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+                System.out.println(":::");
+                System.out.println(":::");
                 continue;
             }
 
-            if (dateToView.isAfter(newRoomRate.getValidPeriodFrom()))  {
+            if (dateToView.isAfter(newRoomRate.getValidPeriodFrom())) {
                 newRoomRate.setValidPeriodTo(dateToView);
                 break;
             }
             System.out.println("DATE INVALID! PLEASE KEY IN DATE THAT IS AFTER \"Valid Period From\" ");
+            System.out.println(":::");
+            System.out.println(":::");
         }
+        scanner.nextLine();
+        RoomTypeEntity retrievedRoomType = null;
+
+        while (true) {
+            System.out.print("Enter Room Type Name> ");
+            String roomType = scanner.nextLine();
+            try {
+                retrievedRoomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomType);
+            } catch (RoomTypeNotFoundException ex) {
+                System.out.println("Room Type Name not found, please try again!");
+            }
+
+            if (retrievedRoomType != null && retrievedRoomType.getIsDisabled() == true) {
+                System.out.println("Cannot create new room of disabled room type!");
+                retrievedRoomType = null;
+                continue;
+            }
+            if (retrievedRoomType != null) {
+                break;
+            }
+        }
+        newRoomRate.setRoomTypeEntity(retrievedRoomType);
 
         Set<ConstraintViolation<RoomRateEntity>> constraintViolations = validator.validate(newRoomRate);
 
         if (constraintViolations.isEmpty()) {
             try {
                 Long roomRateId = roomRateEntitySessionBeanRemote.createNewRoomRate(newRoomRate);
-                System.out.println("Room Type created successfully!: " + roomRateId + "\n");
+                System.out.println("");
+                System.out.println("Room Rate created successfully!: " + roomRateId + "\n");
             } catch (InputDataValidationException ex) {
                 System.out.println(ex.getMessage() + "\n");
             } catch (UnknownPersistenceException ex) {
                 System.out.println("Unknown persistence error caught");
             } catch (RoomRateNameExistException ex) {
-                System.out.println("RoomType name already exist!");
+                System.out.println("Room Rate name already exist!");
             }
         } else {
             showInputDataValidationErrorsForRoomRateEntity(constraintViolations);
@@ -198,23 +232,25 @@ public class SalesOperationModule {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
 
-        System.out.println("*** Hotel Management Client :: Hotel Operation Module :: View Room Type Details ***\n");
-        System.out.print("Enter Room Type Name> ");
-        String roomTypeName = scanner.nextLine().trim();
+        System.out.println("*** Hotel Management Client :: Hotel Operation Module :: View Room Rate Details ***\n");
+        System.out.print("Enter Room Rate Name> ");
+        String roomRateName = scanner.nextLine().trim();
 
         try {
-            RoomRateEntity roomRate = roomRateEntitySessionBeanRemote.retrieveRoomRateByName(roomTypeName);
+            RoomRateEntity roomRate = roomRateEntitySessionBeanRemote.retrieveRoomRateByName(roomRateName);
 
-            System.out.printf("%s%s%s%s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
-            System.out.printf("%s%s%s%s\n", roomRate.getRoomRateName(), roomRate.getRatePerNight().toString(), roomRate.getValidPeriodFrom().toString(), roomRate.getValidPeriodTo().toString());
+            System.out.printf("%30.30s%30.30s%30.30s%30.30s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
+            System.out.printf("%30.30s%30.30s%30.30s%30.30s\n", roomRate.getRoomRateName(), roomRate.getRatePerNight().toString(), roomRate.getValidPeriodFrom().toString(), roomRate.getValidPeriodTo().toString());
 
             System.out.println("------------------------");
             System.out.println("1: Update Room Rate");
             System.out.println("2: Delete Room Rate");
             System.out.println("3: Back\n");
             System.out.print("> ");
-            response = scanner.nextInt();
+            response = 0;
             while (response < 1 || response > 3) {
+                response = scanner.nextInt();
+
                 if (response == 1) {
                     doUpdateRoomRate(roomRate);
                 } else if (response == 2) {
@@ -227,7 +263,7 @@ public class SalesOperationModule {
             }
 
         } catch (RoomRateNotFoundException ex) {
-            System.out.println("Room Type Name: " + roomTypeName + " does not exist");
+            System.out.println("Room Rate Name: " + roomRateName + " does not exist");
         }
     }
 
@@ -236,63 +272,108 @@ public class SalesOperationModule {
 
         System.out.println("*** Hotel Management Client :: Hotel Operation Module (Sales Manager) :: View Room Rate Details :: Update Room Rate ***\n");
 
-        System.out.print("Enter Room Rate Name (blank if no change)> ");
+        System.out.println("Enter Room Rate Name (blank if no change)> ");
         String name = scanner.nextLine().trim();
         if (name.length() > 0) {
             roomRate.setRoomRateName(name);
         }
-
-        System.out.print("Enter Room Rate Rate per Night (blank if no change)> ");
-        BigDecimal ratePerNight = scanner.nextBigDecimal();
-        if (ratePerNight != null) {
-            roomRate.setRatePerNight(ratePerNight);
+        
+        System.out.println("Would you like to update Room Rate Per Night? Press 1 to update and any other key to skip");
+        String input = scanner.nextLine().trim();
+        if (input == "1") {
+            System.out.println("Enter Room Rate Rate per Night> ");
+            int ratePerNight = 0;
+            ratePerNight = scanner.nextInt();
+            if (ratePerNight != 0) {
+                roomRate.setRatePerNight(BigDecimal.valueOf(ratePerNight));
+            }
         }
 
-        LocalDateTime dateToView;
-        while (true) {
-            System.out.println("Please Enter Room Rate Valid Period From> (blank if no change) ");
-            System.out.println("------------------------");
-            System.out.print("Please Enter Day of Room Rate Valid Period From>   (please select from 01 - 31)");
-            String day = scanner.nextLine();
-            System.out.print("Please Enter Month of Room Rate Valid Period From>   (please select from 01 - 12)");
-            String month = scanner.nextLine();
-            System.out.print("Please Enter Year of Room Rate Valid Period From>   (please select from 2000 - 2999)");
-            String year = scanner.nextLine();
-            String date = year + "-" + month + "-" + day;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            try {
-                dateToView = LocalDateTime.parse(date, formatter);
+        scanner.nextLine();
+        System.out.println("Would you like to update Valid Period? Press 1 to update and any other key to skip");
+        input = scanner.nextLine();
+        if (input == "1") {
+            LocalDateTime dateToView;
+            while (true) {
+                System.out.println("");
+                System.out.println("Please Enter Room Rate Valid Period From> ");
+                System.out.println("------------------------");
+                System.out.println("Please Enter Day of Room Rate Valid Period From>   (please select from 01 - 31)");
+                int day = scanner.nextInt();
+                System.out.println("Please Enter Month of Room Rate Valid Period From>   (please select from 01 - 12)");
+                int month = scanner.nextInt();
+                System.out.println("Please Enter Year of Room Rate Valid Period From>   (please select from 2000 - 2999)");
+                int year = scanner.nextInt();
+                try {
+                    dateToView = LocalDateTime.of(year, month, day, 0, 0, 0);
+                } catch (DateTimeException ex) {
+                    System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+                    System.out.println(":::");
+                    System.out.println(":::");
+
+                    continue;
+                }
                 roomRate.setValidPeriodFrom(dateToView);
-            } catch (DateTimeParseException ex) {
-                System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
-                continue;
-            }
-            break;
-        }
-
-        while (true) {
-            System.out.println("Please Enter Room Rate Valid Period To> (blank if no change) ");
-            System.out.println("------------------------");
-            System.out.print("Please Enter Day of Room Rate Valid Period To>   (please select from 01 - 31)");
-            String day = scanner.nextLine();
-            System.out.print("Please Enter Month of Room Rate Valid Period To>   (please select from 01 - 12)");
-            String month = scanner.nextLine();
-            System.out.print("Please Enter Year of Room Rate Valid Period To>   (please select from 2000 - 2999)");
-            String year = scanner.nextLine();
-            String date = year + "-" + month + "-" + day;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            try {
-                dateToView = LocalDateTime.parse(date, formatter);
-            } catch (DateTimeParseException ex) {
-                System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
-                continue;
-            }
-
-            if (dateToView.isAfter(roomRate.getValidPeriodFrom()))  {
-                roomRate.setValidPeriodTo(dateToView);
                 break;
             }
-            System.out.println("DATE INVALID! PLEASE KEY IN DATE THAT IS AFTER \"Valid Period From\" ");
+
+            while (true) {
+                System.out.println("");
+                System.out.println("Please Enter Room Rate Valid Period To> ");
+                System.out.println("------------------------");
+                System.out.println("Please Enter Day of Room Rate Valid Period To>   (please select from 01 - 31)");
+                int day = scanner.nextInt();
+                System.out.println("Please Enter Month of Room Rate Valid Period To>   (please select from 01 - 12)");
+                int month = scanner.nextInt();
+                System.out.println("Please Enter Year of Room Rate Valid Period To>   (please select from 2000 - 2999)");
+                int year = scanner.nextInt();
+                try {
+                    dateToView = LocalDateTime.of(year, month, day, 0, 0, 0);
+                } catch (DateTimeException ex) {
+                    System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+                    System.out.println(":::");
+                    System.out.println(":::");
+                    continue;
+                }
+
+                if (dateToView.isAfter(roomRate.getValidPeriodFrom())) {
+                    roomRate.setValidPeriodTo(dateToView);
+                    break;
+                }
+                System.out.println("DATE INVALID! PLEASE KEY IN DATE THAT IS AFTER \"Valid Period From\" ");
+                System.out.println(":::");
+                System.out.println(":::");
+            }
+            scanner.nextLine();
+        }
+
+        RoomTypeEntity retrievedRoomType = null;
+
+        while (true) {
+            System.out.print("Enter Room Type Name (blank if no change)> ");
+            String roomType = scanner.nextLine();
+            if (roomType.length() > 0) {
+                try {
+                    retrievedRoomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomType);
+                } catch (RoomTypeNotFoundException ex) {
+                    System.out.println("Room Type Name not found, please try again!");
+                }
+
+                if (retrievedRoomType != null && retrievedRoomType.getIsDisabled() == true) {
+                    System.out.println("Cannot create new room of disabled room type!");
+                    retrievedRoomType = null;
+                    continue;
+                }
+                if (retrievedRoomType != null) {
+                    break;
+                }
+            } else {
+                break;
+            }
+
+        }
+        if (retrievedRoomType != null) {
+            roomRate.setRoomTypeEntity(retrievedRoomType);
         }
 
         Set<ConstraintViolation<RoomRateEntity>> constraintViolations = validator.validate(roomRate);
@@ -300,8 +381,8 @@ public class SalesOperationModule {
         if (constraintViolations.isEmpty()) {
             try {
                 roomRateEntitySessionBeanRemote.updateRoomRate(roomRate);
-                Long updatedRoomTypeId = roomRate.getRoomRateId();
-                System.out.println("Room Type updated successfully!: " + updatedRoomTypeId + "\n");
+                Long updatedRoomRateId = roomRate.getRoomRateId();
+                System.out.println("Room Rate updated successfully!: " + updatedRoomRateId + "\n");
             } catch (UpdateRoomRateException | RoomRateNotFoundException ex) {
                 System.out.println("An error has occurred while updating product: " + ex.getMessage() + "\n");
             } catch (InputDataValidationException ex) {
@@ -318,7 +399,7 @@ public class SalesOperationModule {
         String input;
 
         System.out.println("*** Hotel Management Client :: Hotel Operation Module (Sales Manager) :: View Room Rate Details :: Delete Room Rate ***\n");
-        System.out.printf("Confirm Delete Room Type %s (Room Rate ID: %d) (Enter 'Y' to Delete)> ", roomRate.getRoomRateName(), roomRate.getRoomRateId());
+        System.out.printf("Confirm Delete Room Rate %s (Room Rate ID: %d) (Enter 'Y' to Delete)> ", roomRate.getRoomRateName(), roomRate.getRoomRateId());
         input = scanner.nextLine().trim();
 
         if (input.equals("Y")) {
@@ -336,16 +417,16 @@ public class SalesOperationModule {
     private void doViewAllRoomRates() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Types ***\n");
+        System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Rates ***\n");
 
-        List<RoomRateEntity> roomRateEntities = roomRateEntitySessionBeanRemote.retrieveAllRoomRate();
-        System.out.printf("%s%s%s%s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
+        List<RoomRateEntity> roomRateEntities = roomRateEntitySessionBeanRemote.retrieveAllRoomRates();
+        System.out.printf("%30.30s%30.30s%30.30s%30.30s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To");
 
         for (RoomRateEntity roomRateEntity : roomRateEntities) {
-            System.out.printf("%s%s%s%s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toString(), roomRateEntity.getValidPeriodTo().toString());
+            System.out.printf("%30.30s%30.30s%30.30s%30.30s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toString(), roomRateEntity.getValidPeriodTo().toString());
         }
 
-        System.out.print("Press any key to continue...> ");
+        System.out.println("Press any key to continue...> ");
         scanner.nextLine();
     }
 

@@ -23,7 +23,7 @@ public interface RoomRateEntitySessionBeanLocal {
 
     public Long createNewRoomRate(RoomRateEntity newRoomRate) throws InputDataValidationException, RoomRateNameExistException, UnknownPersistenceException;
 
-    public List<RoomRateEntity> retrieveAllRoomRate();
+    public List<RoomRateEntity> retrieveAllRoomRates();
 
     public RoomRateEntity retrieveRoomRateById(Long roomRateId) throws RoomRateNotFoundException;
 
