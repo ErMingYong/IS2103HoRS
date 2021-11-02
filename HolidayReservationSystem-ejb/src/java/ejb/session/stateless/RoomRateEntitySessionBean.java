@@ -110,7 +110,6 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         }
     }
 
-    
     //need to decide how to delete
     //i think need find rooms that are available and use the room type which the room rate contains
     //if have then disable
@@ -182,4 +181,6 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
 
         return msg;
     }
+
+
 }

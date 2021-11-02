@@ -23,8 +23,6 @@ import javax.validation.constraints.Size;
 @Entity
 public class RoomTypeEntity implements Serializable {
 
-
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,12 +55,16 @@ public class RoomTypeEntity implements Serializable {
     @NotNull
     @Column(nullable = false)
     private Boolean isDisabled;
+    @NotNull
+    @Column(nullable = false)
+    @Min(1)
+    private Integer ranking;
 
     public RoomTypeEntity() {
         this.isDisabled = false;
     }
 
-    public RoomTypeEntity(String roomTypeName, String description, String size, String bed, Integer capacity, String amenities) {
+    public RoomTypeEntity(String roomTypeName, String description, String size, String bed, Integer capacity, String amenities, Integer ranking) {
         this();
         this.roomTypeName = roomTypeName;
         this.description = description;
@@ -70,6 +72,7 @@ public class RoomTypeEntity implements Serializable {
         this.bed = bed;
         this.capacity = capacity;
         this.amenities = amenities;
+        this.ranking = ranking;
     }
 
     public Long getRoomTypeId() {
@@ -176,6 +179,20 @@ public class RoomTypeEntity implements Serializable {
      */
     public void setIsDisabled(Boolean isDisabled) {
         this.isDisabled = isDisabled;
+    }
+
+    /**
+     * @return the ranking
+     */
+    public Integer getRanking() {
+        return ranking;
+    }
+
+    /**
+     * @param ranking the ranking to set
+     */
+    public void setRanking(Integer ranking) {
+        this.ranking = ranking;
     }
 
     @Override

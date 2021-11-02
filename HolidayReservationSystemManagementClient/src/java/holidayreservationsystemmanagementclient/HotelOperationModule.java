@@ -168,6 +168,9 @@ public class HotelOperationModule {
         System.out.println("Enter Room Type Amenities");
         newRoomType.setAmenities(scanner.nextLine().trim());
 
+        System.out.println("Enter Room Type Ranking");
+        newRoomType.setRanking(scanner.nextInt());
+
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(newRoomType);
 
         if (constraintViolations.isEmpty()) {
@@ -196,8 +199,8 @@ public class HotelOperationModule {
 
         try {
             RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b\n", roomType.getRoomTypeName(), roomType.getDescription(), roomType.getSize(), roomType.getBed(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled());
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomType.getRoomTypeName(), roomType.getDescription(), roomType.getSize(), roomType.getBed(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled(), roomType.getRanking());
             System.out.println("------------------------");
             System.out.println("1: Update Room Type");
             System.out.println("2: Delete Room Type");
@@ -264,6 +267,13 @@ public class HotelOperationModule {
             roomType.setAmenities(input);
         }
 
+        System.out.print("Enter Room Type Ranking (blank if no change)> ");
+        int rank = 0;
+        rank = scanner.nextInt();
+        if (rank > 0) {
+            roomType.setRanking(rank);
+        }
+
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomType);
 
         if (constraintViolations.isEmpty()) {
@@ -308,10 +318,10 @@ public class HotelOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Types ***\n");
 
         List<RoomTypeEntity> roomTypeEntities = roomTypeEntitySessionBeanRemote.retrieveAllRoomTypes();
-        System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s\n", "Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled");
-
+        System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
+            
         for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled());
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled(), roomTypeEntity.getRanking());
         }
 
         System.out.print("Press any key to continue...> ");
@@ -593,18 +603,18 @@ public class HotelOperationModule {
                     exceptionReportTypeEnum = ExceptionReportTypeEnum.FIRST_TYPE;
                 } else if (response == 2) {
                     exceptionReportTypeEnum = ExceptionReportTypeEnum.SECOND_TYPE;
-                }else if (response == 3) {
+                } else if (response == 3) {
                     doExit = true;
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
-            
+
             if (doExit) {
                 break;
             }
-            
+
             scanner.nextLine();
             LocalDateTime dateToView;
             while (true) {
@@ -670,8 +680,6 @@ public class HotelOperationModule {
                         System.out.println("Guest passport: " + selectedReport.getReservationEntity().getPassportNumber());
                         System.out.println("Guest Email: " + selectedReport.getReservationEntity().getEmail());
                         System.out.println("Room Type Booked: " + selectedReport.getReservationEntity().getRoomTypeName());
-                        System.out.println("Room Rate Booked: " + selectedReport.getReservationEntity().getRoomRateName());
-                        System.out.println("Rate Per Night: " + selectedReport.getReservationEntity().getRatePerNight());
 
                         if (selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
                             System.out.println("Room Type Allocated: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName());

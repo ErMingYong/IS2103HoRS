@@ -16,8 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -66,15 +64,6 @@ public class ReservationEntity implements Serializable {
     @NotNull
     @Size(min = 1, max = 32)
     private String roomTypeName;
-    @Column(nullable = false, length = 32)
-    @NotNull
-    @Size(min = 1, max = 32)
-    private String roomRateName;
-    @DecimalMin("10.00")
-    @DecimalMax("9999.00")
-    @NotNull
-    @Column(nullable = false)
-    private BigDecimal ratePerNight;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
@@ -234,34 +223,6 @@ public class ReservationEntity implements Serializable {
      */
     public void setRoomTypeName(String roomTypeName) {
         this.roomTypeName = roomTypeName;
-    }
-
-    /**
-     * @return the roomRateName
-     */
-    public String getRoomRateName() {
-        return roomRateName;
-    }
-
-    /**
-     * @param roomRateName the roomRateName to set
-     */
-    public void setRoomRateName(String roomRateName) {
-        this.roomRateName = roomRateName;
-    }
-
-    /**
-     * @return the ratePerNight
-     */
-    public BigDecimal getRatePerNight() {
-        return ratePerNight;
-    }
-
-    /**
-     * @param ratePerNight the ratePerNight to set
-     */
-    public void setRatePerNight(BigDecimal ratePerNight) {
-        this.ratePerNight = ratePerNight;
     }
 
     /**

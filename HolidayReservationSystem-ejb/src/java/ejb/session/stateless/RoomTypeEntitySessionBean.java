@@ -51,6 +51,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
 
         if (constraintViolations.isEmpty()) {
             try {
+                incrementRankingsAbove(newRoomType.getRanking());
                 em.persist(newRoomType);
                 em.flush();
 
@@ -63,6 +64,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                         throw new UnknownPersistenceException(ex.getMessage());
                     }
                 } else {
+                    decrementRankingsAbove(newRoomType.getRanking());
                     throw new UnknownPersistenceException(ex.getMessage());
                 }
             }
@@ -116,6 +118,11 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                     roomTypeEntityToUpdate.setBed(roomTypeEntity.getBed());
                     roomTypeEntityToUpdate.setCapacity(roomTypeEntity.getCapacity());
                     roomTypeEntityToUpdate.setAmenities(roomTypeEntity.getAmenities());
+                    //RED FLAG
+                    if (roomTypeEntityToUpdate.getRanking() != roomTypeEntity.getRanking()) {
+                        roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
+
+                    }
                     // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
                     //cannot set isDisabled through this method as well
                 } else {
@@ -171,5 +178,48 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         }
 
         return msg;
+    }
+
+    //for when you create a new roomtype
+    private void incrementRankingsAbove(Integer rank) {
+
+        int highestRank = rank;
+        while (true) {
+            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.ranking =:inRanking ")
+                    .setParameter("inRanking", highestRank);
+            List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
+
+            if (listOfRoomTypeEntities.size() != 0) {
+                highestRank += 1;
+            } else {
+                break;
+            }
+        }
+
+        while (highestRank > rank) {
+            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.ranking =:inRanking ")
+                    .setParameter("inRanking", highestRank);
+            List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
+            for (RoomTypeEntity roomTypeEntity : listOfRoomTypeEntities) {
+                roomTypeEntity.setRanking(rank + 1);
+            }
+            highestRank -= 1;
+        }
+    }
+
+    //for when you create a new roomtype
+    private void decrementRankingsAbove(Integer rank) {
+        while (true) {
+            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.ranking =:inRanking ")
+                    .setParameter("inRanking", rank);
+            List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
+            if (listOfRoomTypeEntities.size() == 0) {
+                break;
+            }
+            for (RoomTypeEntity roomTypeEntity : listOfRoomTypeEntities) {
+                roomTypeEntity.setRanking(rank - 1);
+            }
+            rank += 1;
+        }
     }
 }

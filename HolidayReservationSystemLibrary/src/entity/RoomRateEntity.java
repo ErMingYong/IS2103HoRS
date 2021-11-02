@@ -10,15 +10,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import util.enumeration.RoomRateTypeEnum;
 
 /**
  *
@@ -49,20 +52,25 @@ public class RoomRateEntity implements Serializable {
     @NotNull
     @Column(nullable = false)
     private Boolean isDisabled;
+    @Enumerated
+    @NotNull
+    @Column(nullable = false)
+    private RoomRateTypeEnum roomRateTypeEnum;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {
         this.isDisabled = false;
     }
 
-    public RoomRateEntity(String roomRateName, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo) {
+    public RoomRateEntity(String roomRateName, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo, RoomRateTypeEnum roomRateTypeEnum) {
         this();
         this.roomRateName = roomRateName;
         this.ratePerNight = ratePerNight;
         this.validPeriodFrom = validPeriodFrom;
         this.validPeriodTo = validPeriodTo;
+        this.roomRateTypeEnum = roomRateTypeEnum;
     }
 
     /**
@@ -129,6 +137,20 @@ public class RoomRateEntity implements Serializable {
 
     public void setRoomRateId(Long roomRateId) {
         this.roomRateId = roomRateId;
+    }
+    
+        /**
+     * @return the roomRateTypeEnum
+     */
+    public RoomRateTypeEnum getRoomRateTypeEnum() {
+        return roomRateTypeEnum;
+    }
+
+    /**
+     * @param roomRateTypeEnum the roomRateTypeEnum to set
+     */
+    public void setRoomRateTypeEnum(RoomRateTypeEnum roomRateTypeEnum) {
+        this.roomRateTypeEnum = roomRateTypeEnum;
     }
 
     /**

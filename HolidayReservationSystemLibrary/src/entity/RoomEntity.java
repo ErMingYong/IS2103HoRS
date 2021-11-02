@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -46,7 +47,7 @@ public class RoomEntity implements Serializable {
     @NotNull
     private RoomStatusEnum roomStatusEnum;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomEntity() {
