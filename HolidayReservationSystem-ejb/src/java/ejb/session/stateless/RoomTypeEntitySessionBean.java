@@ -157,7 +157,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
             if (roomType != null) {
                 changeRankingWhenRemove(roomType.getRanking());
                 em.remove(roomType);
-                
+
             } else {
                 throw new RoomTypeNotFoundException("Room Type ID " + roomTypeId + " does not exist");
             }
@@ -188,6 +188,11 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     private void changeRankingWhenInclude(RoomTypeEntity roomTypeEntity, Integer rank) {
         Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
         List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
+        if (rank <= 0) {
+            rank = 1;
+        } else if (rank > listOfRoomTypeEntities.size()) {
+            rank = listOfRoomTypeEntities.size() + 1;
+        }
         listOfRoomTypeEntities.add(rank - 1, roomTypeEntity);
 
         int counter = 1;
@@ -212,6 +217,11 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
         List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         listOfRoomTypeEntities.remove(roomTypeEntity);
+        if (rank <= 0) {
+            rank = 1;
+        } else if (rank > listOfRoomTypeEntities.size()) {
+            rank = listOfRoomTypeEntities.size() + 1;
+        }
         listOfRoomTypeEntities.add(rank - 1, roomTypeEntity);
 
         int counter = 1;
