@@ -5,7 +5,10 @@
  */
 package ejb.session.stateless;
 
+import entity.ReservationEntity;
 import entity.RoomRateEntity;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -110,15 +113,25 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         }
     }
 
-
     @Override
     public void deleteRoomRate(Long roomRateId) throws RoomRateNotFoundException {
 
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
+        //Get reservations that are ongoing where the roomrate is the name of the roomrate to be deleted
+        //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
+        List<ReservationEntity> listOReservationEntities = query.getResultList();
+        LocalDateTime currentDate = LocalDateTime.now();
+        boolean toDisable = false;
+        for (ReservationEntity res : listOReservationEntities) {
+            if (res.getReservationStartDate().isAfter(currentDate) && res.getRoomRateName().equals(roomRate.getRoomRateName())) {
+                toDisable = true;
+                break;
+            }
+        }
 
-        Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeName = :inName").setParameter("inName", roomRate.getRoomTypeEntity().getRoomTypeName());
-        List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
-        if (query.getResultList().size() > 0) {
+        
+        if (toDisable) {
             try {
                 //means roomRate still in use so you should disable it so no new rooms can be created with that room type
                 disableRoomRate(roomRate);
@@ -179,6 +192,5 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
 
         return msg;
     }
-
 
 }
