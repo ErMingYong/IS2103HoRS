@@ -351,25 +351,7 @@ public class HotelOperationModule {
 
         newRoom.setRoomFloor(roomFloor);
         newRoom.setRoomNumber(roomNumber);
-//        boolean flag = true;
-//        while (flag) {
-//            System.out.print("Enter Room Floor> ");
-//            roomFloor = scanner.nextInt();
-//
-//            System.out.print("Enter Room Number> ");
-//            roomNumber = scanner.nextInt();
-//
-//            try {
-//                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
-//            } catch (RoomNotFoundException ex) {
-//                newRoom.setRoomFloor(roomFloor);
-//                newRoom.setRoomNumber(roomNumber);
-//                flag = false;
-//            }
-//
-//            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
-//
-//        }
+
         scanner.nextLine();
         System.out.println("-------------------------------");
         //Cannot set disabled, by default in creation should be false for isDisabled
@@ -448,25 +430,6 @@ public class HotelOperationModule {
         roomToUpdate.setRoomFloor(roomFloor);
         roomToUpdate.setRoomNumber(roomNumber);
 
-//        while (true) {
-//            System.out.print("Enter New Room Floor> ");
-//            roomFloor = scanner.nextInt();
-//
-//            System.out.print("Enter New Room Number> ");
-//            roomNumber = scanner.nextInt();
-//
-//            roomToUpdate.setRoomFloor(roomFloor);
-//            roomToUpdate.setRoomNumber(roomNumber);
-//
-////            try {
-////                RoomEntity existingRoom = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
-////            } catch (RoomNotFoundException ex) {
-////                roomToUpdate.setRoomFloor(scanner.nextInt());
-////                roomToUpdate.setRoomNumber(scanner.nextInt());
-////                break;
-////            }
-//            System.out.println("Room Floor and Number already exist! Cannot create duplicate room!");
-//        }
         RoomTypeEntity retrievedRoomType = null;
         scanner.nextLine();
         while (true) {
