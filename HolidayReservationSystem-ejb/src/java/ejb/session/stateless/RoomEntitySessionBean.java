@@ -139,6 +139,9 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             boolean isNotUsed = false;
             try {
                 RoomEntity room = retrieveRoomByRoomFloorAndRoomNumber(roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
+                if (roomEntity.getRoomId() == room.getRoomId()) {
+                    isNotUsed = true;
+                }
             } catch (RoomNotFoundException ex) {
                 isNotUsed = true;
             }
