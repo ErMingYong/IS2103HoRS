@@ -76,6 +76,7 @@ public class FrontOfficeModule {
             System.out.println("2: Check-in Guest");
             System.out.println("3: Check-out Guest");
             System.out.println("4: Exit");
+            response = 0;
 
             while (response < 1 || response > 4) {
                 response = scanner.nextInt();
@@ -153,8 +154,19 @@ public class FrontOfficeModule {
             }
             break;
         }
+        int noRooms = 0;
+        while (true) {
+            noRooms = 0;
+            System.out.println("Please select number of rooms to book>");
+            noRooms = scanner.nextInt();
+            if (noRooms > 0) {
+                break;
+            } else {
+                System.out.println("Please select a valid number above 0!");
+            }
+        }
         
-        
+        //HashMap<String, HashMap<String, BigDecimal>> map = 
 
         try {
             RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
