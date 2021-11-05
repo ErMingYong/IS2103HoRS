@@ -16,13 +16,20 @@ import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.RoomTypeEntity;
+import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.ConstraintViolation;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.InputDataValidationException;
+import util.exception.InsufficientRoomsAvailableException;
 import util.exception.InvalidAccessRightException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomTypeNotFoundException;
@@ -103,7 +110,6 @@ public class FrontOfficeModule {
 
     public void doWalkInSearch() {
         Scanner scanner = new Scanner(System.in);
-        Integer response = 0;
 
         System.out.println("*** Hotel Management Client :: Front Office Module :: Do Walk In Search ***\n");
         System.out.print("Enter Room Type Name> ");
@@ -165,32 +171,46 @@ public class FrontOfficeModule {
                 System.out.println("Please select a valid number above 0!");
             }
         }
-        
-        //HashMap<String, HashMap<String, BigDecimal>> map = 
 
+        System.out.println("");
+        System.out.println("------------------------");
+        System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
+        System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+        HashMap<String, HashMap<String, BigDecimal>> map;
         try {
-            RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomType.getRoomTypeName(), roomType.getDescription(), roomType.getSize(), roomType.getBed(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled(), roomType.getRanking());
-            System.out.println("------------------------");
-            System.out.println("1: Update Room Type");
-            System.out.println("2: Delete Room Type");
-            System.out.println("3: Back\n");
-            System.out.print("> ");
-            response = 0;
-            while (response < 1 || response > 2) {
-                response = scanner.nextInt();
-                if (response == 1) {
-                    //doUpdateRoomType(roomType);
-                } else if (response == 2) {
-                    break;
-                } else {
-                    System.out.println("Invalid option, please try again!\n");
+            map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypes(reservationStartDate, reservationEndDate, noRooms);
+            List<String> listOfKeys = new ArrayList<>(map.keySet());
+
+            while (true) {
+                int counter = 1;
+                for (String roomType : listOfKeys) {
+                    HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
+                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    counter += 1;
                 }
+                System.out.println("------------------------");
+                Integer response = 0;
+                System.out.println("1: Reserve room/s (Walk-In)");
+                System.out.println("2: Back\n");
+                while (response < 1 || response > 2) {
+                    response = scanner.nextInt();
+                    if (response == 1) {
+                        doWalkInReserve(map);
+                    } else if (response == 2) {
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!\n");
+                    }
+                }
+                break;
             }
 
-        } catch (RoomTypeNotFoundException ex) {
-            System.out.println("Room Type Name: " + roomTypeName + " does not exist");
+        } catch (InsufficientRoomsAvailableException ex) {
+            System.out.println("Insufficient rooms are available from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
         }
     }
+    
+        private void doWalkInReserve(HashMap<String, HashMap<String, BigDecimal>> map) {
+            
+        }
 }
