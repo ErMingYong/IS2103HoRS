@@ -30,7 +30,7 @@ public class RoomTypeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomTypeId;
-    @Column(nullable = false, length = 32)
+    @Column(nullable = false, length = 32, unique = true)
     @NotNull
     @Size(min = 1, max = 32)
     private String roomTypeName;

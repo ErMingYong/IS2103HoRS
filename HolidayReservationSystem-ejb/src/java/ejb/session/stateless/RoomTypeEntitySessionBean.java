@@ -105,29 +105,41 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     @Override
-    public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, UpdateRoomTypeException, InputDataValidationException {
+    public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, InputDataValidationException, RoomTypeNameExistException {
         if (roomTypeEntity != null && roomTypeEntity.getRoomTypeId() != null) {
             Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomTypeEntity);
+            
+            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.roomTypeName = :inName").setParameter("inName", roomTypeEntity.getRoomTypeName());
+            boolean isNameUsed = false;
+            try {
+                RoomTypeEntity roomType = (RoomTypeEntity) query.getSingleResult();
+                if (!roomType.getRoomTypeId().equals(roomTypeEntity.getRoomTypeId())) {
+                    isNameUsed = true;
+                }
+            } catch (NoResultException ex) {
+                isNameUsed = false;
+            }
+            
+            if (isNameUsed) {
+                throw new RoomTypeNameExistException();
+            }
+            
 
             if (constraintViolations.isEmpty()) {
                 RoomTypeEntity roomTypeEntityToUpdate = retrieveRoomTypeByRoomTypeId(roomTypeEntity.getRoomTypeId());
 
-                if (roomTypeEntityToUpdate.getRoomTypeName().equals(roomTypeEntity.getRoomTypeName())) {
-                    roomTypeEntityToUpdate.setDescription(roomTypeEntity.getDescription());
-                    roomTypeEntityToUpdate.setSize(roomTypeEntity.getSize());
-                    roomTypeEntityToUpdate.setBed(roomTypeEntity.getBed());
-                    roomTypeEntityToUpdate.setCapacity(roomTypeEntity.getCapacity());
-                    roomTypeEntityToUpdate.setAmenities(roomTypeEntity.getAmenities());
-                    //RED FLAG
-                    if (roomTypeEntityToUpdate.getRanking() != roomTypeEntity.getRanking()) {
-                        roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
-                        updateRankings(roomTypeEntity, roomTypeEntity.getRanking());
-                    }
-                    // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
-                    //cannot set isDisabled through this method as well
-                } else {
-                    throw new UpdateRoomTypeException("Username of roomType record to be updated does not match the existing record");
+                roomTypeEntityToUpdate.setDescription(roomTypeEntity.getDescription());
+                roomTypeEntityToUpdate.setSize(roomTypeEntity.getSize());
+                roomTypeEntityToUpdate.setBed(roomTypeEntity.getBed());
+                roomTypeEntityToUpdate.setCapacity(roomTypeEntity.getCapacity());
+                roomTypeEntityToUpdate.setAmenities(roomTypeEntity.getAmenities());
+                //RED FLAG
+                if (roomTypeEntityToUpdate.getRanking() != roomTypeEntity.getRanking()) {
+                    roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
+                    updateRankings(roomTypeEntity, roomTypeEntity.getRanking());
                 }
+                // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
+                //cannot set isDisabled through this method as well
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }

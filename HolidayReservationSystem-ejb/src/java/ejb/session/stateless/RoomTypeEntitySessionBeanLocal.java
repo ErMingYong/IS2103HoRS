@@ -31,7 +31,7 @@ public interface RoomTypeEntitySessionBeanLocal {
 
     public void deleteRoomType(Long roomTypeId) throws RoomTypeNotFoundException;
 
-    public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, UpdateRoomTypeException, InputDataValidationException;
+    public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, InputDataValidationException, RoomTypeNameExistException;
 
     public void disableRoomType(RoomTypeEntity roomTypeToDisable) throws UnknownPersistenceException;
 }

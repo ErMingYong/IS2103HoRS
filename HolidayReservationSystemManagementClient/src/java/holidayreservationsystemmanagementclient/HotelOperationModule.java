@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -267,12 +269,13 @@ public class HotelOperationModule {
             roomType.setAmenities(input);
         }
 
-        System.out.print("Enter Room Type Ranking (blank if no change)> ");
+        System.out.print("Enter Room Type Ranking (Original Rank: " + roomType.getRanking() + ")> ");
         int rank = 0;
         rank = scanner.nextInt();
         if (rank > 0) {
             roomType.setRanking(rank);
         }
+        scanner.nextLine();
 
         Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomType);
 
@@ -281,15 +284,18 @@ public class HotelOperationModule {
                 roomTypeEntitySessionBeanRemote.updateRoomType(roomType);
                 Long updatedRoomTypeId = roomType.getRoomTypeId();
                 System.out.println("Room Type updated successfully!: " + updatedRoomTypeId + "\n");
-            } catch (UpdateRoomTypeException | RoomTypeNotFoundException ex) {
+            } catch (RoomTypeNotFoundException ex) {
                 System.out.println("An error has occurred while updating product: " + ex.getMessage() + "\n");
             } catch (InputDataValidationException ex) {
                 System.out.println(ex.getMessage() + "\n");
 
+            } catch (RoomTypeNameExistException ex) {
+                System.out.println("RoomType Name inputted is already being used by another Room Type!");
             }
         } else {
             showInputDataValidationErrorsForRoomTypeEntity(constraintViolations);
         }
+        System.out.println("-------------------------------");
     }
 
     private void doDeleteRoomType(RoomTypeEntity roomType) {
@@ -319,7 +325,7 @@ public class HotelOperationModule {
 
         List<RoomTypeEntity> roomTypeEntities = roomTypeEntitySessionBeanRemote.retrieveAllRoomTypes();
         System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
-            
+
         for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
             System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled(), roomTypeEntity.getRanking());
         }
@@ -571,10 +577,10 @@ public class HotelOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Rooms ***\n");
 
         List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRooms();
-        System.out.printf("%15s%15s\n", "Room Floor", "Room Number");
+        System.out.printf("%15s%15s%15s%15s\n", "Room Floor", "Room Number", "Room Type", "Room Status");
 
         for (RoomEntity roomEntity : roomEntities) {
-            System.out.printf("%15d%15d\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
+            System.out.printf("%15d%15d%15s%15s\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber(), roomEntity.getRoomTypeEntity().getRoomTypeName(), roomEntity.getRoomStatusEnum());
         }
 
         System.out.print("Press any key to continue...> ");
@@ -636,25 +642,6 @@ public class HotelOperationModule {
                 break;
             }
 
-//            while (true) {
-//                System.out.println("Please Enter Date To View> ");
-//                System.out.println("------------------------");
-//                System.out.println("Please Enter Day of Date To View>   (please select from 01 - 31)");
-//                String day = scanner.nextLine();
-//                System.out.println("Please Enter Month of Date To View>   (please select from 01 - 12)");
-//                String month = scanner.nextLine();
-//                System.out.println("Please Enter Year of Date To View>   (please select from 2000 - 2999)");
-//                String year = scanner.nextLine();
-//                String date = year + "-" + month + "-" + day;
-//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//                try {
-//                    dateToView = LocalDateTime.parse(date, formatter);
-//                } catch (DateTimeParseException ex) {
-//                    System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
-//                    continue;
-//                }
-//                break;
-//            }
             List<ExceptionReportEntity> listOfReports = exceptionReportEntitySessionBeanRemote.retrieveExceptionReportsByTypeAndDate(exceptionReportTypeEnum, dateToView);
             if (listOfReports.isEmpty()) {
                 System.out.println("No Exception Report Of " + exceptionReportTypeEnum.name() + " for the date " + dateToView.toString());

@@ -298,7 +298,7 @@ public class SalesOperationModule {
 
         System.out.println("Would you like to update Room Rate Per Night? Press 1 to update and any other key to skip");
         String input = scanner.nextLine().trim();
-        if (input == "1") {
+        if (input.equals("1")) {
             System.out.println("Enter Room Rate Rate per Night> ");
             int ratePerNight = 0;
             ratePerNight = scanner.nextInt();
@@ -310,7 +310,7 @@ public class SalesOperationModule {
         scanner.nextLine();
         System.out.println("Would you like to update Valid Period? Press 1 to update and any other key to skip");
         input = scanner.nextLine();
-        if (input == "1") {
+        if (input.equals("1")) {
             LocalDateTime dateToView;
             while (true) {
                 System.out.println("");

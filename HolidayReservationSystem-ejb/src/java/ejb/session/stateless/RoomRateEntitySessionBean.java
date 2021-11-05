@@ -120,6 +120,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         //Get reservations that are ongoing where the roomrate is the name of the roomrate to be deleted
         //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
         Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
+
         List<ReservationEntity> listOReservationEntities = query.getResultList();
         LocalDateTime currentDate = LocalDateTime.now();
         boolean toDisable = false;
@@ -130,7 +131,6 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
             }
         }
 
-        
         if (toDisable) {
             try {
                 //means roomRate still in use so you should disable it so no new rooms can be created with that room type
@@ -166,20 +166,18 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
             if (constraintViolations.isEmpty()) {
                 RoomRateEntity roomRateToUpdate = retrieveRoomRateById(roomRate.getRoomRateId());
 
-                if (roomRateToUpdate.getRoomRateName().equals(roomRateToUpdate.getRoomRateName())) {
-                    roomRateToUpdate.setRatePerNight(roomRateToUpdate.getRatePerNight());
-                    roomRateToUpdate.setValidPeriodFrom(roomRateToUpdate.getValidPeriodFrom());
-                    roomRateToUpdate.setValidPeriodTo(roomRateToUpdate.getValidPeriodTo());
-                    // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
-                    //cannot set isDisabled through this method as well
-                } else {
-                    throw new UpdateRoomRateException("Username of roomRate record to be updated does not match the existing record");
-                }
+                roomRateToUpdate.setRoomRateName(roomRate.getRoomRateName());
+                roomRateToUpdate.setRatePerNight(roomRate.getRatePerNight());
+                roomRateToUpdate.setValidPeriodFrom(roomRate.getValidPeriodFrom());
+                roomRateToUpdate.setValidPeriodTo(roomRate.getValidPeriodTo());
+                // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
+                //cannot set isDisabled through this method as well
+
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
         } else {
-            throw new RoomRateNotFoundException("RoomType ID not provided for roomRate to be updated");
+            throw new RoomRateNotFoundException("Room Rate not found");
         }
     }
 
