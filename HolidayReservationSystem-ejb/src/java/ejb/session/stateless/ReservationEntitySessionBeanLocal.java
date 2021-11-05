@@ -6,9 +6,13 @@
 package ejb.session.stateless;
 
 import entity.ReservationEntity;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.InputDataValidationException;
+import util.exception.InsufficientRoomsAvailableException;
 import util.exception.ReservationNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateReservationException;
@@ -31,5 +35,7 @@ public interface ReservationEntitySessionBeanLocal {
     public void deleteReservation(ReservationEntity reservationToDelete) throws ReservationNotFoundException;
 
     public void updateReservation(ReservationEntity reservation) throws ReservationNotFoundException, UpdateReservationException, InputDataValidationException;
+
+    public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
     
 }

@@ -156,9 +156,11 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         }
     }
 
+    @Override
     public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException {
 
         //GET TOTAL INVENTORY
+        //must take into account unavailable rooms as well, as they may just be unavailable now and not the day that you wan to make the booking
         Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE);
         List<RoomEntity> listOfRoomEntities = query.getResultList();
         HashMap<String, HashMap<String, BigDecimal>> map = new HashMap<>();
@@ -178,12 +180,14 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
         //GET NUMBER OF ROOM USED
         int numRoomsUsed = 0;
+        //COMPUTATION HEAVY how to only get reservations that endDate is already over so i dont have a huge ass list
+
         query = em.createQuery("SELECT r FROM ReservationEntity r ");
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();
             LocalDateTime resEndDate = res.getReservationEndDate();
-            if (resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate) || resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate) || resStartDate.isAfter(startDate) && resEndDate.isBefore(endDate)) {
+            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate) || resStartDate.isAfter(startDate) && resEndDate.isBefore(endDate)) {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
                 BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
                 numRoomsUsed += 1;
