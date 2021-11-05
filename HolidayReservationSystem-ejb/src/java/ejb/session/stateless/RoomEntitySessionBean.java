@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.RoomEntity;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -139,7 +140,7 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             boolean isNotUsed = false;
             try {
                 RoomEntity room = retrieveRoomByRoomFloorAndRoomNumber(roomEntity.getRoomFloor(), roomEntity.getRoomNumber());
-                if (roomEntity.getRoomId() == room.getRoomId()) {
+                if (roomEntity.getRoomId().equals(room.getRoomId())) {
                     isNotUsed = true;
                 }
             } catch (RoomNotFoundException ex) {

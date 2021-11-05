@@ -377,6 +377,7 @@ public class HotelOperationModule {
                 retrievedRoomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomType);
             } catch (RoomTypeNotFoundException ex) {
                 System.out.println("Room Type Name not found, please try again!");
+                continue;
             }
 
             if (retrievedRoomType.getIsDisabled() == true) {
