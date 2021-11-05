@@ -23,46 +23,46 @@ import javax.ejb.EJB;
 public class Main {
 
     @EJB
-    private static TransactionEntitySessionBeanRemote transactionEntitySessionBean;
+    private static TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     @EJB
-    private static RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBean;
+    private static RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
 
     @EJB
-    private static RoomRateEntitySessionBeanRemote roomRateEntitySessionBean;
+    private static RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
 
     @EJB
-    private static RoomEntitySessionBeanRemote roomEntitySessionBean;
+    private static RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
 
     @EJB
-    private static ReservationEntitySessionBeanRemote reservationEntitySessionBean;
+    private static ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
 
     @EJB
-    private static PartnerEntitySessionBeanRemote partnerEntitySessionBean;
+    private static PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
 
     @EJB
-    private static GuestEntitySessionBeanRemote guestEntitySessionBean;
+    private static GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
 
     @EJB
-    private static ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBean;
+    private static ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
 
     @EJB
-    private static EmployeeEntitySessionBeanRemote employeeEntitySessionBean;
+    private static EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        MainApp mainApp = new MainApp(employeeEntitySessionBean,
-                exceptionReportEntitySessionBean,
-                guestEntitySessionBean,
-                partnerEntitySessionBean,
-                reservationEntitySessionBean,
-                roomEntitySessionBean,
-                roomRateEntitySessionBean,
-                roomTypeEntitySessionBean,
-                transactionEntitySessionBean);
+        MainApp mainApp = new MainApp(employeeEntitySessionBeanRemote,
+                exceptionReportEntitySessionBeanRemote,
+                guestEntitySessionBeanRemote,
+                partnerEntitySessionBeanRemote,
+                reservationEntitySessionBeanRemote,
+                roomEntitySessionBeanRemote,
+                roomRateEntitySessionBeanRemote,
+                roomTypeEntitySessionBeanRemote,
+                transactionEntitySessionBeanRemote);
 
         mainApp.runApp();
     }

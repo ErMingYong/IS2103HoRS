@@ -9,8 +9,11 @@ import entity.GuestEntity;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.GuestNotFoundException;
+import util.exception.GuestUsernameExistException;
+import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateGuestException;
 
 /**
  *
@@ -19,7 +22,7 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface GuestEntitySessionBeanLocal {
 
-    public Long createNewGuest(GuestEntity newGuest) throws UnknownPersistenceException;
+    public Long createNewGuest(GuestEntity newGuest) throws UnknownPersistenceException, GuestUsernameExistException, InputDataValidationException;
 
     public List<GuestEntity> retrieveAllGuest();
 
@@ -29,7 +32,7 @@ public interface GuestEntitySessionBeanLocal {
 
     public void deleteGuest(Long guestId) throws GuestNotFoundException;
 
-    public void updateGuest(Long oldGuestId, GuestEntity newGuest) throws GuestNotFoundException, UnknownPersistenceException;
+    public void updateGuest(GuestEntity guestEntity) throws GuestNotFoundException, UpdateGuestException, InputDataValidationException;
 
     public GuestEntity guestLogin(String guestUsername, String guestPassword) throws GuestNotFoundException, InvalidLoginCredentialException;
     

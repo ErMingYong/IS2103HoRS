@@ -22,6 +22,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.GuestNotFoundException;
+import util.exception.GuestUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -32,15 +33,15 @@ import util.exception.UnknownPersistenceException;
  */
 public class MainApp {
 
-    private TransactionEntitySessionBeanRemote transactionEntitySessionBean;
-    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBean;
-    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBean;
-    private RoomEntitySessionBeanRemote roomEntitySessionBean;
-    private ReservationEntitySessionBeanRemote reservationEntitySessionBean;
-    private PartnerEntitySessionBeanRemote partnerEntitySessionBean;
-    private GuestEntitySessionBeanRemote guestEntitySessionBean;
-    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBean;
-    private EmployeeEntitySessionBeanRemote employeeEntitySessionBean;
+    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
+    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
+    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
+    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
+    private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
+    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
+    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
+    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
+    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
 
     private GuestOperationModule guestOperationModule;
 
@@ -56,15 +57,15 @@ public class MainApp {
 
     public MainApp(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote) {
         this();
-        this.transactionEntitySessionBean = transactionEntitySessionBean;
-        this.roomTypeEntitySessionBean = roomTypeEntitySessionBean;
-        this.roomRateEntitySessionBean = roomRateEntitySessionBean;
-        this.roomEntitySessionBean = roomEntitySessionBean;
-        this.reservationEntitySessionBean = reservationEntitySessionBean;
-        this.partnerEntitySessionBean = partnerEntitySessionBean;
-        this.guestEntitySessionBean = guestEntitySessionBean;
-        this.exceptionReportEntitySessionBean = exceptionReportEntitySessionBean;
-        this.employeeEntitySessionBean = employeeEntitySessionBean;
+        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
+        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
+        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
+        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
+        this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
+        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
+        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
+        this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
+        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
     }
 
     public void runApp() {
@@ -74,10 +75,11 @@ public class MainApp {
         while (true) {
             System.out.println("*** Welcome to Holiday Reservation System Reservation Client ***\n");
             System.out.println("1: Login");
-            System.out.println("2: Exit\n");
+            System.out.println("2: Register as Guest");
+            System.out.println("3: Exit\n");
             response = 0;
 
-            while (response < 1 || response > 2) {
+            while (response < 1 || response > 3) {
                 System.out.println("> ");
                 response = scanner.nextInt();
 
@@ -86,15 +88,15 @@ public class MainApp {
                         doLogin();
                         System.out.println("Login successful!\n");
 
-                        guestOperationModule = new GuestOperationModule(employeeEntitySessionBean,
-                                exceptionReportEntitySessionBean,
-                                guestEntitySessionBean,
-                                partnerEntitySessionBean,
-                                reservationEntitySessionBean,
-                                roomEntitySessionBean,
-                                roomRateEntitySessionBean,
-                                roomTypeEntitySessionBean,
-                                transactionEntitySessionBean,
+                        guestOperationModule = new GuestOperationModule(employeeEntitySessionBeanRemote,
+                                exceptionReportEntitySessionBeanRemote,
+                                guestEntitySessionBeanRemote,
+                                partnerEntitySessionBeanRemote,
+                                reservationEntitySessionBeanRemote,
+                                roomEntitySessionBeanRemote,
+                                roomRateEntitySessionBeanRemote,
+                                roomTypeEntitySessionBeanRemote,
+                                transactionEntitySessionBeanRemote,
                                 currentGuest);
                         mainMenu();
                     } catch (InvalidLoginCredentialException ex) {
@@ -110,7 +112,7 @@ public class MainApp {
                 }
             }
 
-            if (response == 2) {
+            if (response == 3) {
                 break;
             }
         }
@@ -125,11 +127,11 @@ public class MainApp {
         System.out.println("Enter Username: ");
         username = scanner.nextLine().trim();
         System.out.println("Enter Password: ");
-        username = scanner.nextLine().trim();
+        password = scanner.nextLine().trim();
 
         if (username.length() > 0 && password.length() > 0) {
             try {
-                currentGuest = guestEntitySessionBean.guestLogin(username, password);
+                currentGuest = guestEntitySessionBeanRemote.guestLogin(username, password);
             } catch (GuestNotFoundException ex) {
                 System.out.println("User account does not exist");
             }
@@ -147,6 +149,7 @@ public class MainApp {
             System.out.println("You are login as " + currentGuest.getFirstName() + " " + currentGuest.getLastName() + " with " + currentGuest.getPassportNumber().toString() + " passport number\n");
             System.out.println("1: Guest Operation Module");
             System.out.println("2: Logout\n");
+            response = 0;
 
             while (response < 1 || response > 2) {
                 System.out.println("> ");
@@ -192,11 +195,15 @@ public class MainApp {
 
         if (constraintViolations.isEmpty()) {
             try {
-                Long newGuestId = guestEntitySessionBean.createNewGuest(newGuest);
+                Long newGuestId = guestEntitySessionBeanRemote.createNewGuest(newGuest);
                 System.out.println("------------------------");
                 System.out.println("New guest created successfully!: " + newGuestId + "\n");
+            } catch (GuestUsernameExistException ex) {
+                System.out.println("An error has occurred while creating the new guest!: The user name already exist\n");
             } catch (UnknownPersistenceException ex) {
-                System.out.println("An unknown error has occurred while creating the new employee!: " + ex.getMessage() + "\n");
+                System.out.println("An unknown error has occurred while creating the new guest!: " + ex.getMessage() + "\n");
+            } catch (InputDataValidationException ex) {
+                System.out.println(ex.getMessage() + "\n");
             }
         } else {
             showInputDataValidationErrorsForGuestEntity(constraintViolations);

@@ -6,19 +6,25 @@
 package ejb.session.stateless;
 
 import entity.GuestEntity;
-import entity.ReservationEntity;
 import java.util.List;
+import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.GuestNotFoundException;
+import util.exception.GuestUsernameExistException;
+import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
+import util.exception.UpdateGuestException;
 
 /**
  *
@@ -41,14 +47,28 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
     }
 
     @Override
-    public Long createNewGuest(GuestEntity newGuest) throws UnknownPersistenceException {
-        try {
-            em.persist(newGuest);
-            em.flush();
+    public Long createNewGuest(GuestEntity newGuest) throws UnknownPersistenceException, GuestUsernameExistException, InputDataValidationException {
+        Set<ConstraintViolation<GuestEntity>> constraintViolations = validator.validate(newGuest);
 
-            return newGuest.getUserEntityId();
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
+        if (constraintViolations.isEmpty()) {
+            try {
+                em.persist(newGuest);
+                em.flush();
+
+                return newGuest.getUserEntityId();
+            } catch (PersistenceException ex) {
+                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
+                        throw new GuestUsernameExistException(ex.getMessage());
+                    } else {
+                        throw new UnknownPersistenceException(ex.getMessage());
+                    }
+                } else {
+                    throw new UnknownPersistenceException(ex.getMessage());
+                }
+            }
+        } else {
+            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
     }
 
@@ -77,16 +97,12 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
 
     @Override
     public GuestEntity retrieveGuestByUsername(String guestUsername) throws GuestNotFoundException {
-        GuestEntity guestEntity = (GuestEntity) em.createQuery(
-                "SELECT g FROM Guest g WHERE g.username = :inUsername")
-                .setParameter("inUsername", guestUsername)
-                .getSingleResult();
-        if (guestEntity != null) {
-            guestEntity.getReservationEntities();
+        Query query = em.createQuery("SELECT g FROM GuestEntity g WHERE g.username = :inUsername").setParameter("inUsername", guestUsername);
 
-            return guestEntity;
-        } else {
-            throw new GuestNotFoundException("Guest Username " + guestUsername + " does not exist");
+        try {
+            return (GuestEntity) query.getSingleResult();
+        } catch (NoResultException | NonUniqueResultException ex) {
+            throw new GuestNotFoundException("Staff Username " + guestUsername + " does not exist!");
         }
     }
 
@@ -102,18 +118,28 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
     }
 
     @Override
-    public void updateGuest(Long oldGuestId, GuestEntity newGuest) throws GuestNotFoundException, UnknownPersistenceException {
-        try {
-            GuestEntity oldGuest = retrieveGuestById(oldGuestId);
-            Long newGuestId = createNewGuest(newGuest);
+    public void updateGuest(GuestEntity guestEntity) throws GuestNotFoundException, UpdateGuestException, InputDataValidationException {
+        if (guestEntity != null && guestEntity.getUserEntityId() != null) {
+            Set<ConstraintViolation<GuestEntity>> constraintViolations = validator.validate(guestEntity);
 
-            newGuest.setReservationEntities(oldGuest.getReservationEntities());
-            oldGuest.getReservationEntities().clear();
-            em.remove(oldGuest);
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
-        } catch (GuestNotFoundException ex) {
-            throw new GuestNotFoundException("Guest ID " + oldGuestId + " does not exist");
+            if (constraintViolations.isEmpty()) {
+                GuestEntity guestEntityToUpdate = retrieveGuestById(guestEntity.getUserEntityId());
+
+                if (guestEntityToUpdate.getUserName().equals(guestEntity.getUserName())) {
+                    guestEntityToUpdate.setFirstName(guestEntity.getFirstName());
+                    guestEntityToUpdate.setLastName(guestEntity.getLastName());
+                    guestEntityToUpdate.setEmail(guestEntity.getEmail());
+                    guestEntityToUpdate.setContactNumber(guestEntity.getContactNumber());
+                    guestEntityToUpdate.setPassportNumber(guestEntity.getPassportNumber());
+                    // Username and password are deliberately NOT updated to demonstrate that client is not allowed to update account credential through this business method
+                } else {
+                    throw new UpdateGuestException("Username of guest record to be updated does not match the existing record");
+                }
+            } else {
+                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+            }
+        } else {
+            throw new GuestNotFoundException("Employee ID not provided for employee to be updated");
         }
     }
 
@@ -134,5 +160,15 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
         } catch (GuestNotFoundException ex) {
             throw new GuestNotFoundException("Guest Username " + guestUsername + " does not exist");
         }
+    }
+
+    private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<GuestEntity>> constraintViolations) {
+        String msg = "Input data validation error!:";
+
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
+        }
+
+        return msg;
     }
 }

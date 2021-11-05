@@ -26,7 +26,7 @@ public interface ReservationEntitySessionBeanLocal {
 
     public ReservationEntity retrieveReservationById(Long reservationId) throws ReservationNotFoundException;
 
-    public ReservationEntity retrieveReservationByPassportNumber(String passportNumber) throws ReservationNotFoundException;
+    public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber);
 
     public void deleteReservation(ReservationEntity reservationToDelete) throws ReservationNotFoundException;
 

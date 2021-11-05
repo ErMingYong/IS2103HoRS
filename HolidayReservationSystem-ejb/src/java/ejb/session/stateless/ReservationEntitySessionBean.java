@@ -11,7 +11,6 @@ import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -101,16 +100,19 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public ReservationEntity retrieveReservationByPassportNumber(String passportNumber) throws ReservationNotFoundException {
+    public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber) {
 
-        ReservationEntity reservation = (ReservationEntity) em.createQuery(
+        Query query = em.createQuery(
                 "SELECT r FROM ReservationEntity r WHERE r.passportNumber = :passportNum")
-                .setParameter("passportNum", passportNumber)
-                .getSingleResult();
+                .setParameter("passportNum", passportNumber);
 
-        reservation.getRoomEntity();
-        reservation.getTransactionEntity();
-        return reservation;
+        List<ReservationEntity> reservations = query.getResultList();
+
+        for (ReservationEntity reservation : reservations) {
+            reservation.getRoomEntity();
+            reservation.getTransactionEntity();
+        }
+        return reservations;
     }
 
     @Override
