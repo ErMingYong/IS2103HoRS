@@ -110,16 +110,14 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         }
     }
 
-    //need to decide how to delete
-    //i think need find rooms that are available and use the room type which the room rate contains
-    //if have then disable
-    //or else delete
+
     @Override
     public void deleteRoomRate(Long roomRateId) throws RoomRateNotFoundException {
 
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
 
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity r WHERE r.roomRate.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
+        Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeName = :inName").setParameter("inName", roomRate.getRoomTypeEntity().getRoomTypeName());
+        List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
         if (query.getResultList().size() > 0) {
             try {
                 //means roomRate still in use so you should disable it so no new rooms can be created with that room type

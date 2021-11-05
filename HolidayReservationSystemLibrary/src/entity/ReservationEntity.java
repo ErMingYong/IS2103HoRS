@@ -64,6 +64,10 @@ public class ReservationEntity implements Serializable {
     @NotNull
     @Size(min = 1, max = 32)
     private String roomTypeName;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String roomRateName;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
@@ -251,6 +255,20 @@ public class ReservationEntity implements Serializable {
      */
     public void setTransactionEntity(TransactionEntity transactionEntity) {
         this.transactionEntity = transactionEntity;
+    }
+
+    /**
+     * @return the roomRateName
+     */
+    public String getRoomRateName() {
+        return roomRateName;
+    }
+
+    /**
+     * @param roomRateName the roomRateName to set
+     */
+    public void setRoomRateName(String roomRateName) {
+        this.roomRateName = roomRateName;
     }
 
     @Override
