@@ -121,7 +121,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                     //RED FLAG
                     if (roomTypeEntityToUpdate.getRanking() != roomTypeEntity.getRanking()) {
                         roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
-
                     }
                     // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
                     //cannot set isDisabled through this method as well
@@ -148,7 +147,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                 //means roomType still in use so you should disable it so no new rooms can be created with that room type
                 disableRoomType(roomType);
             } catch (UnknownPersistenceException ex) {
-                System.out.println("Unknown Error");;
+                System.out.println("Unknown Error");
             }
         } else {
 
@@ -224,8 +223,8 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
 //    }
     //for when you update a roomtype
     private void changeRankingWhenInclude(RoomTypeEntity roomTypeEntity, Integer rank) {
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt");
-        List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList().sort((RoomTypeEntity x, RoomTypeEntity y) -> x.getRanking().compareTo(y.getRanking()));
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
+        List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         listOfRoomTypeEntities.add(rank - 1, roomTypeEntity);
 
         int counter = 1;
@@ -236,8 +235,8 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     private void changeRankingWhenRemove(Integer rank) {
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt");
-        List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList().sort((RoomTypeEntity x, RoomTypeEntity y) -> x.getRanking().compareTo(y.getRanking()));
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
+        List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         listOfRoomTypeEntities.remove(rank - 1);
         int counter = 1;
         for (RoomTypeEntity roomType : listOfRoomTypeEntities) {
