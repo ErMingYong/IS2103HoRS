@@ -121,6 +121,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                     //RED FLAG
                     if (roomTypeEntityToUpdate.getRanking() != roomTypeEntity.getRanking()) {
                         roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
+                        updateRankings(roomTypeEntity, roomTypeEntity.getRanking());
                     }
                     // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
                     //cannot set isDisabled through this method as well
@@ -146,13 +147,17 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
             try {
                 //means roomType still in use so you should disable it so no new rooms can be created with that room type
                 disableRoomType(roomType);
+                //set ranking to the lowest so that it wont affect the roomtype ranking during allocation
+                updateRankings(roomType, 1);
             } catch (UnknownPersistenceException ex) {
                 System.out.println("Unknown Error");
             }
         } else {
 
             if (roomType != null) {
+                changeRankingWhenRemove(roomType.getRanking());
                 em.remove(roomType);
+                
             } else {
                 throw new RoomTypeNotFoundException("Room Type ID " + roomTypeId + " does not exist");
             }
@@ -179,48 +184,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         return msg;
     }
 
-//    //for when you create a new roomtype
-//    private void incrementRankingsAbove(Integer rank) {
-//
-//        int highestRank = rank;
-//        while (true) {
-//            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.ranking =:inRanking ")
-//                    .setParameter("inRanking", highestRank);
-//            List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
-//
-//            if (listOfRoomTypeEntities.size() != 0) {
-//                highestRank += 1;
-//            } else {
-//                break;
-//            }
-//        }
-//
-//        while (highestRank > rank) {
-//            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.ranking =:inRanking ")
-//                    .setParameter("inRanking", highestRank);
-//            List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
-//            for (RoomTypeEntity roomTypeEntity : listOfRoomTypeEntities) {
-//                roomTypeEntity.setRanking(rank + 1);
-//            }
-//            highestRank -= 1;
-//        }
-//    }
-//
-//    //for when you create a new roomtype
-//    private void decrementRankingsAbove(Integer rank) {
-//        while (true) {
-//            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.ranking =:inRanking ")
-//                    .setParameter("inRanking", rank);
-//            List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
-//            if (listOfRoomTypeEntities.size() == 0) {
-//                break;
-//            }
-//            for (RoomTypeEntity roomTypeEntity : listOfRoomTypeEntities) {
-//                roomTypeEntity.setRanking(rank - 1);
-//            }
-//            rank += 1;
-//        }
-//    }
     //for when you update a roomtype
     private void changeRankingWhenInclude(RoomTypeEntity roomTypeEntity, Integer rank) {
         Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
@@ -238,6 +201,19 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
         List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         listOfRoomTypeEntities.remove(rank - 1);
+        int counter = 1;
+        for (RoomTypeEntity roomType : listOfRoomTypeEntities) {
+            roomType.setRanking(counter);
+            counter += 1;
+        }
+    }
+
+    private void updateRankings(RoomTypeEntity roomTypeEntity, Integer rank) {
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
+        List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
+        listOfRoomTypeEntities.remove(roomTypeEntity);
+        listOfRoomTypeEntities.add(rank - 1, roomTypeEntity);
+
         int counter = 1;
         for (RoomTypeEntity roomType : listOfRoomTypeEntities) {
             roomType.setRanking(counter);
