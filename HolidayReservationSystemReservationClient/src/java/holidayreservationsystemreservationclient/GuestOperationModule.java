@@ -78,7 +78,8 @@ public class GuestOperationModule {
                 response = scanner.nextInt();
 
                 if (response == 1) {
-                    //RESERVE HOTEL ROOM
+                    //SEARCH HOTEL ROOM
+                    //INCLUDES -> RESERVER HOTEL ROOM
                 } else if (response == 2) {
                     //VIEW MY RESERVATION DETAILS
                     doViewMyReservationDetails();

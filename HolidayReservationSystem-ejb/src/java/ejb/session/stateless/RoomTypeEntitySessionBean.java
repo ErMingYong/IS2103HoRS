@@ -186,7 +186,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
 
     //for when you update a roomtype
     private void changeRankingWhenInclude(RoomTypeEntity roomTypeEntity, Integer rank) {
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.ranking");
         List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         if (rank <= 0) {
             rank = 1;
@@ -203,7 +203,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     private void changeRankingWhenRemove(Integer rank) {
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.ranking");
         List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         listOfRoomTypeEntities.remove(rank - 1);
         int counter = 1;
@@ -214,7 +214,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     private void updateRankings(RoomTypeEntity roomTypeEntity, Integer rank) {
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.getRanking");
+        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt ORDER BY rt.ranking");
         List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
         listOfRoomTypeEntities.remove(roomTypeEntity);
         if (rank <= 0) {
