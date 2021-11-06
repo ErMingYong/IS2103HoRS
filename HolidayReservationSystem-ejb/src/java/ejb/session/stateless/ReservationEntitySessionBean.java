@@ -164,7 +164,9 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         //GET TOTAL INVENTORY
         //must take into account unavailable rooms as well, as they may just be unavailable now and not the day that you wan to make the booking
         Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE);
+        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE);
         List<RoomEntity> listOfRoomEntities = query.getResultList();
+        listOfRoomEntities.addAll(queryUnavailable.getResultList());
         HashMap<String, HashMap<String, BigDecimal>> map = new HashMap<>();
         int totalRooms = listOfRoomEntities.size();
         for (RoomEntity room : listOfRoomEntities) {
@@ -182,9 +184,9 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
         //GET NUMBER OF ROOM USED
         int numRoomsUsed = 0;
-        //COMPUTATION HEAVY how to only get reservations that endDate is already over so i dont have a huge ass list
-
-        query = em.createQuery("SELECT r FROM ReservationEntity r ");
+        //COMPUTATION HEAVY how to only get reservations that endDate is already over so i dont have a huge list
+        //query only reservations that HAVE NOT PASSED (NOW < ENDDATE)
+        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate").setParameter("inDate", LocalDateTime.now());
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();

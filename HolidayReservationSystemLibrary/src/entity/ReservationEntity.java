@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -68,6 +69,10 @@ public class ReservationEntity implements Serializable {
     @NotNull
     @Size(min = 1, max = 32)
     private String roomRateName;
+    @Column(nullable = false)
+    @NotNull
+    @DecimalMin(value = "0")
+    private BigDecimal reservationPrice;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
@@ -269,6 +274,20 @@ public class ReservationEntity implements Serializable {
      */
     public void setRoomRateName(String roomRateName) {
         this.roomRateName = roomRateName;
+    }
+
+    /**
+     * @return the reservationPrice
+     */
+    public BigDecimal getReservationPrice() {
+        return reservationPrice;
+    }
+
+    /**
+     * @param reservationPrice the reservationPrice to set
+     */
+    public void setReservationPrice(BigDecimal reservationPrice) {
+        this.reservationPrice = reservationPrice;
     }
 
     @Override

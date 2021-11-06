@@ -136,7 +136,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
                 //means roomRate still in use so you should disable it so no new rooms can be created with that room type
                 disableRoomRate(roomRate);
             } catch (UnknownPersistenceException ex) {
-                System.out.println("Unknown Error");;
+                System.out.println("Unknown Error");
             }
         } else {
 
