@@ -123,7 +123,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
         //Get reservations that are ongoing where the roomrate is the name of the roomrate to be deleted
         //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
-        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateEntity.roomRateId = :inName").setParameter("inName", roomRate.getRoomRateId());
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateEntities.contains(:inName) = true").setParameter("inName", roomRate);
 
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
 //        LocalDateTime currentDate = LocalDateTime.now();
