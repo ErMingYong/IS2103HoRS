@@ -33,10 +33,6 @@ public class ReservationEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationEntityId;
-    @Column(nullable = false, unique = true)
-    @NotNull
-    @Digits(integer = 8, fraction = 0)
-    private Long reservationNumber;
     @NotNull
     @Column(nullable = false)
     private LocalDateTime reservationStartDate;
@@ -90,7 +86,6 @@ public class ReservationEntity implements Serializable {
 
     public ReservationEntity(Long reservationNumber, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
         this();
-        this.reservationNumber = reservationNumber;
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
         this.firstName = firstName;
@@ -294,20 +289,6 @@ public class ReservationEntity implements Serializable {
      */
     public void setReservationPrice(BigDecimal reservationPrice) {
         this.reservationPrice = reservationPrice;
-    }
-
-    /**
-     * @return the reservationNumber
-     */
-    public Long getReservationNumber() {
-        return reservationNumber;
-    }
-
-    /**
-     * @param reservationNumber the reservationNumber to set
-     */
-    public void setReservationNumber(Long reservationNumber) {
-        this.reservationNumber = reservationNumber;
     }
 
     @Override
