@@ -76,7 +76,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         List<ReservationEntity> listReservations = query.getResultList();
         for (ReservationEntity reservationEntity : listReservations) {
             reservationEntity.getRoomEntity();
-            reservationEntity.getTransactionEntity();
         }
 
         return listReservations;
@@ -89,9 +88,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         if (reservation != null) {
             if (reservation.getRoomEntity() != null) {
                 reservation.getRoomEntity();
-            }
-            if (reservation.getTransactionEntity() != null) {
-                reservation.getTransactionEntity();
             }
             return reservation;
         } else {
@@ -110,7 +106,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
         for (ReservationEntity reservation : reservations) {
             reservation.getRoomEntity();
-            reservation.getTransactionEntity();
         }
         return reservations;
     }
@@ -120,7 +115,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         ReservationEntity reservation = retrieveReservationById(reservationToDelete.getReservationEntityId());
         if (reservation != null) {
             reservation.setRoomEntity(null);
-            reservation.setTransactionEntity(null);
 
             em.remove(reservation);
         } else {

@@ -76,15 +76,20 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     @Override
     public List<RoomTypeEntity> retrieveAllRoomTypes() {
         Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt");
-
-        return query.getResultList();
+        List<RoomTypeEntity> listOfRoomTypeEntities = query.getResultList();
+        for (RoomTypeEntity roomType : listOfRoomTypeEntities) {
+            roomType.getRoomRateEntities().size();
+            roomType.getRoomEntities().size();
+        }
+        return listOfRoomTypeEntities;
     }
 
     @Override
     public RoomTypeEntity retrieveRoomTypeByRoomTypeId(Long roomTypeId) throws RoomTypeNotFoundException {
 
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
-
+        roomType.getRoomRateEntities().size();
+        roomType.getRoomEntities().size();
         if (roomType != null) {
             return roomType;
         } else {
@@ -97,8 +102,12 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
 
         Query query = em.createQuery("SELECT r FROM RoomTypeEntity r WHERE r.roomTypeName = :inName");
         query.setParameter("inName", roomTypeName);
+
         try {
-            return (RoomTypeEntity) query.getSingleResult();
+            RoomTypeEntity roomType = (RoomTypeEntity) query.getSingleResult();
+            roomType.getRoomRateEntities().size();
+            roomType.getRoomEntities().size();
+            return roomType;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new RoomTypeNotFoundException("Room Type Name " + roomTypeName + " does not exist");
         }
@@ -108,7 +117,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, InputDataValidationException, RoomTypeNameExistException {
         if (roomTypeEntity != null && roomTypeEntity.getRoomTypeId() != null) {
             Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomTypeEntity);
-            
+
             Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.roomTypeName = :inName").setParameter("inName", roomTypeEntity.getRoomTypeName());
             boolean isNameUsed = false;
             try {
@@ -119,11 +128,10 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
             } catch (NoResultException ex) {
                 isNameUsed = false;
             }
-            
+
             if (isNameUsed) {
                 throw new RoomTypeNameExistException();
             }
-            
 
             if (constraintViolations.isEmpty()) {
                 RoomTypeEntity roomTypeEntityToUpdate = retrieveRoomTypeByRoomTypeId(roomTypeEntity.getRoomTypeId());

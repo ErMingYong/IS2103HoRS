@@ -13,7 +13,7 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-import ejb.session.stateless.TransactionEntitySessionBeanRemote;
+//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import javax.ejb.EJB;
 
 /**
@@ -22,8 +22,8 @@ import javax.ejb.EJB;
  */
 public class Main {
 
-    @EJB
-    private static TransactionEntitySessionBeanRemote transactionEntitySessionBean;
+//    @EJB
+//    private static TransactionEntitySessionBeanRemote transactionEntitySessionBean;
 
     @EJB
     private static RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBean;
@@ -61,8 +61,7 @@ public class Main {
                 reservationEntitySessionBean,
                 roomEntitySessionBean,
                 roomRateEntitySessionBean,
-                roomTypeEntitySessionBean,
-                transactionEntitySessionBean);
+                roomTypeEntitySessionBean);
         
         mainApp.runApp();
     }

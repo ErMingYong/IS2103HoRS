@@ -13,7 +13,7 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-import ejb.session.stateless.TransactionEntitySessionBeanRemote;
+//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.GuestEntity;
 import java.util.Scanner;
 import java.util.Set;
@@ -33,7 +33,7 @@ import util.exception.UnknownPersistenceException;
  */
 public class MainApp {
 
-    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
+//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
@@ -55,9 +55,9 @@ public class MainApp {
         this.validator = validatorFactory.getValidator();
     }
 
-    public MainApp(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote) {
+    public MainApp(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote ) {
         this();
-        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
+//        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
         this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
@@ -96,7 +96,6 @@ public class MainApp {
                                 roomEntitySessionBeanRemote,
                                 roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
-                                transactionEntitySessionBeanRemote,
                                 currentGuest);
                         mainMenu();
                     } catch (InvalidLoginCredentialException ex) {

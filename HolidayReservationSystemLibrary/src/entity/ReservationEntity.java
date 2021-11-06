@@ -14,10 +14,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -77,8 +75,8 @@ public class ReservationEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private TransactionEntity transactionEntity;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    private RoomRateEntity roomRateEntity;
 
     public ReservationEntity() {
         this.isCheckedIn = false;
@@ -250,20 +248,6 @@ public class ReservationEntity implements Serializable {
     }
 
     /**
-     * @return the transactionEntity
-     */
-    public TransactionEntity getTransactionEntity() {
-        return transactionEntity;
-    }
-
-    /**
-     * @param transactionEntity the transactionEntity to set
-     */
-    public void setTransactionEntity(TransactionEntity transactionEntity) {
-        this.transactionEntity = transactionEntity;
-    }
-
-    /**
      * @return the roomRateName
      */
     public String getRoomRateName() {
@@ -289,6 +273,20 @@ public class ReservationEntity implements Serializable {
      */
     public void setReservationPrice(BigDecimal reservationPrice) {
         this.reservationPrice = reservationPrice;
+    }
+
+    /**
+     * @return the roomRateEntity
+     */
+    public RoomRateEntity getRoomRateEntity() {
+        return roomRateEntity;
+    }
+
+    /**
+     * @param roomRateEntity the roomRateEntity to set
+     */
+    public void setRoomRateEntity(RoomRateEntity roomRateEntity) {
+        this.roomRateEntity = roomRateEntity;
     }
 
     @Override

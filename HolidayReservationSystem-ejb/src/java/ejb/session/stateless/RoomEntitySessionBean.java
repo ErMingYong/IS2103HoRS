@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.RoomEntity;
+import entity.RoomTypeEntity;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
@@ -62,7 +63,8 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
             try {
                 em.persist(newRoomEntity);
                 em.flush();
-
+                RoomTypeEntity rt = em.find(RoomTypeEntity.class, newRoomEntity.getRoomTypeEntity().getRoomTypeId());
+                rt.getRoomEntities().add(newRoomEntity);
                 return newRoomEntity.getRoomId();
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
@@ -113,6 +115,7 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
                 .setParameter("rmNumber", roomNumber);
         try {
             RoomEntity room = (RoomEntity) query.getSingleResult();
+            room.getRoomTypeEntity();
             return room;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new RoomNotFoundException("Room Floor " + roomFloor + "and Number " + roomNumber + " does not exist");
@@ -123,8 +126,7 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     public void deleteRoom(RoomEntity roomToDelete) throws RoomNotFoundException {
         RoomEntity room = retrieveRoomByRoomId(roomToDelete.getRoomId());
         if (room != null) {
-            room.setRoomTypeEntity(null);
-
+            room.getRoomTypeEntity().getRoomEntities().remove(room);
             em.remove(room);
         } else {
             throw new RoomNotFoundException("Room ID " + room.getRoomId() + " does not exist");

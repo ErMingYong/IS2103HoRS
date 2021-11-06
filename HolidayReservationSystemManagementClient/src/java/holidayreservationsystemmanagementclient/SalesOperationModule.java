@@ -13,7 +13,7 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-import ejb.session.stateless.TransactionEntitySessionBeanRemote;
+//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
@@ -51,7 +51,7 @@ public class SalesOperationModule {
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
+//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     private EmployeeEntity currentEmployee;
 
@@ -63,7 +63,7 @@ public class SalesOperationModule {
         validator = validatorFactory.getValidator();
     }
 
-    public SalesOperationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+    public SalesOperationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
@@ -73,7 +73,7 @@ public class SalesOperationModule {
         this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
         this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
+//        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
     }
 
@@ -207,6 +207,7 @@ public class SalesOperationModule {
             }
         }
         newRoomRate.setRoomTypeEntity(retrievedRoomType);
+        newRoomRate.setRoomTypeName(retrievedRoomType.getRoomTypeName());
 
         while (true) {
             System.out.print("Select Access Right:");

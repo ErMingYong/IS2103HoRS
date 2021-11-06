@@ -63,6 +63,11 @@ public class RoomTypeEntity implements Serializable {
     @Min(1)
     private Integer ranking;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomTypeEntity")
+    private List<RoomEntity> roomEntities;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomTypeEntity")
+    private List<RoomRateEntity> roomRateEntities;
+
     public RoomTypeEntity() {
         this.isDisabled = false;
     }
@@ -196,6 +201,34 @@ public class RoomTypeEntity implements Serializable {
      */
     public void setRanking(Integer ranking) {
         this.ranking = ranking;
+    }
+
+    /**
+     * @return the roomEntities
+     */
+    public List<RoomEntity> getRoomEntities() {
+        return roomEntities;
+    }
+
+    /**
+     * @param roomEntities the roomEntities to set
+     */
+    public void setRoomEntities(List<RoomEntity> roomEntities) {
+        this.roomEntities = roomEntities;
+    }
+
+    /**
+     * @return the roomRateEntities
+     */
+    public List<RoomRateEntity> getRoomRateEntities() {
+        return roomRateEntities;
+    }
+
+    /**
+     * @param roomRateEntities the roomRateEntities to set
+     */
+    public void setRoomRateEntities(List<RoomRateEntity> roomRateEntities) {
+        this.roomRateEntities = roomRateEntities;
     }
 
     @Override

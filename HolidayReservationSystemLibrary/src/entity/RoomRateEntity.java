@@ -38,6 +38,10 @@ public class RoomRateEntity implements Serializable {
     @NotNull
     @Size(min = 1, max = 32)
     private String roomRateName;
+    @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String roomTypeName;
     @DecimalMin("10.00")
     @DecimalMax("9999.00")
     @NotNull
@@ -58,15 +62,17 @@ public class RoomRateEntity implements Serializable {
     private RoomRateTypeEnum roomRateTypeEnum;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(nullable = false)
     private RoomTypeEntity roomTypeEntity;
 
     public RoomRateEntity() {
         this.isDisabled = false;
     }
 
-    public RoomRateEntity(String roomRateName, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo, RoomRateTypeEnum roomRateTypeEnum) {
+    public RoomRateEntity(String roomRateName, String roomTypeName, BigDecimal ratePerNight, LocalDateTime validPeriodFrom, LocalDateTime validPeriodTo, RoomRateTypeEnum roomRateTypeEnum) {
         this();
         this.roomRateName = roomRateName;
+        this.roomTypeName = roomTypeName;
         this.ratePerNight = ratePerNight;
         this.validPeriodFrom = validPeriodFrom;
         this.validPeriodTo = validPeriodTo;
@@ -138,8 +144,8 @@ public class RoomRateEntity implements Serializable {
     public void setRoomRateId(Long roomRateId) {
         this.roomRateId = roomRateId;
     }
-    
-        /**
+
+    /**
      * @return the roomRateTypeEnum
      */
     public RoomRateTypeEnum getRoomRateTypeEnum() {
@@ -165,6 +171,20 @@ public class RoomRateEntity implements Serializable {
      */
     public void setRoomTypeEntity(RoomTypeEntity roomTypeEntity) {
         this.roomTypeEntity = roomTypeEntity;
+    }
+
+    /**
+     * @return the roomTypeName
+     */
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    /**
+     * @param roomTypeName the roomTypeName to set
+     */
+    public void setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
     }
 
     @Override

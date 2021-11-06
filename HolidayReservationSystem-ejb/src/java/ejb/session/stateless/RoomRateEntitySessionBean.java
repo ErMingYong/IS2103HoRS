@@ -8,7 +8,6 @@ package ejb.session.stateless;
 import entity.ReservationEntity;
 import entity.RoomRateEntity;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -107,7 +106,9 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         Query query = em.createQuery("SELECT r FROM RoomRateEntity r WHERE r.roomRateName = :inRoomRateName");
         query.setParameter("inRoomRateName", roomRateName);
         try {
-            return (RoomRateEntity) query.getSingleResult();
+            RoomRateEntity roomRate = (RoomRateEntity) query.getSingleResult();
+            roomRate.getRoomTypeEntity();
+            return roomRate;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new RoomRateNotFoundException("Room Rate Name " + roomRateName + " does not exist");
         }
@@ -119,7 +120,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
         //Get reservations that are ongoing where the roomrate is the name of the roomrate to be deleted
         //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
-        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateName = :inName").setParameter("inName", roomRate.getRoomRateName());
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateEntity.roomRateId = :inName").setParameter("inName", roomRate.getRoomRateId());
 
         List<ReservationEntity> listOReservationEntities = query.getResultList();
         LocalDateTime currentDate = LocalDateTime.now();
