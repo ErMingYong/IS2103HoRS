@@ -355,7 +355,7 @@ public class FrontOfficeModule {
         System.out.println("Please Enter Guest Passport Number");
         String passportNumber = scanner.nextLine();
 
-        reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(passportNumber);
+        List<ReservationEntity> listOfReservations = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(passportNumber);
 
     }
 
