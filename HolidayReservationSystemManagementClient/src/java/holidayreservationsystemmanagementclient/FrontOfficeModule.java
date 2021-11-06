@@ -16,6 +16,7 @@ import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 //import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.ReservationEntity;
+import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -293,6 +294,7 @@ public class FrontOfficeModule {
                         System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                         counter += 1;
                         roomTypeNameList.add(roomType);
+
                     }
                 }
 
@@ -300,11 +302,16 @@ public class FrontOfficeModule {
                 System.out.println("Please select room type for reservation number: " + numReservation);
                 Integer response = 0;
                 String selectedRoomType = "";
+                List<String> listOfRoomRateNames = new ArrayList<>();
                 while (response < 1 || response > roomTypeNameList.size()) {
                     response = 0;
                     response = scanner.nextInt();
                     if (response < 1 || response > roomTypeNameList.size()) {
                         selectedRoomType = roomTypeNameList.get(response - 1);
+                        HashMap<String, BigDecimal> selectedRoomTypeMap = map.get(selectedRoomType);
+                        listOfRoomRateNames = new ArrayList<>(selectedRoomTypeMap.keySet());
+                        listOfRoomRateNames.remove("bestPrice");
+                        listOfRoomRateNames.remove("numRoomType");
                         newReservation.setRoomTypeName(selectedRoomType);
                         newReservation.setReservationPrice(map.get(selectedRoomType).get("bestPrice"));
                         totalPayment.add(newReservation.getReservationPrice());
@@ -314,7 +321,7 @@ public class FrontOfficeModule {
                     }
 
                 }
-                reservationEntitySessionBeanRemote.createNewReservation(newReservation);
+                reservationEntitySessionBeanRemote.createNewReservation(newReservation, listOfRoomRateNames);
 
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(selectedRoomType);
                 stringToBigDecimalMap.put("numRoomType", stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE));
@@ -344,13 +351,12 @@ public class FrontOfficeModule {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** Hotel Management Client :: Front Office Module :: Guest Check In ***\n");
         System.out.println("");
-        
+
         System.out.println("Please Enter Guest Passport Number");
         String passportNumber = scanner.nextLine();
-        
+
         reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(passportNumber);
-        
-        
+
     }
 
     public void doCheckOut() {

@@ -11,9 +11,13 @@ import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +32,7 @@ import util.enumeration.RoomStatusEnum;
 import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.ReservationNotFoundException;
+import util.exception.RoomRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateReservationException;
 
@@ -37,6 +42,9 @@ import util.exception.UpdateReservationException;
  */
 @Stateless
 public class ReservationEntitySessionBean implements ReservationEntitySessionBeanRemote, ReservationEntitySessionBeanLocal {
+
+    @EJB
+    private RoomRateEntitySessionBeanLocal roomRateEntitySessionBeanLocal;
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
@@ -51,12 +59,48 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         validator = validatorFactory.getValidator();
     }
 
+    public class Pair<F, S> {
+
+        private F first; //first member of pair
+        private S second; //second member of pair
+
+        public Pair(F first, S second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        public void setFirst(F first) {
+            this.first = first;
+        }
+
+        public void setSecond(S second) {
+            this.second = second;
+        }
+
+        public F getFirst() {
+            return first;
+        }
+
+        public S getSecond() {
+            return second;
+        }
+    }
+
     @Override
-    public Long createNewReservation(ReservationEntity newReservation) throws UnknownPersistenceException, InputDataValidationException {
+    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
 
         if (constraintViolations.isEmpty()) {
             try {
+                for (String roomRateName : listOfRoomRateNames) {
+                    RoomRateEntity roomRate;
+                    try {
+                        roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
+                        newReservation.getRoomRateEntities().add(roomRate);
+                    } catch (RoomRateNotFoundException ex) {
+                        Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 em.persist(newReservation);
                 em.flush();
 
@@ -76,6 +120,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         List<ReservationEntity> listReservations = query.getResultList();
         for (ReservationEntity reservationEntity : listReservations) {
             reservationEntity.getRoomEntity();
+            reservationEntity.getRoomRateEntities().size();
         }
 
         return listReservations;
@@ -171,7 +216,12 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
             } else {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = new HashMap<>();
                 stringToBigDecimalMap.put("numRoomType", BigDecimal.ONE);
-                stringToBigDecimalMap.put("bestPrice", calculatePriceOfStay(startDate, endDate, room.getRoomTypeEntity()));
+                Pair<List<RoomRateEntity>, BigDecimal> pair = calculatePriceOfStay(startDate, endDate, room.getRoomTypeEntity());
+
+                stringToBigDecimalMap.put("bestPrice", pair.getSecond());
+                for (RoomRateEntity roomRate : pair.getFirst()) {
+                    stringToBigDecimalMap.put(roomRate.getRoomRateName(), BigDecimal.ONE);
+                }
                 map.put(room.getRoomTypeEntity().getRoomTypeName(), stringToBigDecimalMap);
             }
         }
@@ -196,35 +246,38 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 stringToBigDecimalMap.put("numRoomType", newNum);
             }
         }
-
         if (totalRooms - numRoomsUsed < numRooms) {
             throw new InsufficientRoomsAvailableException();
         }
-
         return map;
     }
 
-    private BigDecimal calculatePriceOfStay(LocalDateTime startDate, LocalDateTime endDate, RoomTypeEntity roomTypeEntity) {
+    private Pair<List<RoomRateEntity>, BigDecimal> calculatePriceOfStay(LocalDateTime startDate, LocalDateTime endDate, RoomTypeEntity roomTypeEntity) {
         BigDecimal totalPrice = BigDecimal.ZERO;
         LocalDateTime currDate = startDate;
+
+        List<RoomRateEntity> list = new ArrayList<>();
         while (!currDate.isEqual(endDate)) {
-            Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity =: inRoomType AND rr.roomRateTypeEnum =:inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
+            Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId =: inRoomType AND rr.roomRateTypeEnum =:inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity.getRoomTypeId()).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
             List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
             BigDecimal lowest = BigDecimal.valueOf(99999);
+            RoomRateEntity lowestRoomRate = null;
             for (RoomRateEntity roomRate : listOfRoomRateEntities) {
 
                 if ((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
                         || currDate.isEqual(roomRate.getValidPeriodFrom()) || currDate.isEqual(roomRate.getValidPeriodTo())) {
                     if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
                         lowest = roomRate.getRatePerNight();
+                        lowestRoomRate = roomRate;
                     }
                 }
             }
             totalPrice.add(lowest);
+            list.add(lowestRoomRate);
             currDate.plusDays(1);
         }
-
-        return totalPrice;
+        Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
+        return pair;
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ReservationEntity>> constraintViolations) {

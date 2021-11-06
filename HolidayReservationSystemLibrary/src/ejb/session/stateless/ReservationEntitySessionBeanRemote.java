@@ -24,7 +24,7 @@ import util.exception.UpdateReservationException;
 @Remote
 public interface ReservationEntitySessionBeanRemote {
 
-    public Long createNewReservation(ReservationEntity newReservation) throws UnknownPersistenceException, InputDataValidationException;
+    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws UnknownPersistenceException, InputDataValidationException;
 
     public List<ReservationEntity> retrieveAllReservations();
 

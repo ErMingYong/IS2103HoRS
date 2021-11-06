@@ -8,12 +8,15 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
@@ -64,10 +67,6 @@ public class ReservationEntity implements Serializable {
     @NotNull
     @Size(min = 1, max = 32)
     private String roomTypeName;
-    @Column(nullable = false, length = 32)
-    @NotNull
-    @Size(min = 1, max = 32)
-    private String roomRateName;
     @Column(nullable = false)
     @NotNull
     @DecimalMin(value = "0")
@@ -75,14 +74,15 @@ public class ReservationEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    private RoomRateEntity roomRateEntity;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomRateEntity")
+    private List<RoomRateEntity> roomRateEntity;
 
     public ReservationEntity() {
         this.isCheckedIn = false;
+        this.roomRateEntity = new ArrayList<RoomRateEntity>();
     }
 
-    public ReservationEntity(Long reservationNumber, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
+    public ReservationEntity(LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
         this();
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
@@ -248,20 +248,6 @@ public class ReservationEntity implements Serializable {
     }
 
     /**
-     * @return the roomRateName
-     */
-    public String getRoomRateName() {
-        return roomRateName;
-    }
-
-    /**
-     * @param roomRateName the roomRateName to set
-     */
-    public void setRoomRateName(String roomRateName) {
-        this.roomRateName = roomRateName;
-    }
-
-    /**
      * @return the reservationPrice
      */
     public BigDecimal getReservationPrice() {
@@ -278,14 +264,14 @@ public class ReservationEntity implements Serializable {
     /**
      * @return the roomRateEntity
      */
-    public RoomRateEntity getRoomRateEntity() {
+    public List<RoomRateEntity> getRoomRateEntities() {
         return roomRateEntity;
     }
 
     /**
      * @param roomRateEntity the roomRateEntity to set
      */
-    public void setRoomRateEntity(RoomRateEntity roomRateEntity) {
+    public void setRoomRateEntities(List<RoomRateEntity> roomRateEntity) {
         this.roomRateEntity = roomRateEntity;
     }
 

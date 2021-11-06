@@ -24,7 +24,7 @@ import util.exception.UpdateReservationException;
 @Local
 public interface ReservationEntitySessionBeanLocal {
 
-    public Long createNewReservation(ReservationEntity newReservation) throws UnknownPersistenceException, InputDataValidationException;
+    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws UnknownPersistenceException, InputDataValidationException;
 
     public List<ReservationEntity> retrieveAllReservations();
 
@@ -37,5 +37,5 @@ public interface ReservationEntitySessionBeanLocal {
     public void updateReservation(ReservationEntity reservation) throws ReservationNotFoundException, UpdateReservationException, InputDataValidationException;
 
     public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
-    
+
 }

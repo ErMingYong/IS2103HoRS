@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.ReservationEntity;
 import entity.RoomRateEntity;
+import entity.RoomTypeEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +60,8 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
             try {
                 em.persist(newRoomRate);
                 em.flush();
+                RoomTypeEntity roomType = em.find(RoomTypeEntity.class, newRoomRate.getRoomTypeEntity().getRoomTypeId());
+                roomType.getRoomRateEntities().add(newRoomRate);
 
                 return newRoomRate.getRoomRateId();
             } catch (PersistenceException ex) {
@@ -122,16 +125,18 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
         Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomRateEntity.roomRateId = :inName").setParameter("inName", roomRate.getRoomRateId());
 
-        List<ReservationEntity> listOReservationEntities = query.getResultList();
-        LocalDateTime currentDate = LocalDateTime.now();
+        List<ReservationEntity> listOfReservationEntities = query.getResultList();
+//        LocalDateTime currentDate = LocalDateTime.now();
         boolean toDisable = false;
-        for (ReservationEntity res : listOReservationEntities) {
-            if (res.getReservationStartDate().isAfter(currentDate) && res.getRoomRateName().equals(roomRate.getRoomRateName())) {
-                toDisable = true;
-                break;
-            }
+//        for (ReservationEntity res : listOReservationEntities) {
+//            if (res.getReservationStartDate().isAfter(currentDate) && res.getRoomRateName().equals(roomRate.getRoomRateName())) {
+//                toDisable = true;
+//                break;
+//            }
+//        }
+        if (listOfReservationEntities.size() > 0) {
+            toDisable = true;
         }
-
         if (toDisable) {
             try {
                 //means roomRate still in use so you should disable it so no new rooms can be created with that room type
@@ -152,7 +157,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
     @Override
     public void disableRoomRate(RoomRateEntity roomRateToDisable) throws UnknownPersistenceException {
         try {
-            roomRateToDisable.setIsDisabled(Boolean.TRUE);
+            roomRateToDisable.setIsDisabled(true);
         } catch (PersistenceException ex) {
             throw new UnknownPersistenceException(ex.getMessage());
         }
