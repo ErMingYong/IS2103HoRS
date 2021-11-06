@@ -356,5 +356,6 @@ public class FrontOfficeModule {
     public void doCheckOut() {
         //check guest out by taking in the room they stayed in
         // set the room to be Available again
+        //detach room from reservation
     }
 }
