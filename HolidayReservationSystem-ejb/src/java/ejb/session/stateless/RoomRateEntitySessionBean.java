@@ -11,6 +11,8 @@ import entity.RoomTypeEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -26,6 +28,7 @@ import javax.validation.ValidatorFactory;
 import util.exception.InputDataValidationException;
 import util.exception.RoomRateNameExistException;
 import util.exception.RoomRateNotFoundException;
+import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateRoomRateException;
 
@@ -37,7 +40,7 @@ import util.exception.UpdateRoomRateException;
 public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemote, RoomRateEntitySessionBeanLocal {
 
     @EJB
-    private RoomTypeEntitySessionBeanLocal roomRateEntitySessionBeanLocal;
+    private RoomTypeEntitySessionBeanLocal roomTypeEntitySessionBeanLocal;
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
@@ -170,15 +173,26 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
             Set<ConstraintViolation<RoomRateEntity>> constraintViolations = validator.validate(roomRate);
 
             if (constraintViolations.isEmpty()) {
-                RoomRateEntity roomRateToUpdate = retrieveRoomRateById(roomRate.getRoomRateId());
+                try {
+                    RoomRateEntity roomRateToUpdate = retrieveRoomRateById(roomRate.getRoomRateId());
+                    roomRateToUpdate.getRoomTypeEntity().getRoomRateEntities().remove(roomRateToUpdate);
+                    RoomTypeEntity roomTypeToUpdate = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName(roomRate.getRoomTypeName());
 
-                roomRateToUpdate.setRoomRateName(roomRate.getRoomRateName());
-                roomRateToUpdate.setRatePerNight(roomRate.getRatePerNight());
-                roomRateToUpdate.setValidPeriodFrom(roomRate.getValidPeriodFrom());
-                roomRateToUpdate.setValidPeriodTo(roomRate.getValidPeriodTo());
-                // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
-                //cannot set isDisabled through this method as well
+                    roomRateToUpdate.setRoomTypeEntity(roomTypeToUpdate);
+                    roomTypeToUpdate.getRoomRateEntities().add(roomRateToUpdate);
 
+                    roomRateToUpdate.setRoomRateName(roomRate.getRoomRateName());
+                    roomRateToUpdate.setRoomTypeName(roomRate.getRoomTypeName());
+                    roomRateToUpdate.setRatePerNight(roomRate.getRatePerNight());
+                    roomRateToUpdate.setValidPeriodFrom(roomRate.getValidPeriodFrom());
+                    roomRateToUpdate.setValidPeriodTo(roomRate.getValidPeriodTo());
+                    roomRateToUpdate.setRoomRateTypeEnum(roomRate.getRoomRateTypeEnum());
+
+                    // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
+                    //cannot set isDisabled through this method as well
+                } catch (RoomTypeNotFoundException ex) {
+                    System.out.println("Room Type not found");
+                }
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }

@@ -393,6 +393,7 @@ public class SalesOperationModule {
 
         if (retrievedRoomType != null) {
             roomRate.setRoomTypeEntity(retrievedRoomType);
+            roomRate.setRoomTypeName(retrievedRoomType.getRoomTypeName());
         }
 
         while (true) {
