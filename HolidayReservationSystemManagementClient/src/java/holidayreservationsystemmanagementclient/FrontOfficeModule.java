@@ -80,6 +80,7 @@ public class FrontOfficeModule {
             System.out.println("2: Check-in Guest");
             System.out.println("3: Check-out Guest");
             System.out.println("4: Exit");
+            System.out.println("");
             response = 0;
 
             while (response < 1 || response > 4) {
@@ -139,7 +140,7 @@ public class FrontOfficeModule {
         LocalDateTime reservationEndDate;
         while (true) {
             System.out.println("");
-            System.out.println("Please Enter Reservation Start Date> ");
+            System.out.println("Please Enter Reservation End Date> ");
             System.out.println("------------------------");
             System.out.println("Enter Day>     (please select from 01 - 31)");
             int day = scanner.nextInt();
@@ -169,7 +170,8 @@ public class FrontOfficeModule {
                 System.out.println("Please select a valid number above 0!");
             }
         }
-
+        scanner.nextLine();
+        System.out.println("Please wait while we retrieve the available room types...");
         HashMap<String, HashMap<String, BigDecimal>> map;
         try {
             map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypes(reservationStartDate, reservationEndDate, noRooms);
@@ -250,7 +252,7 @@ public class FrontOfficeModule {
             while (true) {
                 System.out.println("Enter Walk-In Guest's Contact Number>");
                 contactNumber = scanner.nextLine();
-                if (contactNumber.length() != 8) {
+                if (contactNumber.length() == 8) {
                     break;
                 } else {
                     System.out.println("Please input a valid Contact Number");
@@ -260,7 +262,7 @@ public class FrontOfficeModule {
             while (true) {
                 System.out.println("Enter Walk-In Guest's Passport Number>");
                 passportNumber = scanner.nextLine();
-                if (passportNumber.length() != 8) {
+                if (passportNumber.length() == 8) {
                     break;
                 } else {
                     System.out.println("Please input a valid Passport Number");
@@ -270,7 +272,7 @@ public class FrontOfficeModule {
             BigDecimal totalPayment = BigDecimal.ZERO;
             List<String> listOfKeys = new ArrayList<>(map.keySet());
             int numReservation = 1;
-            while (numRooms > numReservation) {
+            while (numRooms >= numReservation) {
                 ReservationEntity newReservation = new ReservationEntity();
                 newReservation.setFirstName(firstName);
                 newReservation.setLastName(lastName);
@@ -304,7 +306,7 @@ public class FrontOfficeModule {
                 while (response < 1 || response > roomTypeNameList.size()) {
                     response = 0;
                     response = scanner.nextInt();
-                    if (response < 1 || response > roomTypeNameList.size()) {
+                    if (response >= 1 && response <= roomTypeNameList.size()) {
                         selectedRoomType = roomTypeNameList.get(response - 1);
                         HashMap<String, BigDecimal> selectedRoomTypeMap = map.get(selectedRoomType);
                         listOfRoomRateNames = new ArrayList<>(selectedRoomTypeMap.keySet());
@@ -312,7 +314,7 @@ public class FrontOfficeModule {
                         listOfRoomRateNames.remove("numRoomType");
                         newReservation.setRoomTypeName(selectedRoomType);
                         newReservation.setReservationPrice(map.get(selectedRoomType).get("bestPrice"));
-                        totalPayment.add(newReservation.getReservationPrice());
+                        totalPayment = totalPayment.add(newReservation.getReservationPrice());
                     } else {
                         System.out.println("Invalid option, please try again!\n");
                         continue;

@@ -16,6 +16,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMin;
@@ -75,14 +77,16 @@ public class ReservationEntity implements Serializable {
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
     @OneToMany(fetch = FetchType.LAZY)//, mappedBy = "roomRateEntity")
-    private List<RoomRateEntity> roomRateEntity;
+    @JoinColumn(nullable = true)
+    private List<RoomRateEntity> roomRateEntities;
 
     public ReservationEntity() {
         this.isCheckedIn = false;
-        this.roomRateEntity = new ArrayList<RoomRateEntity>();
+        this.roomRateEntities = new ArrayList<RoomRateEntity>();
     }
 
-    public ReservationEntity(LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber) {
+
+    public ReservationEntity(LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber, String roomTypeName, BigDecimal reservationPrice) {
         this();
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
@@ -91,8 +95,11 @@ public class ReservationEntity implements Serializable {
         this.email = email;
         this.contactNumber = contactNumber;
         this.passportNumber = passportNumber;
+        this.roomTypeName = roomTypeName;
+        this.reservationPrice = reservationPrice;
     }
 
+    
     /**
      * @return the reservationEntityId
      */
@@ -265,14 +272,14 @@ public class ReservationEntity implements Serializable {
      * @return the roomRateEntity
      */
     public List<RoomRateEntity> getRoomRateEntities() {
-        return roomRateEntity;
+        return roomRateEntities;
     }
 
     /**
      * @param roomRateEntity the roomRateEntity to set
      */
-    public void setRoomRateEntities(List<RoomRateEntity> roomRateEntity) {
-        this.roomRateEntity = roomRateEntity;
+    public void setRoomRateEntities(List<RoomRateEntity> roomRateEntities) {
+        this.roomRateEntities = roomRateEntities;
     }
 
     @Override
