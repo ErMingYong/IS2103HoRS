@@ -24,7 +24,6 @@ import util.exception.UnknownPersistenceException;
  *
  * @author Koh Wen Jie
  */
-
 @Singleton
 @LocalBean
 @Startup
@@ -48,6 +47,11 @@ public class DataInitializationSessionBean {
     private void initializeData() {
         try {
             employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("manager", "1", "manager", "password", EmployeeAccessRightEnum.SYSTEM_ADMINISTRATOR));
+            employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("sysadmin", "1", "sysadmin", "password", EmployeeAccessRightEnum.SYSTEM_ADMINISTRATOR));
+            employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("opmanager", "1", "opmanager", "password", EmployeeAccessRightEnum.OPERATION_MANAGER));
+            employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("salesmanager", "1", "salesmanager", "password", EmployeeAccessRightEnum.SALES_MANAGER));
+            employeeEntitySessionBeanLocal.createNewEmployee(new EmployeeEntity("guestrelo", "1", "guestrelo", "password", EmployeeAccessRightEnum.GUEST_RELATION_OFFICER));
+
         } catch (UnknownPersistenceException | InputDataValidationException | EmployeeUsernameExistException ex) {
             ex.printStackTrace();
         }

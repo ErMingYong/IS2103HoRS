@@ -38,4 +38,6 @@ public interface ReservationEntitySessionBeanLocal {
 
     public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
 
+    public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate);
+
 }
