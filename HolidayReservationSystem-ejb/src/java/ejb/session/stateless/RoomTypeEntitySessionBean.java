@@ -117,17 +117,23 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, InputDataValidationException, RoomTypeNameExistException {
         if (roomTypeEntity != null && roomTypeEntity.getRoomTypeId() != null) {
             Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomTypeEntity);
-
+            //RoomTypeEntity roomType = em.find(RoomTypeEntity.class,roomTypeEntity.getRoomTypeId());
+                    
+            //check if new name is used already
             Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.roomTypeName = :inName").setParameter("inName", roomTypeEntity.getRoomTypeName());
             boolean isNameUsed = false;
-            try {
-                RoomTypeEntity roomType = (RoomTypeEntity) query.getSingleResult();
-                if (!roomType.getRoomTypeId().equals(roomTypeEntity.getRoomTypeId())) {
-                    isNameUsed = true;
-                }
-            } catch (NoResultException ex) {
-                isNameUsed = false;
+            
+            if (query.getResultList().size() > 0) {
+                isNameUsed = true;
             }
+//            try {
+//                RoomTypeEntity roomType = (RoomTypeEntity) query.getSingleResult();
+//                if (!roomType.getRoomTypeId().equals(roomTypeEntity.getRoomTypeId())) {
+//                    isNameUsed = true;
+//                }
+//            } catch (NoResultException ex) {
+//                isNameUsed = false;
+//            }
 
             if (isNameUsed) {
                 throw new RoomTypeNameExistException();
@@ -135,7 +141,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
 
             if (constraintViolations.isEmpty()) {
                 RoomTypeEntity roomTypeEntityToUpdate = retrieveRoomTypeByRoomTypeId(roomTypeEntity.getRoomTypeId());
-
+                roomTypeEntityToUpdate.setRoomTypeName(roomTypeEntity.getRoomTypeName());
                 roomTypeEntityToUpdate.setDescription(roomTypeEntity.getDescription());
                 roomTypeEntityToUpdate.setSize(roomTypeEntity.getSize());
                 roomTypeEntityToUpdate.setBed(roomTypeEntity.getBed());
