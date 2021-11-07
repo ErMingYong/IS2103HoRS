@@ -74,7 +74,7 @@ public class ReservationEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomRateEntity")
+    @OneToMany(fetch = FetchType.LAZY)//, mappedBy = "roomRateEntity")
     private List<RoomRateEntity> roomRateEntity;
 
     public ReservationEntity() {
