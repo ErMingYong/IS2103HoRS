@@ -81,6 +81,7 @@ public class GuestOperationModule {
                 if (response == 1) {
                     //SEARCH HOTEL ROOM
                     //INCLUDES -> RESERVER HOTEL ROOM
+                    doSearchHotelRoom();
                 } else if (response == 2) {
                     //VIEW MY RESERVATION DETAILS
                     doViewMyReservationDetails();
@@ -98,6 +99,10 @@ public class GuestOperationModule {
                 break;
             }
         }
+    }
+    
+    private void doSearchHotelRoom() {
+        
     }
 
     private void doViewMyReservationDetails() {
