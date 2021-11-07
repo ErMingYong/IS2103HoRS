@@ -112,8 +112,6 @@ public class FrontOfficeModule {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** Hotel Management Client :: Front Office Module :: Walk In Search ***\n");
-        System.out.print("Enter Room Type Name> ");
-        String roomTypeName = scanner.nextLine().trim();
 
         LocalDateTime reservationStartDate;
         while (true) {
