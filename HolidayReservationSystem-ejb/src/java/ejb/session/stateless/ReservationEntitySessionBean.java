@@ -167,7 +167,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
             reservation.getRoomEntity();
             reservation.getRoomRateEntities().size();
         }
-        
+
         return reservations;
 
     }
@@ -220,7 +220,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         //GET TOTAL INVENTORY
         //must take into account unavailable rooms as well, as they may just be unavailable now and not the day that you wan to make the booking
         Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE);
-        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE);
+        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE);
         List<RoomEntity> listOfRoomEntities = query.getResultList();
         listOfRoomEntities.addAll(queryUnavailable.getResultList());
         System.out.println("working here");
@@ -281,7 +281,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         List<RoomRateEntity> list = new ArrayList<>();
         while (currDate.isBefore(endDate)) {
             System.out.println("calc here 2");
-        while (!currDate.isEqual(endDate)) {
             Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum = :inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity.getRoomTypeId()).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
             List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
             BigDecimal lowest = BigDecimal.valueOf(99999);

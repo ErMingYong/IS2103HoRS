@@ -17,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -78,13 +79,13 @@ public class ReservationEntity implements Serializable {
     private RoomEntity roomEntity;
     @OneToMany(fetch = FetchType.LAZY)//, mappedBy = "roomRateEntity")
     @JoinColumn(nullable = true)
+//@JoinTable(name = "ReservationToRoomRates")
     private List<RoomRateEntity> roomRateEntities;
 
     public ReservationEntity() {
         this.isCheckedIn = false;
         this.roomRateEntities = new ArrayList<RoomRateEntity>();
     }
-
 
     public ReservationEntity(LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, String firstName, String lastName, String email, String contactNumber, String passportNumber, String roomTypeName, BigDecimal reservationPrice) {
         this();
@@ -99,7 +100,6 @@ public class ReservationEntity implements Serializable {
         this.reservationPrice = reservationPrice;
     }
 
-    
     /**
      * @return the reservationEntityId
      */

@@ -12,11 +12,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 
 /**
  *
@@ -39,15 +40,15 @@ public class GuestEntity extends UserEntity implements Serializable {
     @Column(nullable = false, length = 8, unique = true)
     @Size(min = 8, max = 8)
     private String passportNumber;
-    
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(nullable = true)
+    //@JoinTable(name = "GuestToReservation")
     private List<ReservationEntity> reservationEntities;
 
     public GuestEntity() {
         this.reservationEntities = new ArrayList<ReservationEntity>();
     }
-
 
     public GuestEntity(String email, String contactNumber, String passportNumber, String firstName, String lastName, String username, String password) {
         super(firstName, lastName, username, password);
@@ -56,8 +57,8 @@ public class GuestEntity extends UserEntity implements Serializable {
         this.passportNumber = passportNumber;
         this.reservationEntities = new ArrayList<ReservationEntity>();
     }
-    
- @Override
+
+    @Override
     public String toString() {
         return "entity.GuestEntity[ id=" + this.getUserEntityId() + " ]";
     }
@@ -103,7 +104,8 @@ public class GuestEntity extends UserEntity implements Serializable {
     public void setPassportNumber(String passportNumber) {
         this.passportNumber = passportNumber;
     }
-        /**
+
+    /**
      * @return the reservationEntities
      */
     public List<ReservationEntity> getReservationEntities() {
@@ -116,6 +118,7 @@ public class GuestEntity extends UserEntity implements Serializable {
     public void setReservationEntities(List<ReservationEntity> reservationEntities) {
         this.reservationEntities = reservationEntities;
     }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -136,5 +139,4 @@ public class GuestEntity extends UserEntity implements Serializable {
         return true;
     }
 
-   
 }
