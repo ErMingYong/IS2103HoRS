@@ -167,7 +167,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
             reservation.getRoomEntity();
             reservation.getRoomRateEntities().size();
         }
-        
+
         return reservations;
 
     }
@@ -281,28 +281,29 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         List<RoomRateEntity> list = new ArrayList<>();
         while (currDate.isBefore(endDate)) {
             System.out.println("calc here 2");
-        while (!currDate.isEqual(endDate)) {
-            Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum = :inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity.getRoomTypeId()).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
-            List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
-            BigDecimal lowest = BigDecimal.valueOf(99999);
-            RoomRateEntity lowestRoomRate = null;
-            for (RoomRateEntity roomRate : listOfRoomRateEntities) {
-                System.out.println("calc here 3");
-                if (((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
-                        || currDate.isEqual(roomRate.getValidPeriodFrom()) || currDate.isEqual(roomRate.getValidPeriodTo())) && roomRate.getRoomRateTypeEnum().equals(RoomRateTypeEnum.PUBLISHED)) {
-                    if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
-                        lowest = roomRate.getRatePerNight();
-                        lowestRoomRate = roomRate;
+            while (!currDate.isEqual(endDate)) {
+                Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum = :inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity.getRoomTypeId()).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
+                List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
+                BigDecimal lowest = BigDecimal.valueOf(99999);
+                RoomRateEntity lowestRoomRate = null;
+                for (RoomRateEntity roomRate : listOfRoomRateEntities) {
+                    System.out.println("calc here 3");
+                    if (((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
+                            || currDate.isEqual(roomRate.getValidPeriodFrom()) || currDate.isEqual(roomRate.getValidPeriodTo())) && roomRate.getRoomRateTypeEnum().equals(RoomRateTypeEnum.PUBLISHED)) {
+                        if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
+                            lowest = roomRate.getRatePerNight();
+                            lowestRoomRate = roomRate;
+                        }
                     }
                 }
+                totalPrice = totalPrice.add(lowest);
+                list.add(lowestRoomRate);
+                currDate = currDate.plusDays(1);
             }
-            totalPrice = totalPrice.add(lowest);
-            list.add(lowestRoomRate);
-            currDate = currDate.plusDays(1);
+            System.out.println("calc 4");
+            Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
+            return pair;
         }
-        System.out.println("calc 4");
-        Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
-        return pair;
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ReservationEntity>> constraintViolations) {
