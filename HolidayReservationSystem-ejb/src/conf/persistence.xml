@@ -10,7 +10,6 @@
     <class>entity.RoomEntity</class>
     <class>entity.RoomRateEntity</class>
     <class>entity.RoomTypeEntity</class>
-    <class>entity.TransactionEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
