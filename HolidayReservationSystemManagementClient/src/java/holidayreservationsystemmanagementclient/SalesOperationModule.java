@@ -396,7 +396,7 @@ public class SalesOperationModule {
         }
 
         while (true) {
-            System.out.print("Select Access Right:");
+            System.out.print("Select Room Rate Type:");
             System.out.println("------------------------");
             System.out.println("1: PUBLISHED");
             System.out.println("2: NORMAL");
