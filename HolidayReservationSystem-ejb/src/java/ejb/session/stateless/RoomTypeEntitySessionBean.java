@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.RoomTypeEntity;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Stateless;
@@ -23,7 +24,6 @@ import util.exception.InputDataValidationException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateRoomTypeException;
 
 /**
  *
@@ -114,15 +114,53 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     }
 
     @Override
+    public HashMap<String, Integer> retrieveRoomTypeRankingsSortedByName() {
+
+        //name-ranking pairing
+        HashMap<String, Integer> map = new HashMap<>();
+
+        Query query = em.createQuery("SELECT r FROM RoomTypeEntity r");
+
+        List<RoomTypeEntity> list = query.getResultList();
+        for (RoomTypeEntity roomType : list) {
+            if (map.containsKey(roomType.getRoomTypeName())) {
+            } else {
+                map.put(roomType.getRoomTypeName(), roomType.getRanking());
+            }
+        }
+
+        return map;
+    }
+
+    @Override
+    public HashMap<Integer, String> retrieveRoomTypeRankingsSortedByRanking() {
+
+        //ranking-name pairing
+        HashMap<Integer, String> map = new HashMap<>();
+
+        Query query = em.createQuery("SELECT r FROM RoomTypeEntity r");
+
+        List<RoomTypeEntity> list = query.getResultList();
+        for (RoomTypeEntity roomType : list) {
+            if (map.containsKey(roomType.getRanking())) {
+            } else {
+                map.put(roomType.getRanking(), roomType.getRoomTypeName());
+            }
+        }
+
+        return map;
+    }
+
+    @Override
     public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, InputDataValidationException, RoomTypeNameExistException {
         if (roomTypeEntity != null && roomTypeEntity.getRoomTypeId() != null) {
             Set<ConstraintViolation<RoomTypeEntity>> constraintViolations = validator.validate(roomTypeEntity);
             //RoomTypeEntity roomType = em.find(RoomTypeEntity.class,roomTypeEntity.getRoomTypeId());
-                    
+
             //check if new name is used already
             Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.roomTypeName = :inName").setParameter("inName", roomTypeEntity.getRoomTypeName());
             boolean isNameUsed = false;
-            
+
             if (query.getResultList().size() > 0) {
                 isNameUsed = true;
             }

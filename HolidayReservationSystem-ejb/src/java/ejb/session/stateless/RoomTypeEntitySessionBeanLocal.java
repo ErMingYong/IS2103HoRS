@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.RoomTypeEntity;
+import java.util.HashMap;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.InputDataValidationException;
@@ -34,4 +35,8 @@ public interface RoomTypeEntitySessionBeanLocal {
     public void updateRoomType(RoomTypeEntity roomTypeEntity) throws RoomTypeNotFoundException, InputDataValidationException, RoomTypeNameExistException;
 
     public void disableRoomType(RoomTypeEntity roomTypeToDisable) throws UnknownPersistenceException;
+
+    public HashMap<String, Integer> retrieveRoomTypeRankingsSortedByName();
+
+    public HashMap<Integer, String> retrieveRoomTypeRankingsSortedByRanking();
 }

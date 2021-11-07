@@ -574,14 +574,13 @@ public class HotelOperationModule {
                 } else if (response == 2) {
                     exceptionReportTypeEnum = ExceptionReportTypeEnum.SECOND_TYPE;
                 } else if (response == 3) {
-                    doExit = true;
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
 
-            if (doExit) {
+            if (response == 3) {
                 break;
             }
 
