@@ -294,10 +294,10 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                         lowestRoomRate = roomRate;
                     }
                 }
+                totalPrice = totalPrice.add(lowest);
+                list.add(lowestRoomRate);
+                currDate = currDate.plusDays(1);
             }
-            totalPrice = totalPrice.add(lowest);
-            list.add(lowestRoomRate);
-            currDate = currDate.plusDays(1);
         }
         System.out.println("calc 4");
         Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
