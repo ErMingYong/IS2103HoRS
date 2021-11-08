@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.ReservationNotFoundException;
@@ -24,7 +25,7 @@ import util.exception.UpdateReservationException;
 @Remote
 public interface ReservationEntitySessionBeanRemote {
 
-    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws UnknownPersistenceException, InputDataValidationException;
+    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
     public List<ReservationEntity> retrieveAllReservations();
 
@@ -39,5 +40,7 @@ public interface ReservationEntitySessionBeanRemote {
     public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
 
     public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate);
+
+    public void createNewReservations(HashMap<ReservationEntity, List<String>> map) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
 }

@@ -42,7 +42,6 @@ public class GuestEntity extends UserEntity implements Serializable {
     private String passportNumber;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = true)
     //@JoinTable(name = "GuestToReservation")
     private List<ReservationEntity> reservationEntities;
 

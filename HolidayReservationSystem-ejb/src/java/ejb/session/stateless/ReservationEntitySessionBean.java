@@ -29,6 +29,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.RoomRateTypeEnum;
 import util.enumeration.RoomStatusEnum;
+import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.ReservationNotFoundException;
@@ -87,9 +88,30 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws UnknownPersistenceException, InputDataValidationException {
+    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
-
+        //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
+        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatusAND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+        List<RoomEntity> listOfRoomEntities = query.getResultList();
+        listOfRoomEntities.addAll(queryUnavailable.getResultList());
+        int currInventory = listOfRoomEntities.size();
+        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+        List<ReservationEntity> list = query.getResultList();
+        LocalDateTime startDate = newReservation.getReservationStartDate();
+        LocalDateTime endDate = newReservation.getReservationEndDate();
+        for (ReservationEntity res : list) {
+            LocalDateTime resStartDate = res.getReservationStartDate();
+            LocalDateTime resEndDate = res.getReservationEndDate();
+            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+                currInventory -= 1;
+            }
+        }
+        if (currInventory == 0) {
+            throw new CreateNewReservationException();
+        }
+        //throw new CreateNewReservationException();
+        //
         if (constraintViolations.isEmpty()) {
             try {
                 for (String roomRateName : listOfRoomRateNames) {
@@ -101,6 +123,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                         Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+
                 em.persist(newReservation);
                 em.flush();
 
@@ -110,6 +133,13 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
             }
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+        }
+    }
+
+    public void createNewReservations(HashMap<ReservationEntity, List<String>> map) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+        List<ReservationEntity> list = new ArrayList<>(map.keySet());
+        for (ReservationEntity res : list) {
+            createNewReservation(res, map.get(res));
         }
     }
 
@@ -142,7 +172,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber) {
+    public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber
+    ) {
 
         Query query = em.createQuery(
                 "SELECT r FROM ReservationEntity r WHERE r.passportNumber = :passportNum")
@@ -158,7 +189,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate) {
+    public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate
+    ) {
         Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationStartDate = :inDate").setParameter("inDate", startDate);
 
         List<ReservationEntity> reservations = query.getResultList();
@@ -215,7 +247,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException {
+    public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate,
+            Integer numRooms) throws InsufficientRoomsAvailableException {
         System.out.println("Retrieving Room Types");
         //GET TOTAL INVENTORY
         //must take into account unavailable rooms as well, as they may just be unavailable now and not the day that you wan to make the booking
@@ -256,7 +289,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();
             LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate) || resStartDate.isAfter(startDate) && resEndDate.isBefore(endDate)) {
+            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
                 BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
                 numRoomsUsed += 1;

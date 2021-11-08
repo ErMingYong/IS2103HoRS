@@ -6,7 +6,9 @@
 package ejb.session.singleton;
 
 import ejb.session.stateless.EmployeeEntitySessionBeanLocal;
+import ejb.session.stateless.RoomTypeEntitySessionBeanLocal;
 import entity.EmployeeEntity;
+import entity.RoomTypeEntity;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;

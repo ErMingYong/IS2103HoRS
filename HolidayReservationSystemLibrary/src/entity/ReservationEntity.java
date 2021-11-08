@@ -77,8 +77,8 @@ public class ReservationEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
-    @OneToMany(fetch = FetchType.LAZY)//, mappedBy = "roomRateEntity")
-    @JoinColumn(nullable = true)
+    @ManyToMany(fetch = FetchType.LAZY)//, mappedBy = "roomRateEntity")
+    //@JoinColumn(nullable = true)
 //@JoinTable(name = "ReservationToRoomRates")
     private List<RoomRateEntity> roomRateEntities;
 

@@ -23,7 +23,6 @@ public class PartnerEntity extends UserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
     private List<ReservationEntity> reservationEntities;
 
     public PartnerEntity() {
