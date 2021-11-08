@@ -49,6 +49,14 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
     //method creates an Allocation Report that is stored into the database, hence void
     public void allocationReportCheckTimer() throws UnknownPersistenceException {
 
+        LocalDateTime todayDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+
+        //retrieve of reservations with today as end date and making their rooms available
+        List<ReservationEntity> reservationsEndingToday = reservationEntitySessionBeanLocal.retrieveAllReservationsWithEndDate(todayDate);
+        for (ReservationEntity reservation : reservationsEndingToday) {
+            reservation.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+        }
+
         //retrieve all available rooms
         Query availableRoomQuery = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE);
         List<RoomEntity> listOfAvailableRoomEntities = availableRoomQuery.getResultList();
@@ -68,7 +76,7 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
                 roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), list);
             }
         }
-        LocalDateTime todayDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+
         //list of reservations that has to be assigned today
         List<ReservationEntity> reservations = reservationEntitySessionBeanLocal.retrieveAllReservationsWithStartDate(todayDate);
         //check if there is any reservations in the first place, if dont have theres no need to do any allocation
@@ -127,6 +135,14 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
     @Override
     public void allocationReportCheckTimerManual() throws UnknownPersistenceException {
 
+        LocalDateTime todayDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+
+        //retrieve of reservations with today as end date and making their rooms available
+        List<ReservationEntity> reservationsEndingToday = reservationEntitySessionBeanLocal.retrieveAllReservationsWithEndDate(todayDate);
+        for (ReservationEntity reservation : reservationsEndingToday) {
+            reservation.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+        }
+
         //retrieve all available rooms
         Query availableRoomQuery = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE);
         List<RoomEntity> listOfAvailableRoomEntities = availableRoomQuery.getResultList();
@@ -147,13 +163,9 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
             }
         }
 
-        Integer todayDay = LocalDateTime.now().getDayOfMonth();
-        Integer todayMonth = LocalDateTime.now().getMonthValue();
-        Integer todayYear = LocalDateTime.now().getYear();
-        LocalDateTime todayDate = LocalDateTime.of(todayYear, todayMonth, todayDay, 0, 0, 0);
-
         //list of reservations that has to be assigned today
         List<ReservationEntity> reservations = reservationEntitySessionBeanLocal.retrieveAllReservationsWithStartDate(todayDate);
+        //check if there is any reservations in the first place, if dont have theres no need to do any allocation
         if (!reservations.isEmpty()) {
             //assigning of rooms to reservations based on a 1-1 direct pairing to the requested rooms
             for (ReservationEntity reservation : reservations) {
