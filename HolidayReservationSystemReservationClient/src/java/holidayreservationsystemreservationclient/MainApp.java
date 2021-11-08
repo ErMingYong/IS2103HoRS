@@ -5,6 +5,7 @@
  */
 package holidayreservationsystemreservationclient;
 
+import ejb.session.stateless.AllocationReportSessionBeanRemote;
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
@@ -34,6 +35,7 @@ import util.exception.UnknownPersistenceException;
 public class MainApp {
 
 //    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
+    private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
@@ -55,9 +57,9 @@ public class MainApp {
         this.validator = validatorFactory.getValidator();
     }
 
-    public MainApp(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote ) {
+    public MainApp(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote ) {
         this();
-//        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
+        this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
         this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
@@ -88,7 +90,8 @@ public class MainApp {
                         doLogin();
                         System.out.println("Login successful!\n");
 
-                        guestOperationModule = new GuestOperationModule(employeeEntitySessionBeanRemote,
+                        guestOperationModule = new GuestOperationModule(allocationReportSessionBeanRemote,
+                                employeeEntitySessionBeanRemote,
                                 exceptionReportEntitySessionBeanRemote,
                                 guestEntitySessionBeanRemote,
                                 partnerEntitySessionBeanRemote,

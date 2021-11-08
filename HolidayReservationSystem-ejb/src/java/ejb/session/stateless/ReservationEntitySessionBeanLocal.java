@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.GuestEntity;
 import entity.ReservationEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ import util.exception.UpdateReservationException;
 public interface ReservationEntitySessionBeanLocal {
 
     public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
+
+    public Long createNewReservationForGuest(ReservationEntity newReservation, List<String> listOfRoomRateNames, GuestEntity guest) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
     public List<ReservationEntity> retrieveAllReservations();
 
@@ -53,5 +56,9 @@ public interface ReservationEntitySessionBeanLocal {
     public List<ReservationEntity> retrieveReservationByPassportNumberForCheckOut(String passportNumber);
 
     public void setReservationToCheckedOut(ReservationEntity reservationEntity);
+
+    public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypesOnline(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
+
+    public void createNewReservationsForGuest(List<Pair<ReservationEntity, List<String>>> list, GuestEntity guest) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
 }

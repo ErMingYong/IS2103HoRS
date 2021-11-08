@@ -5,6 +5,7 @@
  */
 package holidayreservationsystemreservationclient;
 
+import ejb.session.stateless.AllocationReportSessionBeanRemote;
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
@@ -21,6 +22,9 @@ import javax.ejb.EJB;
  * @author Koh Wen Jie
  */
 public class Main {
+
+    @EJB
+    private static AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
 
 //    @EJB
 //    private static TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
@@ -54,7 +58,8 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        MainApp mainApp = new MainApp(employeeEntitySessionBeanRemote,
+        MainApp mainApp = new MainApp(allocationReportSessionBeanRemote,
+                employeeEntitySessionBeanRemote,
                 exceptionReportEntitySessionBeanRemote,
                 guestEntitySessionBeanRemote,
                 partnerEntitySessionBeanRemote,
