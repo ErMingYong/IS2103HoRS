@@ -9,6 +9,7 @@ import entity.PartnerEntity;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.InputDataValidationException;
+import util.exception.InvalidLoginCredentialException;
 import util.exception.PartnerNotFoundException;
 import util.exception.PartnerUsernameExistException;
 import util.exception.UnknownPersistenceException;
@@ -27,8 +28,12 @@ public interface PartnerEntitySessionBeanRemote {
 
     public PartnerEntity retrievePartnerByPartnerId(Long partnerId) throws PartnerNotFoundException;
 
+    public PartnerEntity retrievePartnerByUsername(String username) throws PartnerNotFoundException;
+
     public void deletePartner(Long partnerId) throws PartnerNotFoundException;
 
     public void updatePartner(PartnerEntity partnerEntity) throws PartnerNotFoundException, UpdatePartnerException, InputDataValidationException;
+
+    public PartnerEntity partnerLogin(String partnerUsername, String partnerPassword) throws PartnerNotFoundException, InvalidLoginCredentialException;
 
 }

@@ -22,21 +22,30 @@ import util.exception.PartnerNotFoundException;
  *
  * @author mingy
  */
+
+
+
 @WebService(serviceName = "PartnerEntityWebService")
 @Stateless()
 public class PartnerEntityWebService {
 
     @EJB
     private PartnerEntitySessionBeanLocal partnerEntitySessionBeanLocal;
+    /*
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
+    */
 
+    /*
     @EJB
     private ReservationEntitySessionBeanLocal reservationEntitySessionBeanLocal;
+    */
 
     /**
      * This is a sample web service operation
      */
+    
+    
     @WebMethod(operationName = "partnerLogin")
     public PartnerEntity partnerLogin(@WebParam(name = "username") String partnerUsername,
             @WebParam(name = "password") String partnerPassword) {
