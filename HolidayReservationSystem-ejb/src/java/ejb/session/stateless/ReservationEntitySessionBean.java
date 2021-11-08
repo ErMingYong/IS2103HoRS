@@ -223,6 +223,21 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
+    public List<ReservationEntity> retrieveAllReservationsWithEndDate(LocalDateTime endDate) {
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate = :inDate").setParameter("inDate", endDate);
+
+        List<ReservationEntity> reservations = query.getResultList();
+
+        for (ReservationEntity reservation : reservations) {
+            reservation.getRoomEntity();
+            reservation.getRoomRateEntities().size();
+        }
+
+        return reservations;
+
+    }
+
+    @Override
     public void deleteReservation(ReservationEntity reservationToDelete) throws ReservationNotFoundException {
         ReservationEntity reservation = retrieveReservationById(reservationToDelete.getReservationEntityId());
         if (reservation != null) {

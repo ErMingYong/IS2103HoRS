@@ -42,6 +42,8 @@ public interface ReservationEntitySessionBeanLocal {
 
     public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate);
 
+    public List<ReservationEntity> retrieveAllReservationsWithEndDate(LocalDateTime endDate);
+
     public void createNewReservations(List<Pair<ReservationEntity, List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
     public void setReservationToCheckedIn(ReservationEntity reservationEntity);
