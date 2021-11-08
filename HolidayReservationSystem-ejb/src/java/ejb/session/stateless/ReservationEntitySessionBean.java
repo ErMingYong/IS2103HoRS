@@ -18,7 +18,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.util.Pair;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -47,6 +49,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
     @EJB
     private RoomRateEntitySessionBeanLocal roomRateEntitySessionBeanLocal;
+    @Resource
+    private EJBContext eJBContext;
 
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
@@ -87,7 +91,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 //            return second;
 //        }
 //    }
-
     @Override
     public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
@@ -138,9 +141,14 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public void createNewReservations(List<Pair<ReservationEntity,List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
-        for (Pair<ReservationEntity,List<String>> pair : list) {
-            createNewReservation(pair.getKey(), pair.getValue());
+    public void createNewReservations(List<Pair<ReservationEntity, List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+        for (Pair<ReservationEntity, List<String>> pair : list) {
+            try {
+                createNewReservation(pair.getKey(), pair.getValue());
+            } catch (CreateNewReservationException ex) {
+                eJBContext.setRollbackOnly();
+                throw new CreateNewReservationException();
+            }
         }
     }
 
