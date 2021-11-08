@@ -44,4 +44,12 @@ public interface ReservationEntitySessionBeanLocal {
 
     public void createNewReservations(List<Pair<ReservationEntity, List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
+    public void setReservationToCheckedIn(ReservationEntity reservationEntity);
+
+    public List<ReservationEntity> retrieveReservationByPassportNumberForCheckIn(String passportNumber);
+
+    public List<ReservationEntity> retrieveReservationByPassportNumberForCheckOut(String passportNumber);
+
+    public void setReservationToCheckedOut(ReservationEntity reservationEntity);
+
 }

@@ -10,7 +10,9 @@ import entity.RoomEntity;
 import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -181,12 +183,45 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber
-    ) {
+    public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber) {
 
         Query query = em.createQuery(
                 "SELECT r FROM ReservationEntity r WHERE r.passportNumber = :passportNum")
                 .setParameter("passportNum", passportNumber);
+
+        List<ReservationEntity> reservations = query.getResultList();
+
+        for (ReservationEntity reservation : reservations) {
+            reservation.getRoomEntity();
+            reservation.getRoomRateEntities().size();
+        }
+        return reservations;
+    }
+
+    @Override
+    public List<ReservationEntity> retrieveReservationByPassportNumberForCheckIn(String passportNumber) {
+        LocalDateTime checkInDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        Query query = em.createQuery(
+                "SELECT r FROM ReservationEntity r WHERE r.passportNumber = :passportNum AND r.reservationStartDate = :inDate")
+                .setParameter("passportNum", passportNumber)
+                .setParameter("inDate", checkInDate);
+
+        List<ReservationEntity> reservations = query.getResultList();
+
+        for (ReservationEntity reservation : reservations) {
+            reservation.getRoomEntity();
+            reservation.getRoomRateEntities().size();
+        }
+        return reservations;
+    }
+
+    @Override
+    public List<ReservationEntity> retrieveReservationByPassportNumberForCheckOut(String passportNumber) {
+        LocalDateTime checkInDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        Query query = em.createQuery(
+                "SELECT r FROM ReservationEntity r WHERE r.passportNumber = :passportNum AND r.reservationEndDate = :inDate")
+                .setParameter("passportNum", passportNumber)
+                .setParameter("inDate", checkInDate);
 
         List<ReservationEntity> reservations = query.getResultList();
 
@@ -344,6 +379,22 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         System.out.println("calc 4");
         Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
         return pair;
+    }
+
+    @Override
+    public void setReservationToCheckedIn(ReservationEntity reservationEntity) {
+        ReservationEntity res = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
+        res.setIsCheckedIn(true);
+        res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.UNAVAILABLE);
+
+    }
+
+    @Override
+    public void setReservationToCheckedOut(ReservationEntity reservationEntity) {
+        ReservationEntity res = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
+        res.setIsCheckedIn(false);
+        res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+        res.setRoomEntity(null);
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ReservationEntity>> constraintViolations) {

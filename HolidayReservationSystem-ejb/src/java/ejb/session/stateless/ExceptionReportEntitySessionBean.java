@@ -6,10 +6,12 @@
 package ejb.session.stateless;
 
 import entity.ExceptionReportEntity;
+import entity.ReservationEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -18,6 +20,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.ExceptionReportNotFoundException;
+import util.exception.NoExceptionReportFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -75,6 +78,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         }
     }
 
+    @Override
     public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date) {
         List<ExceptionReportEntity> listOfExceptionReportEntities = em.createQuery("SELECT er FROM ExceptionReportEntity er WHERE er.exceptionReportTypeEnum = :inExceptionReportType AND  er.generationDate = :inDate ")
                 .setParameter("inExceptionReportType", exceptionReportTypeEnum)
@@ -84,6 +88,21 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
             exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity();
         }
         return listOfExceptionReportEntities;
+    }
+
+    @Override
+    public ExceptionReportEntity retrieveExceptionReportByReservation(ReservationEntity res) throws NoExceptionReportFoundException {
+        Query query = em.createQuery("SELECT er FROM ExceptionReportEntity er WHERE er.reservationEntity = :inReservationEntity ")
+                .setParameter("inReservationEntity", res);
+        ExceptionReportEntity exceptionReportEntity;
+        try {
+            exceptionReportEntity = (ExceptionReportEntity) query.getSingleResult();
+            exceptionReportEntity.getReservationEntity();
+        } catch (NoResultException ex) {
+            throw new NoExceptionReportFoundException();
+        }
+
+        return exceptionReportEntity;
     }
 
     @Override

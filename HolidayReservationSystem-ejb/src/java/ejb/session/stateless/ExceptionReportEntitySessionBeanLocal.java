@@ -6,11 +6,13 @@
 package ejb.session.stateless;
 
 import entity.ExceptionReportEntity;
+import entity.ReservationEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.ejb.Local;
 import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.ExceptionReportNotFoundException;
+import util.exception.NoExceptionReportFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -31,5 +33,7 @@ public interface ExceptionReportEntitySessionBeanLocal {
     public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException;
 
     public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date);
+
+    public ExceptionReportEntity retrieveExceptionReportByReservation(ReservationEntity res) throws NoExceptionReportFoundException;
     
 }

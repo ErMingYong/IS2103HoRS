@@ -15,6 +15,7 @@ import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 //import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
+import entity.ExceptionReportEntity;
 import entity.ReservationEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
@@ -30,10 +31,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.util.Pair;
 import util.enumeration.EmployeeAccessRightEnum;
+import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.InvalidAccessRightException;
+import util.exception.NoExceptionReportFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -389,13 +392,92 @@ public class FrontOfficeModule {
         System.out.println("Please Enter Guest Passport Number");
         String passportNumber = scanner.nextLine();
 
-        List<ReservationEntity> listOfReservations = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(passportNumber);
+        List<ReservationEntity> listOfReservations = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumberForCheckIn(passportNumber);
 
+        if (listOfReservations.isEmpty()) {
+            System.out.println("Guest of Passport Number: " + passportNumber + " does not have any Reservations Today!");
+        } else {
+            int counter = 1;
+            for (ReservationEntity res : listOfReservations) {
+                try {
+                    //try to find exception for the reservation, if have then handle according to First and Second type
+                    ExceptionReportEntity exceptionReport = exceptionReportEntitySessionBeanRemote.retrieveExceptionReportByReservation(res);
+                    if (exceptionReport.getExceptionReportTypeEnum() == ExceptionReportTypeEnum.FIRST_TYPE) {
+                        //set reservation to be checked in, and set room to be Unavailble
+                        System.out.println("FIRST TYPE EXCEPTION");
+                        System.out.println("Reservation: " + counter);
+                        counter += 1;
+                        System.out.println("");
+                        System.out.println("Room Allocated: " + displayRoomFloorAndNumber(res.getRoomEntity().getRoomFloor(), res.getRoomEntity().getRoomNumber()));
+                        System.out.println("::::::::::::::::::::::::::::::::::::::");
+                        reservationEntitySessionBeanRemote.setReservationToCheckedIn(res);
+                        System.out.println("Press any key to continue...");
+                        String response = scanner.nextLine();
+                    } else {
+                        //awaiting what prof will say
+                        System.out.println("SECOND TYPE EXCEPTION");
+                        System.out.println("No room has been allocated for this reservation");
+                        System.out.println("Press any key to continue to manually allocate...");
+                        String response = scanner.nextLine();
+                    }
+                } catch (NoExceptionReportFoundException ex) {
+                    //No exception means will have a room allcoated
+                    //set reservation to be checked in, and set room to be Unavailble
+                    System.out.println("Reservation: " + counter);
+                    counter += 1;
+                    System.out.println("");
+                    System.out.println("Room Allocated: " + displayRoomFloorAndNumber(res.getRoomEntity().getRoomFloor(), res.getRoomEntity().getRoomNumber()));
+                    System.out.println("::::::::::::::::::::::::::::::::::::::");
+                    reservationEntitySessionBeanRemote.setReservationToCheckedIn(res);
+                    System.out.println("Press any key to continue...");
+                    String response = scanner.nextLine();
+                }
+            }
+        }
+        System.out.println("--------------------------");
+        System.out.println("There is no more reservation to display.");
+    }
+
+    private String displayRoomFloorAndNumber(Integer roomFloor, Integer roomNumber) {
+        String floor = roomFloor.toString();
+        if (floor.length() == 1) {
+            floor = "0" + floor;
+        }
+        String number = roomNumber.toString();
+        if (number.length() == 1) {
+            number = "0" + floor;
+        }
+        return floor + number;
     }
 
     public void doCheckOut() {
-        //check guest out by taking in the room they stayed in
-        // set the room to be Available again
-        //detach room from reservation
+        //check guest out by taking in their passport they stayed in
+        //detach room from reservation, set reservation isCheckIn to be false, set room to Available
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*** Hotel Management Client :: Front Office Module :: Guest Check Out ***\n");
+        System.out.println("");
+
+        System.out.println("Please Enter Guest Passport Number");
+        String passportNumber = scanner.nextLine();
+
+        List<ReservationEntity> listOfReservations = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumberForCheckIn(passportNumber);
+
+        if (listOfReservations.isEmpty()) {
+            System.out.println("Guest Does not have any Reservations to Check Out From for Today!");
+            System.out.println("Press any key to continue...");
+            String response = scanner.nextLine();
+        } else {
+            System.out.println("Checking out Guest from Reservations");
+            for (ReservationEntity res : listOfReservations) {
+                reservationEntitySessionBeanRemote.setReservationToCheckedOut(res);
+                System.out.println("Successfully checked Out for Room " + displayRoomFloorAndNumber(res.getRoomEntity().getRoomFloor(), res.getRoomEntity().getRoomNumber()));
+            }
+            System.out.println("-------------------------------------------");
+            System.out.println("Guest Has been Successfully Checked Out From All Reservations");
+            System.out.println("Press any key to continue...");
+            String response = scanner.nextLine();
+        }
+
     }
 }
