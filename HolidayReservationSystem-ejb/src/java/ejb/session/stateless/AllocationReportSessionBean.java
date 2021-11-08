@@ -8,7 +8,9 @@ package ejb.session.stateless;
 import entity.ExceptionReportEntity;
 import entity.ReservationEntity;
 import entity.RoomEntity;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,61 +68,59 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
                 roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), list);
             }
         }
-
-        Integer todayDay = LocalDateTime.now().getDayOfMonth();
-        Integer todayMonth = LocalDateTime.now().getMonthValue();
-        Integer todayYear = LocalDateTime.now().getYear();
-        LocalDateTime todayDate = LocalDateTime.of(todayYear, todayMonth, todayDay, 0, 0, 0);
-
+        LocalDateTime todayDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         //list of reservations that has to be assigned today
         List<ReservationEntity> reservations = reservationEntitySessionBeanLocal.retrieveAllReservationsWithStartDate(todayDate);
-        //assigning of rooms to reservations based on a 1-1 direct pairing to the requested rooms
-        for (ReservationEntity reservation : reservations) {
-            if (roomMapping.containsKey(reservation.getRoomTypeName()) && (roomMapping.get(reservation.getRoomTypeName()).size() > 0)) {
-                //is wanted roomType is available
-                List<RoomEntity> listRooms = roomMapping.remove(reservation.getRoomTypeName());
-                reservation.setRoomEntity(listRooms.remove(0));
-                roomMapping.put(reservation.getRoomTypeName(), listRooms);
-            }
-            //else wanted roomType is unavailable, leave the reservation back in list of reservations
-        }
-
-        //create helper methods in session bean to facilitate the determining of rankings
-        HashMap<String, Integer> roomRankingsByName = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByName();
-        HashMap<Integer, String> roomRankingsByRanking = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByRanking();
-
-        //assigning reservations to the next higher room type
-        for (ReservationEntity reservation : reservations) {
-            String requestRoomTypeName = reservation.getRoomTypeName();
-            if (roomMapping.containsKey(requestRoomTypeName)) {
-                Integer requestRoomTypeRanking = roomRankingsByName.get(requestRoomTypeName);
-                String nextHigherRoomType = roomRankingsByRanking.get(requestRoomTypeRanking + 1);
-                if (roomMapping.containsKey(nextHigherRoomType) && (roomMapping.get(nextHigherRoomType).size() > 0)) {
-                    //next higher ranking room is available, and assigned to the reservation
-                    List<RoomEntity> listRooms = roomMapping.remove(nextHigherRoomType);
+        //check if there is any reservations in the first place, if dont have theres no need to do any allocation
+        if (!reservations.isEmpty()) {
+            //assigning of rooms to reservations based on a 1-1 direct pairing to the requested rooms
+            for (ReservationEntity reservation : reservations) {
+                if (roomMapping.containsKey(reservation.getRoomTypeName()) && (roomMapping.get(reservation.getRoomTypeName()).size() > 0)) {
+                    //is wanted roomType is available
+                    List<RoomEntity> listRooms = roomMapping.remove(reservation.getRoomTypeName());
                     reservation.setRoomEntity(listRooms.remove(0));
-                    roomMapping.put(nextHigherRoomType, listRooms);
-
-                    //creation of 1 first type exception report to 1 reservation, since next higher ranking room is allocated
-                    ExceptionReportEntity firstTypeException = new ExceptionReportEntity();
-                    firstTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.FIRST_TYPE);
-                    firstTypeException.setGenerationDate(todayDate);
-                    firstTypeException.setReservationEntity(reservation);
-                    //lazy catch, will just throw the exception to the next method/client
-                    exceptionReportEntitySessionBeanLocal.createNewExceptionReport(firstTypeException);
+                    roomMapping.put(reservation.getRoomTypeName(), listRooms);
                 }
-                //if wanted roomType is unavailable, leave the reservation in list of reservations
+                //else wanted roomType is unavailable, leave the reservation back in list of reservations
             }
-        }
 
-        for (ReservationEntity reservation : reservations) {
-            //creation of 1 second type exception report to 1 reservation, since next higher ranking room is not allocated
-            ExceptionReportEntity secondTypeException = new ExceptionReportEntity();
-            secondTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.SECOND_TYPE);
-            secondTypeException.setGenerationDate(todayDate);
-            secondTypeException.setReservationEntity(reservation);
-            //lazy catch, will just throw the exception to the next method/client
-            exceptionReportEntitySessionBeanLocal.createNewExceptionReport(secondTypeException);
+            //create helper methods in session bean to facilitate the determining of rankings
+            HashMap<String, Integer> roomRankingsByName = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByName();
+            HashMap<Integer, String> roomRankingsByRanking = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByRanking();
+
+            //assigning reservations to the next higher room type
+            for (ReservationEntity reservation : reservations) {
+                String requestRoomTypeName = reservation.getRoomTypeName();
+                if (roomMapping.containsKey(requestRoomTypeName)) {
+                    Integer requestRoomTypeRanking = roomRankingsByName.get(requestRoomTypeName);
+                    String nextHigherRoomType = roomRankingsByRanking.get(requestRoomTypeRanking + 1);
+                    if (roomMapping.containsKey(nextHigherRoomType) && (roomMapping.get(nextHigherRoomType).size() > 0)) {
+                        //next higher ranking room is available, and assigned to the reservation
+                        List<RoomEntity> listRooms = roomMapping.remove(nextHigherRoomType);
+                        reservation.setRoomEntity(listRooms.remove(0));
+                        roomMapping.put(nextHigherRoomType, listRooms);
+
+                        //creation of 1 first type exception report to 1 reservation, since next higher ranking room is allocated
+                        ExceptionReportEntity firstTypeException = new ExceptionReportEntity();
+                        firstTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.FIRST_TYPE);
+                        firstTypeException.setGenerationDate(todayDate);
+                        firstTypeException.setReservationEntity(reservation);
+                        //lazy catch, will just throw the exception to the next method/client
+                        exceptionReportEntitySessionBeanLocal.createNewExceptionReport(firstTypeException);
+                    }
+                    //if wanted roomType is unavailable, leave the reservation in list of reservations
+                }
+            }
+
+            for (ReservationEntity reservation : reservations) {
+                //creation of 1 second type exception report to 1 reservation, since next higher ranking room is not allocated
+                ExceptionReportEntity secondTypeException = new ExceptionReportEntity();
+                secondTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.SECOND_TYPE);
+                secondTypeException.setGenerationDate(todayDate);
+                secondTypeException.setReservationEntity(reservation);
+                //lazy catch, will just throw the exception to the next method/client
+                exceptionReportEntitySessionBeanLocal.createNewExceptionReport(secondTypeException);
+            }
         }
     }
 
@@ -154,56 +154,58 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
 
         //list of reservations that has to be assigned today
         List<ReservationEntity> reservations = reservationEntitySessionBeanLocal.retrieveAllReservationsWithStartDate(todayDate);
-        //assigning of rooms to reservations based on a 1-1 direct pairing to the requested rooms
-        for (ReservationEntity reservation : reservations) {
-            if (roomMapping.containsKey(reservation.getRoomTypeName()) && (roomMapping.get(reservation.getRoomTypeName()).size() > 0)) {
-                //is wanted roomType is available
-                List<RoomEntity> listRooms = roomMapping.remove(reservation.getRoomTypeName());
-                reservation.setRoomEntity(listRooms.remove(0));
-                roomMapping.put(reservation.getRoomTypeName(), listRooms);
-            }
-            //else wanted roomType is unavailable, leave the reservation back in list of reservations
-        }
-
-        //create helper methods in session bean to facilitate the determining of rankings
-        HashMap<String, Integer> roomRankingsByName = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByName();
-        HashMap<Integer, String> roomRankingsByRanking = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByRanking();
-
-        //assigning reservations to the next higher room type
-        for (ReservationEntity reservation : reservations) {
-            String requestRoomTypeName = reservation.getRoomTypeName();
-            if (roomMapping.containsKey(requestRoomTypeName)) {
-                Integer requestRoomTypeRanking = roomRankingsByName.get(requestRoomTypeName);
-                String nextHigherRoomType = roomRankingsByRanking.get(requestRoomTypeRanking + 1);
-                if (roomMapping.containsKey(nextHigherRoomType) && (roomMapping.get(nextHigherRoomType).size() > 0)) {
-                    //next higher ranking room is available, and assigned to the reservation
-                    List<RoomEntity> listRooms = roomMapping.remove(nextHigherRoomType);
+        if (!reservations.isEmpty()) {
+            //assigning of rooms to reservations based on a 1-1 direct pairing to the requested rooms
+            for (ReservationEntity reservation : reservations) {
+                if (roomMapping.containsKey(reservation.getRoomTypeName()) && (roomMapping.get(reservation.getRoomTypeName()).size() > 0)) {
+                    //is wanted roomType is available
+                    List<RoomEntity> listRooms = roomMapping.remove(reservation.getRoomTypeName());
                     reservation.setRoomEntity(listRooms.remove(0));
-                    roomMapping.put(nextHigherRoomType, listRooms);
-
-                    //creation of 1 first type exception report to 1 reservation, since next higher ranking room is allocated
-                    ExceptionReportEntity firstTypeException = new ExceptionReportEntity();
-                    firstTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.FIRST_TYPE);
-                    firstTypeException.setGenerationDate(todayDate);
-                    firstTypeException.setReservationEntity(reservation);
-                    //lazy catch, will just throw the exception to the next method/client
-                    exceptionReportEntitySessionBeanLocal.createNewExceptionReport(firstTypeException);
+                    roomMapping.put(reservation.getRoomTypeName(), listRooms);
                 }
-                //if wanted roomType is unavailable, leave the reservation in list of reservations
+                //else wanted roomType is unavailable, leave the reservation back in list of reservations
             }
-        }
 
-        for (ReservationEntity reservation : reservations) {
-            //creation of 1 second type exception report to 1 reservation, since next higher ranking room is not allocated
-            ExceptionReportEntity secondTypeException = new ExceptionReportEntity();
-            secondTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.SECOND_TYPE);
-            secondTypeException.setGenerationDate(todayDate);
-            secondTypeException.setReservationEntity(reservation);
-            //lazy catch, will just throw the exception to the next method/client
-            exceptionReportEntitySessionBeanLocal.createNewExceptionReport(secondTypeException);
+            //create helper methods in session bean to facilitate the determining of rankings
+            HashMap<String, Integer> roomRankingsByName = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByName();
+            HashMap<Integer, String> roomRankingsByRanking = roomTypeEntitySessionBeanLocal.retrieveRoomTypeRankingsSortedByRanking();
+
+            //assigning reservations to the next higher room type
+            for (ReservationEntity reservation : reservations) {
+                String requestRoomTypeName = reservation.getRoomTypeName();
+                if (roomMapping.containsKey(requestRoomTypeName)) {
+                    Integer requestRoomTypeRanking = roomRankingsByName.get(requestRoomTypeName);
+                    String nextHigherRoomType = roomRankingsByRanking.get(requestRoomTypeRanking + 1);
+                    if (roomMapping.containsKey(nextHigherRoomType) && (roomMapping.get(nextHigherRoomType).size() > 0)) {
+                        //next higher ranking room is available, and assigned to the reservation
+                        List<RoomEntity> listRooms = roomMapping.remove(nextHigherRoomType);
+                        reservation.setRoomEntity(listRooms.remove(0));
+                        roomMapping.put(nextHigherRoomType, listRooms);
+
+                        //creation of 1 first type exception report to 1 reservation, since next higher ranking room is allocated
+                        ExceptionReportEntity firstTypeException = new ExceptionReportEntity();
+                        firstTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.FIRST_TYPE);
+                        firstTypeException.setGenerationDate(todayDate);
+                        firstTypeException.setReservationEntity(reservation);
+                        //lazy catch, will just throw the exception to the next method/client
+                        exceptionReportEntitySessionBeanLocal.createNewExceptionReport(firstTypeException);
+                    }
+                    //if wanted roomType is unavailable, leave the reservation in list of reservations
+                }
+            }
+
+            for (ReservationEntity reservation : reservations) {
+                //creation of 1 second type exception report to 1 reservation, since next higher ranking room is not allocated
+                ExceptionReportEntity secondTypeException = new ExceptionReportEntity();
+                secondTypeException.setExceptionReportTypeEnum(ExceptionReportTypeEnum.SECOND_TYPE);
+                secondTypeException.setGenerationDate(todayDate);
+                secondTypeException.setReservationEntity(reservation);
+                //lazy catch, will just throw the exception to the next method/client
+                exceptionReportEntitySessionBeanLocal.createNewExceptionReport(secondTypeException);
+            }
         }
     }
-    
+
     @Override
     public RoomEntity manualAllocationOfRoomToReservation(String roomTypeName, ReservationEntity reservationEntity) {
         ReservationEntity reservation = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());

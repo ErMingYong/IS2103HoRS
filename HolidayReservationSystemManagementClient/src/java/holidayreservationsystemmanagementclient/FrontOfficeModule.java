@@ -347,8 +347,8 @@ public class FrontOfficeModule {
             LocalDateTime currDate2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
 
             //after 2am walk in, if reservations are for TODAY, then immediately allcoate
-            if (currDateTime.isAfter(currDate2Am) && reservationStartDate.isEqual(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)))) {
-                //allocationTimerSessionBeanRemote.allocateSelectedReservationsToRoomsNow(listOfNewReservations);
+            if (currDateTime.isAfter(currDate2Am) && reservationStartDate.isEqual(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
+                allocationReportSessionBeanRemote.allocationReportCheckTimerManual();
             }
         } catch (UnknownPersistenceException | CreateNewReservationException ex) {
             System.out.println("Unable to create Reservations, Please Try Again!");
