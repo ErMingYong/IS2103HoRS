@@ -5,6 +5,8 @@
  */
 package ejb.session.stateless;
 
+import entity.ReservationEntity;
+import entity.RoomEntity;
 import javax.ejb.Local;
 import util.exception.UnknownPersistenceException;
 
@@ -18,5 +20,7 @@ public interface AllocationReportSessionBeanLocal {
     public void allocationReportCheckTimer() throws UnknownPersistenceException;
 
     public void allocationReportCheckTimerManual() throws UnknownPersistenceException;
+
+    public RoomEntity manualAllocationOfRoomToReservation(String roomTypeName, ReservationEntity reservationEntity);
     
 }

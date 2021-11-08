@@ -124,6 +124,7 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         }
     }
 
+    @Override
     public void allocationReportCheckTimerManual() throws UnknownPersistenceException {
 
         //retrieve all available rooms
@@ -201,5 +202,19 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
             //lazy catch, will just throw the exception to the next method/client
             exceptionReportEntitySessionBeanLocal.createNewExceptionReport(secondTypeException);
         }
+    }
+    
+    @Override
+    public RoomEntity manualAllocationOfRoomToReservation(String roomTypeName, ReservationEntity reservationEntity) {
+        ReservationEntity reservation = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
+        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeName")
+                .setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE)
+                .setParameter("inRoomTypeName", roomTypeName);
+        RoomEntity roomEntity = (RoomEntity) query.getSingleResult();
+        reservation.setRoomEntity(roomEntity);
+        reservation.setRoomTypeName(roomTypeName);
+        reservation.setIsCheckedIn(true);
+        roomEntity.setRoomStatusEnum(RoomStatusEnum.UNAVAILABLE);
+        return roomEntity;
     }
 }

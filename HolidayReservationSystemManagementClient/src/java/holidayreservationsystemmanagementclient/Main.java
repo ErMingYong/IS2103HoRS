@@ -5,6 +5,7 @@
  */
 package holidayreservationsystemmanagementclient;
 
+import ejb.session.stateless.AllocationReportSessionBeanRemote;
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
@@ -22,9 +23,11 @@ import javax.ejb.EJB;
  */
 public class Main {
 
+    @EJB
+    private static AllocationReportSessionBeanRemote allocationReportSessionBean;
+
 //    @EJB
 //    private static TransactionEntitySessionBeanRemote transactionEntitySessionBean;
-
     @EJB
     private static RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBean;
 
@@ -54,7 +57,8 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        MainApp mainApp = new MainApp(employeeEntitySessionBean,
+        MainApp mainApp = new MainApp(allocationReportSessionBean,
+                employeeEntitySessionBean,
                 exceptionReportEntitySessionBean,
                 guestEntitySessionBean,
                 partnerEntitySessionBean,
@@ -62,7 +66,7 @@ public class Main {
                 roomEntitySessionBean,
                 roomRateEntitySessionBean,
                 roomTypeEntitySessionBean);
-        
+
         mainApp.runApp();
     }
 

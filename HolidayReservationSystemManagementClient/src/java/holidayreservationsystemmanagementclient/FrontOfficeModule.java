@@ -5,6 +5,7 @@
  */
 package holidayreservationsystemmanagementclient;
 
+import ejb.session.stateless.AllocationReportSessionBeanRemote;
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
@@ -17,6 +18,7 @@ import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.ExceptionReportEntity;
 import entity.ReservationEntity;
+import entity.RoomEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
@@ -34,6 +36,7 @@ import util.enumeration.EmployeeAccessRightEnum;
 import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
+import util.exception.InsufficientRoomAvailableForManualAllocationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.InvalidAccessRightException;
 import util.exception.NoExceptionReportFoundException;
@@ -45,6 +48,7 @@ import util.exception.UnknownPersistenceException;
  */
 public class FrontOfficeModule {
 
+    private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
     private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
     private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
     private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
@@ -60,7 +64,8 @@ public class FrontOfficeModule {
     public FrontOfficeModule() {
     }
 
-    public FrontOfficeModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+    public FrontOfficeModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+        this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
         this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
@@ -72,33 +77,6 @@ public class FrontOfficeModule {
 //        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
     }
-//Pair
-//    public class Pair<F, S> {
-//
-//        private F first; //first member of pair
-//        private S second; //second member of pair
-//
-//        public Pair(F first, S second) {
-//            this.first = first;
-//            this.second = second;
-//        }
-//
-//        public void setFirst(F first) {
-//            this.first = first;
-//        }
-//
-//        public void setSecond(S second) {
-//            this.second = second;
-//        }
-//
-//        public F getFirst() {
-//            return first;
-//        }
-//
-//        public S getSecond() {
-//            return second;
-//        }
-//    }
 
     public void menuFrontOfficeOperation() throws InvalidAccessRightException {
         if (currentEmployee.getEmployeeAccessRightEnum() != EmployeeAccessRightEnum.GUEST_RELATION_OFFICER) {
@@ -419,6 +397,21 @@ public class FrontOfficeModule {
                         System.out.println("No room has been allocated for this reservation");
                         System.out.println("Press any key to continue to manually allocate...");
                         String response = scanner.nextLine();
+                        try {
+                            RoomEntity roomAllocated = doManualAllocation(res);
+                            System.out.println("-----------------------");
+                            System.out.println("Reservation: " + counter);
+                            counter += 1;
+                            System.out.println("");
+                            System.out.println("Room Allocated: " + displayRoomFloorAndNumber(roomAllocated.getRoomFloor(), roomAllocated.getRoomNumber()));
+                            System.out.println("::::::::::::::::::::::::::::::::::::::");
+                            System.out.println("Press any key to continue...");
+                            response = scanner.nextLine();
+                        } catch (InsufficientRoomAvailableForManualAllocationException ex) {
+                            System.out.println("THERE IS CURRENTLY NO ROOMS LEFT TO ALLOCATE");
+                            System.out.println("PLEASE PROCEED TO REFUND GUEST FOR RESERVATION");
+                            System.out.println("");
+                        }
                     }
                 } catch (NoExceptionReportFoundException ex) {
                     //No exception means will have a room allcoated
@@ -438,16 +431,50 @@ public class FrontOfficeModule {
         System.out.println("There is no more reservation to display.");
     }
 
-    private String displayRoomFloorAndNumber(Integer roomFloor, Integer roomNumber) {
-        String floor = roomFloor.toString();
-        if (floor.length() == 1) {
-            floor = "0" + floor;
+    private RoomEntity doManualAllocation(ReservationEntity reservationEntity) throws InsufficientRoomAvailableForManualAllocationException {
+        //if guest was able to book, but was unable to be allocated a room on the day of stay, 
+        //then the staff must see what room there is available and manually allocate a room, otherwise,
+        //if there is no room available, then offer a refund?
+        //during allocaation, should not look at price, since you cant expect them to pay again
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*** Hotel Management Client :: Front Office Module :: Guest Check In :: Manual Allocation ***\n");
+        LocalDateTime reservationStartDate = reservationEntity.getReservationStartDate();
+        LocalDateTime reservationEndDate = reservationEntity.getReservationEndDate();
+
+        try {
+            HashMap<String, HashMap<String, BigDecimal>> map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypes(reservationEntity.getReservationStartDate(), reservationEntity.getReservationEndDate(), 1);
+            List<String> listOfKeys = new ArrayList<>(map.keySet());
+
+            System.out.println("");
+            System.out.println("------------------------");
+            System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
+            System.out.printf("%5.5s%20.20s%20.20s\n", "S/N", "Room Type", "Quantity Available");
+            int counter = 1;
+            for (String roomType : listOfKeys) {
+                HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
+                if (roomTypeMap.get("numRoomType").intValue() > 0) {
+                    System.out.printf("%5d%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("numRoomType"));
+                    counter += 1;
+                }
+            }
+            RoomEntity roomAllocated = null;
+            System.out.println("------------------------");
+            Integer response = 0;
+            System.out.println("Please select Room Type to allocate for this reservation:");
+            System.out.println("");
+            while (response < 1 || response > listOfKeys.size()) {
+                response = scanner.nextInt();
+                if (response > 0 && response < listOfKeys.size() + 1) {
+                    String selectedRoomTypeName = listOfKeys.get(response - 1);
+                    roomAllocated = allocationReportSessionBeanRemote.manualAllocationOfRoomToReservation(selectedRoomTypeName, reservationEntity);
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
+                }
+            }
+            return roomAllocated;
+        } catch (InsufficientRoomsAvailableException ex) {
+            throw new InsufficientRoomAvailableForManualAllocationException();
         }
-        String number = roomNumber.toString();
-        if (number.length() == 1) {
-            number = "0" + floor;
-        }
-        return floor + number;
     }
 
     public void doCheckOut() {
@@ -478,6 +505,17 @@ public class FrontOfficeModule {
             System.out.println("Press any key to continue...");
             String response = scanner.nextLine();
         }
+    }
 
+    private String displayRoomFloorAndNumber(Integer roomFloor, Integer roomNumber) {
+        String floor = roomFloor.toString();
+        if (floor.length() == 1) {
+            floor = "0" + floor;
+        }
+        String number = roomNumber.toString();
+        if (number.length() == 1) {
+            number = "0" + floor;
+        }
+        return floor + number;
     }
 }
