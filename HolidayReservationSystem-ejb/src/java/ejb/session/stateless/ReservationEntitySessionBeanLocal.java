@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import javafx.util.Pair;
 import javax.ejb.Local;
 import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
@@ -25,9 +26,7 @@ import util.exception.UpdateReservationException;
 @Local
 public interface ReservationEntitySessionBeanLocal {
 
-    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException ;
-
-    
+    public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
     public List<ReservationEntity> retrieveAllReservations();
 
@@ -43,6 +42,6 @@ public interface ReservationEntitySessionBeanLocal {
 
     public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate);
 
-    public void createNewReservations(HashMap<ReservationEntity, List<String>> map) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
+    public void createNewReservations(List<Pair<ReservationEntity, List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
 }

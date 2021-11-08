@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -60,43 +61,43 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         validator = validatorFactory.getValidator();
     }
 
-    public class Pair<F, S> {
-
-        private F first; //first member of pair
-        private S second; //second member of pair
-
-        public Pair(F first, S second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        public void setFirst(F first) {
-            this.first = first;
-        }
-
-        public void setSecond(S second) {
-            this.second = second;
-        }
-
-        public F getFirst() {
-            return first;
-        }
-
-        public S getSecond() {
-            return second;
-        }
-    }
+//    public class Pair<F, S> {
+//
+//        private F first; //first member of pair
+//        private S second; //second member of pair
+//
+//        public Pair(F first, S second) {
+//            this.first = first;
+//            this.second = second;
+//        }
+//
+//        public void setFirst(F first) {
+//            this.first = first;
+//        }
+//
+//        public void setSecond(S second) {
+//            this.second = second;
+//        }
+//
+//        public F getFirst() {
+//            return first;
+//        }
+//
+//        public S getSecond() {
+//            return second;
+//        }
+//    }
 
     @Override
     public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
         //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
         Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
-        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatusAND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus  AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
         List<RoomEntity> listOfRoomEntities = query.getResultList();
         listOfRoomEntities.addAll(queryUnavailable.getResultList());
         int currInventory = listOfRoomEntities.size();
-        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeName", newReservation.getRoomTypeName());
         List<ReservationEntity> list = query.getResultList();
         LocalDateTime startDate = newReservation.getReservationStartDate();
         LocalDateTime endDate = newReservation.getReservationEndDate();
@@ -136,10 +137,10 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         }
     }
 
-    public void createNewReservations(HashMap<ReservationEntity, List<String>> map) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
-        List<ReservationEntity> list = new ArrayList<>(map.keySet());
-        for (ReservationEntity res : list) {
-            createNewReservation(res, map.get(res));
+    @Override
+    public void createNewReservations(List<Pair<ReservationEntity,List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+        for (Pair<ReservationEntity,List<String>> pair : list) {
+            createNewReservation(pair.getKey(), pair.getValue());
         }
     }
 
@@ -270,8 +271,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 stringToBigDecimalMap.put("numRoomType", BigDecimal.ONE);
                 Pair<List<RoomRateEntity>, BigDecimal> pair = calculatePriceOfStay(startDate, endDate, room.getRoomTypeEntity());
 
-                stringToBigDecimalMap.put("bestPrice", pair.getSecond());
-                for (RoomRateEntity roomRate : pair.getFirst()) {
+                stringToBigDecimalMap.put("bestPrice", pair.getValue());
+                for (RoomRateEntity roomRate : pair.getKey()) {
                     stringToBigDecimalMap.put(roomRate.getRoomRateName(), BigDecimal.ONE);
                     System.out.println("here 2");
                 }

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
@@ -68,6 +69,33 @@ public class FrontOfficeModule {
 //        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
     }
+//Pair
+//    public class Pair<F, S> {
+//
+//        private F first; //first member of pair
+//        private S second; //second member of pair
+//
+//        public Pair(F first, S second) {
+//            this.first = first;
+//            this.second = second;
+//        }
+//
+//        public void setFirst(F first) {
+//            this.first = first;
+//        }
+//
+//        public void setSecond(S second) {
+//            this.second = second;
+//        }
+//
+//        public F getFirst() {
+//            return first;
+//        }
+//
+//        public S getSecond() {
+//            return second;
+//        }
+//    }
 
     public void menuFrontOfficeOperation() throws InvalidAccessRightException {
         if (currentEmployee.getEmployeeAccessRightEnum() != EmployeeAccessRightEnum.GUEST_RELATION_OFFICER) {
@@ -219,7 +247,7 @@ public class FrontOfficeModule {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** Hotel Management Client :: Front Office Module :: Walk In Reserve ***\n");
         System.out.println("");
-        HashMap<ReservationEntity, List<String>> mapOfNewReservations = new HashMap<>();
+        List<Pair<ReservationEntity, List<String>>> listOfNewReservationPairs = new ArrayList<>();
 
         String firstName = "";
         String lastName = "";
@@ -324,7 +352,7 @@ public class FrontOfficeModule {
 
             }
 
-            mapOfNewReservations.put(newReservation, listOfRoomRateNames);
+            listOfNewReservationPairs.add(new Pair(newReservation, listOfRoomRateNames));
 
             HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(selectedRoomType);
             stringToBigDecimalMap.put("numRoomType", stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE));
@@ -333,7 +361,7 @@ public class FrontOfficeModule {
         }
 
         try {
-            reservationEntitySessionBeanRemote.createNewReservations(mapOfNewReservations);
+            reservationEntitySessionBeanRemote.createNewReservations(listOfNewReservationPairs);
             LocalDateTime currDateTime = LocalDateTime.now();
             LocalDateTime currDate2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
 
