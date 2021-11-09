@@ -14,9 +14,9 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.GuestEntity;
 import entity.ReservationEntity;
+import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -183,10 +183,10 @@ public class GuestOperationModule {
         }
         scanner.nextLine();
         System.out.println("Please wait while we retrieve the available room types...");
-        HashMap<String, HashMap<String, BigDecimal>> map;
+        HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map;
         try {
-            map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypesOnline(reservationStartDate, reservationEndDate, noRooms);
-            List<String> listOfKeys = new ArrayList<>(map.keySet());
+            map = reservationEntitySessionBeanRemote.retrieveRoomTypeAvailabilities(reservationStartDate, reservationEndDate, noRooms, false);
+            List<RoomTypeEntity> listOfKeys = new ArrayList<>(map.keySet());
 
             while (true) {
                 System.out.println("");
@@ -194,10 +194,10 @@ public class GuestOperationModule {
                 System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
                 System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
                 int counter = 1;
-                for (String roomType : listOfKeys) {
+                for (RoomTypeEntity roomType : listOfKeys) {
                     HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                     if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                         counter += 1;
                     }
                 }
@@ -218,77 +218,29 @@ public class GuestOperationModule {
                 break;
             }
 
+            System.out.println("");
+
         } catch (InsufficientRoomsAvailableException ex) {
             System.out.println("Insufficient rooms are available from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
         }
     }
 
-    private void doHotelReserve(HashMap<String, HashMap<String, BigDecimal>> map, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, Integer numRooms) {
+    private void doHotelReserve(HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, Integer numRooms) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** Hotel Management Client :: Front Office Module :: Walk In Reserve ***\n");
         System.out.println("");
         List<Pair<ReservationEntity, List<String>>> listOfNewReservationPairs = new ArrayList<>();
 
-        String firstName = "";
-        String lastName = "";
-        String email = "";
-        String contactNumber = "";
-        String passportNumber = "";
-
-        while (true) {
-            System.out.println("Enter Walk-In Guest's First Name>");
-            firstName = scanner.nextLine();
-            if (firstName.length() > 0) {
-                break;
-            } else {
-                System.out.println("Please input a First Name");
-            }
-        }
-
-        while (true) {
-            System.out.println("Enter Walk-In Guest's Last Name>");
-            lastName = scanner.nextLine();
-            if (lastName.length() > 0) {
-                break;
-            } else {
-                System.out.println("Please input a Last Name");
-            }
-        }
-
-        //unsure how to check if email is valid at the client side
-        System.out.println("Enter Walk-In Guest's Email>");
-        email = scanner.nextLine();
-
-        while (true) {
-            System.out.println("Enter Walk-In Guest's Contact Number>");
-            contactNumber = scanner.nextLine();
-            if (contactNumber.length() == 8) {
-                break;
-            } else {
-                System.out.println("Please input a valid Contact Number");
-            }
-        }
-
-        while (true) {
-            System.out.println("Enter Walk-In Guest's Passport Number>");
-            passportNumber = scanner.nextLine();
-            if (passportNumber.length() == 8) {
-                break;
-            } else {
-                System.out.println("Please input a valid Passport Number");
-            }
-        }
-
         BigDecimal totalPayment = BigDecimal.ZERO;
-        List<String> listOfKeys = new ArrayList<>(map.keySet());
+        List<RoomTypeEntity> listOfKeys = new ArrayList<>(map.keySet());
         int numReservation = 1;
         while (numRooms >= numReservation) {
             ReservationEntity newReservation = new ReservationEntity();
-            newReservation.setFirstName(firstName);
-            newReservation.setLastName(lastName);
-            newReservation.setEmail(email);
-            newReservation.setContactNumber(contactNumber);
-            newReservation.setPassportNumber(passportNumber);
+            newReservation.setFirstName(currentGuest.getFirstName());
+            newReservation.setLastName(currentGuest.getLastName());
+            newReservation.setEmail(currentGuest.getEmail());
+            newReservation.setContactNumber(currentGuest.getContactNumber());
+            newReservation.setPassportNumber(currentGuest.getPassportNumber());
             newReservation.setReservationStartDate(reservationStartDate);
             newReservation.setReservationEndDate(reservationEndDate);
 
@@ -296,12 +248,12 @@ public class GuestOperationModule {
             System.out.println("------------------------");
             System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
             System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
-            List<String> roomTypeNameList = new ArrayList<>();
+            List<RoomTypeEntity> roomTypeNameList = new ArrayList<>();
             int counter = 1;
-            for (String roomType : listOfKeys) {
+            for (RoomTypeEntity roomType : listOfKeys) {
                 HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                 if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                     counter += 1;
                     roomTypeNameList.add(roomType);
                 }
@@ -310,7 +262,7 @@ public class GuestOperationModule {
             System.out.println("------------------------");
             System.out.println("Please select room type for reservation number: " + numReservation);
             Integer response = 0;
-            String selectedRoomType = "";
+            RoomTypeEntity selectedRoomType = null;
             List<String> listOfRoomRateNames = new ArrayList<>();
             while (response < 1 || response > roomTypeNameList.size()) {
                 response = 0;
@@ -321,7 +273,7 @@ public class GuestOperationModule {
                     listOfRoomRateNames = new ArrayList<>(selectedRoomTypeMap.keySet());
                     listOfRoomRateNames.remove("bestPrice");
                     listOfRoomRateNames.remove("numRoomType");
-                    newReservation.setRoomTypeName(selectedRoomType);
+                    newReservation.setRoomTypeName(selectedRoomType.getRoomTypeName());
                     newReservation.setReservationPrice(map.get(selectedRoomType).get("bestPrice"));
                     totalPayment = totalPayment.add(newReservation.getReservationPrice());
                 } else {
@@ -339,7 +291,10 @@ public class GuestOperationModule {
         }
 
         try {
-            reservationEntitySessionBeanRemote.createNewReservationsForGuest(listOfNewReservationPairs, currentGuest);
+            reservationEntitySessionBeanRemote.createNewReservations(listOfNewReservationPairs);
+            System.out.println("::::::::::::::::::::::::::::::::::::::::::");
+            System.out.println("Reservations are successful!");
+            System.out.println("");
             LocalDateTime currDateTime = LocalDateTime.now();
             LocalDateTime currDate2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
 

@@ -16,6 +16,7 @@ import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 //import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.GuestEntity;
+import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -286,20 +287,20 @@ public class MainApp {
         }
         scanner.nextLine();
         System.out.println("Please wait while we retrieve the available room types...");
-        HashMap<String, HashMap<String, BigDecimal>> map;
+        HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map;
         try {
-            map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypesOnline(reservationStartDate, reservationEndDate, noRooms);
-            List<String> listOfKeys = new ArrayList<>(map.keySet());
+            map = reservationEntitySessionBeanRemote.retrieveRoomTypeAvailabilities(reservationStartDate, reservationEndDate, noRooms, false);
+            List<RoomTypeEntity> listOfKeys = new ArrayList<>(map.keySet());
 
             System.out.println("");
             System.out.println("------------------------");
             System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
             System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
             int counter = 1;
-            for (String roomType : listOfKeys) {
+            for (RoomTypeEntity roomType : listOfKeys) {
                 HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                 if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                     counter += 1;
                 }
             }

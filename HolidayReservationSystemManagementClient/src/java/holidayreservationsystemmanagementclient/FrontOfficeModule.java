@@ -19,6 +19,7 @@ import entity.EmployeeEntity;
 import entity.ExceptionReportEntity;
 import entity.ReservationEntity;
 import entity.RoomEntity;
+import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
@@ -183,21 +184,23 @@ public class FrontOfficeModule {
         }
         scanner.nextLine();
         System.out.println("Please wait while we retrieve the available room types...");
-        HashMap<String, HashMap<String, BigDecimal>> map;
+        HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map;
         try {
-            map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypes(reservationStartDate, reservationEndDate, noRooms);
-            List<String> listOfKeys = new ArrayList<>(map.keySet());
-
+            map = reservationEntitySessionBeanRemote.retrieveRoomTypeAvailabilities(reservationStartDate, reservationEndDate, noRooms, true);
+            List<RoomTypeEntity> listOfKeys = new ArrayList<>(map.keySet());
+            listOfKeys.sort((RoomTypeEntity x, RoomTypeEntity y) -> {
+                return x.getRanking() - y.getRanking();
+            });
             while (true) {
                 System.out.println("");
                 System.out.println("------------------------");
                 System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
                 System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
                 int counter = 1;
-                for (String roomType : listOfKeys) {
+                for (RoomTypeEntity roomType : listOfKeys) {
                     HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                     if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                         counter += 1;
                     }
                 }
@@ -205,6 +208,7 @@ public class FrontOfficeModule {
                 Integer response = 0;
                 System.out.println("1: Reserve room/s (Walk-In)");
                 System.out.println("2: Back\n");
+                System.out.println(">");
                 while (response < 1 || response > 2) {
                     response = scanner.nextInt();
                     if (response == 1) {
@@ -223,7 +227,7 @@ public class FrontOfficeModule {
         }
     }
 
-    private void doWalkInReserve(HashMap<String, HashMap<String, BigDecimal>> map, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, Integer numRooms) {
+    private void doWalkInReserve(HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, Integer numRooms) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** Hotel Management Client :: Front Office Module :: Walk In Reserve ***\n");
         System.out.println("");
@@ -280,7 +284,10 @@ public class FrontOfficeModule {
         }
 
         BigDecimal totalPayment = BigDecimal.ZERO;
-        List<String> listOfKeys = new ArrayList<>(map.keySet());
+        List<RoomTypeEntity> listOfKeys = new ArrayList<>(map.keySet());
+        listOfKeys.sort((RoomTypeEntity x, RoomTypeEntity y) -> {
+            return x.getRanking() - y.getRanking();
+        });
         int numReservation = 1;
         while (numRooms >= numReservation) {
             ReservationEntity newReservation = new ReservationEntity();
@@ -296,22 +303,21 @@ public class FrontOfficeModule {
             System.out.println("------------------------");
             System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
             System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
-            List<String> roomTypeNameList = new ArrayList<>();
+            List<RoomTypeEntity> roomTypeNameList = new ArrayList<>();
             int counter = 1;
-            for (String roomType : listOfKeys) {
+            for (RoomTypeEntity roomType : listOfKeys) {
                 HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                 if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                     counter += 1;
                     roomTypeNameList.add(roomType);
-
                 }
             }
 
             System.out.println("------------------------");
             System.out.println("Please select room type for reservation number: " + numReservation);
             Integer response = 0;
-            String selectedRoomType = "";
+            RoomTypeEntity selectedRoomType = null;
             List<String> listOfRoomRateNames = new ArrayList<>();
             while (response < 1 || response > roomTypeNameList.size()) {
                 response = 0;
@@ -322,7 +328,7 @@ public class FrontOfficeModule {
                     listOfRoomRateNames = new ArrayList<>(selectedRoomTypeMap.keySet());
                     listOfRoomRateNames.remove("bestPrice");
                     listOfRoomRateNames.remove("numRoomType");
-                    newReservation.setRoomTypeName(selectedRoomType);
+                    newReservation.setRoomTypeName(selectedRoomType.getRoomTypeName());
                     newReservation.setReservationPrice(map.get(selectedRoomType).get("bestPrice"));
                     totalPayment = totalPayment.add(newReservation.getReservationPrice());
                 } else {
