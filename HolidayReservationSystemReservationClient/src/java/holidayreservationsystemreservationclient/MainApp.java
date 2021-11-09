@@ -124,7 +124,7 @@ public class MainApp {
                 }
             }
 
-            if (response == 3) {
+            if (response == 4) {
                 break;
             }
         }
