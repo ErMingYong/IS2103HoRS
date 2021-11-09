@@ -57,7 +57,6 @@ public class FrontOfficeModule {
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     private EmployeeEntity currentEmployee;
 
@@ -343,6 +342,9 @@ public class FrontOfficeModule {
 
         try {
             reservationEntitySessionBeanRemote.createNewReservations(listOfNewReservationPairs);
+            System.out.println("::::::::::::::::::::::::::::::::::::::::::");
+            System.out.println("Reservations are successful!");
+            System.out.println("");
             LocalDateTime currDateTime = LocalDateTime.now();
             LocalDateTime currDate2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
 
