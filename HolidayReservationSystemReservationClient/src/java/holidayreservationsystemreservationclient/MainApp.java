@@ -41,7 +41,6 @@ import util.exception.UnknownPersistenceException;
  */
 public class MainApp {
 
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;

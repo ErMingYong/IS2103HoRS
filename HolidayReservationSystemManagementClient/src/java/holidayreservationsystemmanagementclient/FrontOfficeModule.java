@@ -519,7 +519,7 @@ public class FrontOfficeModule {
         }
         String number = roomNumber.toString();
         if (number.length() == 1) {
-            number = "0" + floor;
+            number = "0" + number;
         }
         return floor + number;
     }
