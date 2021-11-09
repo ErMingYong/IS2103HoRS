@@ -26,11 +26,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.util.Pair;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.CreateNewReservationException;
+import util.exception.GuestNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.UnknownPersistenceException;
@@ -353,50 +356,97 @@ public class GuestOperationModule {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** Hotel Reservation System Reservation Client  System :: Guest Operation :: View My Reservation Details***\n");
+        GuestEntity managedGuest;
+        try {
+            managedGuest = guestEntitySessionBeanRemote.retrieveGuestById(currentGuest.getUserEntityId());
+            List<ReservationEntity> listOfReservations = managedGuest.getReservationEntities();
+            listOfReservations.sort((ReservationEntity x, ReservationEntity y) -> {
+                if (x.getReservationStartDate().isAfter(y.getReservationStartDate())) {
+                    return 1;
+                } else if (x.getReservationStartDate().isEqual(y.getReservationStartDate())) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+            Integer option = 0;
+            while (true) {
+                System.out.println("----------------------------------------");
+                for (int i = 0; i < listOfReservations.size(); i++) {
+                    System.out.println((i + 1) + " Reservation Id: " + listOfReservations.get(i).getReservationEntityId());
+                }
+                option = 0;
+                while (option < 1 || option > listOfReservations.size()) {
+                    System.out.println("----------------------------------------");
+                    System.out.println("Enter Reservation Number Option");
+                    option = scanner.nextInt();
 
-        for (int i = 0; i < currentGuest.getReservationEntities().size(); i++) {
-            System.out.println((i + 1) + " Reservation Id: " + currentGuest.getReservationEntities().get(i).getReservationEntityId());
+                    if (option >= 1 && option <= listOfReservations.size()) {
+                        ReservationEntity reservation = listOfReservations.get(option - 1);
+                        Long reservationId = reservation.getReservationEntityId();
+                        LocalDateTime reservationStartDate = reservation.getReservationStartDate();
+                        LocalDateTime reservationEndDate = reservation.getReservationEndDate();
+                        String reservationFirstName = reservation.getFirstName();
+                        String reservationLastname = reservation.getLastName();
+                        String reservationEmail = reservation.getEmail();
+                        String reservationContactNumber = reservation.getContactNumber();
+                        String reservationPassportNumber = reservation.getPassportNumber();
+                        System.out.println("Reservation successfully retrieved. Reservation Id: " + reservationId);
+                        System.out.println("Reservation First Name: " + reservationFirstName);
+                        System.out.println("Reservation Last Name: " + reservationLastname);
+                        System.out.println("Reservation Start Date: " + reservationStartDate.toString());
+                        System.out.println("Reservation End Date: " + reservationEndDate.toString());
+                        System.out.println("Reservation Email: " + reservationEmail);
+                        System.out.println("Reservation Contact Number: " + reservationContactNumber);
+                        System.out.println("Reservation Passport Number: " + reservationPassportNumber);
+
+                        System.out.print("Press any key to continue...> ");
+                        scanner.nextLine();
+                    } else {
+                        System.out.println("Please select a valid input!");
+                        System.out.println("");
+                    }
+                }
+                System.out.println("");
+                System.out.println("Continue to view Reservation? Press 'Y', to Exit Press any other key...");
+                String response = scanner.nextLine();
+                if (response == "Y") {
+                    continue;
+                }
+                break;
+            }
+        } catch (GuestNotFoundException ex) {
+            Logger.getLogger(GuestOperationModule.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.println("Enter Reservation Number Option");
-        Integer option = scanner.nextInt();
-
-        ReservationEntity reservation = currentGuest.getReservationEntities().get(option - 1);
-        Long reservationId = reservation.getReservationEntityId();
-        LocalDateTime reservationStartDate = reservation.getReservationStartDate();
-        LocalDateTime reservationEndDate = reservation.getReservationEndDate();
-        String reservationFirstName = reservation.getFirstName();
-        String reservationLastname = reservation.getLastName();
-        String reservationEmail = reservation.getEmail();
-        String reservationContactNumber = reservation.getContactNumber();
-        String reservationPassportNumber = reservation.getPassportNumber();
-        System.out.println("Reservation successfully retrieved. Reservation Id: " + reservationId);
-        System.out.println("Reservation First Name: " + reservationFirstName);
-        System.out.println("Reservation Last Name: " + reservationLastname);
-        System.out.println("Reservation Start Date: " + reservationStartDate.toString());
-        System.out.println("Reservation End Date: " + reservationEndDate.toString());
-        System.out.println("Reservation Email: " + reservationEmail);
-        System.out.println("Reservation Contact Number: " + reservationContactNumber);
-        System.out.println("Reservation Passport Number: " + reservationPassportNumber);
-
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
     }
 
     private void doViewAllMyReservation() {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.println("*** Hotel Reservation System Reservation Client  System :: Guest Operation :: View All My Reservations ***\n");
-
-        List<ReservationEntity> reservationEntitires = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(currentGuest.getPassportNumber());
-
-        System.out.printf("%s%s%s%s%s%s%s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
-
-        for (ReservationEntity reservationEntity : reservationEntitires) {
-            System.out.printf("%s%s%s%s%s%s%s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
+        GuestEntity managedGuest;
+        try {
+            managedGuest = guestEntitySessionBeanRemote.retrieveGuestById(currentGuest.getUserEntityId());
+            System.out.println("*** Hotel Reservation System Reservation Client  System :: Guest Operation :: View All My Reservations ***\n");
+            List<ReservationEntity> reservationEntities = managedGuest.getReservationEntities();
+            reservationEntities.sort((ReservationEntity x, ReservationEntity y) -> {
+                if (x.getReservationStartDate().isAfter(y.getReservationStartDate())) {
+                    return 1;
+                } else if (x.getReservationStartDate().isEqual(y.getReservationStartDate())) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+            //List<ReservationEntity> reservationEntitires = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(managedGuest.getPassportNumber());
+            System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
+            for (ReservationEntity reservationEntity : reservationEntities) {
+                System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
+            }
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
+        } catch (GuestNotFoundException ex) {
+            Logger.getLogger(GuestOperationModule.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
     }
 }

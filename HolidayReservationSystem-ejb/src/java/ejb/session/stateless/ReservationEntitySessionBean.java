@@ -353,11 +353,9 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE);
         List<RoomEntity> listOfRoomEntities = query.getResultList();
         listOfRoomEntities.addAll(queryUnavailable.getResultList());
-        System.out.println("working here");
         HashMap<String, HashMap<String, BigDecimal>> map = new HashMap<>();
         int totalRooms = listOfRoomEntities.size();
         for (RoomEntity room : listOfRoomEntities) {
-            System.out.println("here");
             if (map.containsKey(room.getRoomTypeEntity().getRoomTypeName())) {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(room.getRoomTypeEntity().getRoomTypeName());
                 stringToBigDecimalMap.put("numRoomType", stringToBigDecimalMap.get("numRoomType").add(BigDecimal.ONE));
@@ -370,7 +368,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 stringToBigDecimalMap.put("bestPrice", pair.getValue());
                 for (RoomRateEntity roomRate : pair.getKey()) {
                     stringToBigDecimalMap.put(roomRate.getRoomRateName(), BigDecimal.ONE);
-                    System.out.println("here 2");
                 }
                 map.put(room.getRoomTypeEntity().getRoomTypeName(), stringToBigDecimalMap);
             }
@@ -378,15 +375,18 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         System.out.println("done getting initial inventory");
         //GET NUMBER OF ROOM USED
         int numRoomsUsed = 0;
-        //COMPUTATION HEAVY how to only get reservations that endDate is already over so i dont have a huge list
+        //only get reservations that endDate is already over so i dont have a huge list
         //query only reservations that HAVE NOT PASSED (NOW < ENDDATE)
-        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate").setParameter("inDate", LocalDateTime.now());
+        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate").setParameter("inDate", LocalDateTime.of(LocalDate.now(), LocalTime.MIN));
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
         System.out.println("getting whats used");
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();
             LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate))
+                    || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate))
+                    || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate))
+                    && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
                 BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
                 numRoomsUsed += 1;
@@ -414,11 +414,9 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE);
         List<RoomEntity> listOfRoomEntities = query.getResultList();
         listOfRoomEntities.addAll(queryUnavailable.getResultList());
-        System.out.println("working here");
         HashMap<String, HashMap<String, BigDecimal>> map = new HashMap<>();
         int totalRooms = listOfRoomEntities.size();
         for (RoomEntity room : listOfRoomEntities) {
-            System.out.println("here");
             if (map.containsKey(room.getRoomTypeEntity().getRoomTypeName())) {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(room.getRoomTypeEntity().getRoomTypeName());
                 stringToBigDecimalMap.put("numRoomType", stringToBigDecimalMap.get("numRoomType").add(BigDecimal.ONE));
@@ -431,7 +429,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 stringToBigDecimalMap.put("bestPrice", pair.getValue());
                 for (RoomRateEntity roomRate : pair.getKey()) {
                     stringToBigDecimalMap.put(roomRate.getRoomRateName(), BigDecimal.ONE);
-                    System.out.println("here 2");
                 }
                 map.put(room.getRoomTypeEntity().getRoomTypeName(), stringToBigDecimalMap);
             }
@@ -441,13 +438,16 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         int numRoomsUsed = 0;
         //COMPUTATION HEAVY how to only get reservations that endDate is already over so i dont have a huge list
         //query only reservations that HAVE NOT PASSED (NOW < ENDDATE)
-        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate").setParameter("inDate", LocalDateTime.now());
+        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate").setParameter("inDate", LocalDateTime.of(LocalDate.now(), LocalTime.MIN));
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
         System.out.println("getting whats used");
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();
             LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate))
+                    || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate))
+                    || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate))
+                    && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
                 BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
                 numRoomsUsed += 1;
@@ -466,70 +466,111 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     private Pair<List<RoomRateEntity>, BigDecimal> calculatePriceOfStay(LocalDateTime startDate, LocalDateTime endDate, RoomTypeEntity roomTypeEntity) {
+        //should only look at published rate, assume that there can only be 1 published rate and validity is forever
         BigDecimal totalPrice = BigDecimal.ZERO;
         LocalDateTime currDate = startDate;
-        System.out.println("calc here");
         List<RoomRateEntity> list = new ArrayList<>();
         while (currDate.isBefore(endDate)) {
-            System.out.println("calc here 2");
-            Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum = :inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity.getRoomTypeId()).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
-            List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
-            BigDecimal lowest = BigDecimal.valueOf(99999);
-            RoomRateEntity lowestRoomRate = null;
+            //Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum = :inRoomRateTypeEnum").setParameter("inRoomType", roomTypeEntity.getRoomTypeId()).setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
+            //List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
+
+            List<RoomRateEntity> listOfRoomRateEntities = roomTypeEntity.getRoomRateEntities();
+//            BigDecimal lowest = BigDecimal.valueOf(99999);
+//            RoomRateEntity lowestRoomRate = null;
             for (RoomRateEntity roomRate : listOfRoomRateEntities) {
-                System.out.println("calc here 3");
-                if (((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
-                        || currDate.isEqual(roomRate.getValidPeriodFrom()) || currDate.isEqual(roomRate.getValidPeriodTo())) && roomRate.getRoomRateTypeEnum().equals(RoomRateTypeEnum.PUBLISHED)) {
-                    if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
-                        lowest = roomRate.getRatePerNight();
-                        lowestRoomRate = roomRate;
-                    }
+                if (roomRate.getRoomRateTypeEnum() == RoomRateTypeEnum.PUBLISHED && roomRate.getIsDisabled() == false) {
+                    list.add(roomRate);
+                    totalPrice = totalPrice.add(roomRate.getRatePerNight());
+                    break;
                 }
-                totalPrice = totalPrice.add(lowest);
-                list.add(lowestRoomRate);
-                currDate = currDate.plusDays(1);
             }
+//                
+//                if (((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
+//                        || currDate.isEqual(roomRate.getValidPeriodFrom()) || currDate.isEqual(roomRate.getValidPeriodTo())) && roomRate.getRoomRateTypeEnum().equals(RoomRateTypeEnum.PUBLISHED)) {
+//                    if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
+//                        lowest = roomRate.getRatePerNight();
+//                        lowestRoomRate = roomRate;
+//                    }
+//                }
+//                totalPrice = totalPrice.add(lowest);
+//                list.add(lowestRoomRate);
+            currDate = currDate.plusDays(1);
         }
-        System.out.println("calc 4");
         Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
         return pair;
     }
 
     private Pair<List<RoomRateEntity>, BigDecimal> calculatePriceOfStayOnline(LocalDateTime startDate, LocalDateTime endDate, RoomTypeEntity roomTypeEntity) {
+        //must check between the 3 types of 
         BigDecimal totalPrice = BigDecimal.ZERO;
         LocalDateTime currDate = startDate;
-        System.out.println("calc here");
         List<RoomRateEntity> list = new ArrayList<>();
         while (currDate.isBefore(endDate)) {
-            System.out.println("calc here 2");
-            Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum != :inRoomRateTypeEnum")
-                    .setParameter("inRoomType", roomTypeEntity.getRoomTypeId())
-                    .setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
-            List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
-            BigDecimal lowest = BigDecimal.valueOf(99999);
-            RoomRateEntity lowestRoomRate = null;
+//            Query query = em.createQuery("SELECT rr FROM RoomRateEntity rr WHERE rr.roomTypeEntity.roomTypeId = :inRoomType AND rr.roomRateTypeEnum != :inRoomRateTypeEnum")
+//                    .setParameter("inRoomType", roomTypeEntity.getRoomTypeId())
+//                    .setParameter("inRoomRateTypeEnum", RoomRateTypeEnum.PUBLISHED);
+//            List<RoomRateEntity> listOfRoomRateEntities = query.getResultList();
+            List<RoomRateEntity> listOfRoomRateEntities = roomTypeEntity.getRoomRateEntities();
+            RoomRateEntity normalRate = null;
+            BigDecimal normalRatePrice = BigDecimal.ZERO;
+            RoomRateEntity peakRate = null;
+            BigDecimal peakRatePrice = BigDecimal.valueOf(99999);
+            RoomRateEntity promoRate = null;
+            BigDecimal promoRatePrice = BigDecimal.valueOf(99999);
+
+//            BigDecimal lowest = BigDecimal.valueOf(99999);
+//            RoomRateEntity lowestRoomRate = null;
             for (RoomRateEntity roomRate : listOfRoomRateEntities) {
-                System.out.println("calc here 3");
-                if (((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
-                        || currDate.isEqual(roomRate.getValidPeriodFrom()) || currDate.isEqual(roomRate.getValidPeriodTo())) && !roomRate.getRoomRateTypeEnum().equals(RoomRateTypeEnum.PUBLISHED)) {
-                    if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
-                        lowest = roomRate.getRatePerNight();
-                        lowestRoomRate = roomRate;
+
+                if (roomRate.getIsDisabled() == false) {
+                    if (((currDate.isAfter(roomRate.getValidPeriodFrom()) && currDate.isBefore(roomRate.getValidPeriodTo()))
+                            || currDate.isEqual(roomRate.getValidPeriodFrom())
+                            || currDate.isEqual(roomRate.getValidPeriodTo()))
+                            && !roomRate.getRoomRateTypeEnum().equals(RoomRateTypeEnum.PUBLISHED)) {
+
+                        if (roomRate.getRoomRateTypeEnum() == RoomRateTypeEnum.NORMAL) {
+                            normalRate = roomRate;
+                            normalRatePrice = normalRate.getRatePerNight();
+                        } else if (roomRate.getRoomRateTypeEnum() == RoomRateTypeEnum.PEAK) {
+                            if (roomRate.getRatePerNight().compareTo(peakRatePrice) < 0) {
+                                peakRatePrice = roomRate.getRatePerNight();
+                                peakRate = roomRate;
+                            }
+                        } else if (roomRate.getRoomRateTypeEnum() == RoomRateTypeEnum.PROMOTION) {
+                            if (roomRate.getRatePerNight().compareTo(promoRatePrice) < 0) {
+                                promoRatePrice = roomRate.getRatePerNight();
+                                promoRate = roomRate;
+                            }
+                        }
+//                        if (roomRate.getRatePerNight().compareTo(lowest) < 0) {
+//                            lowest = roomRate.getRatePerNight();
+//                            lowestRoomRate = roomRate;
+//                        }
                     }
                 }
-                totalPrice = totalPrice.add(lowest);
-                list.add(lowestRoomRate);
+
+                if (promoRate != null) {
+                    totalPrice = totalPrice.add(promoRatePrice);
+                    list.add(promoRate);
+                } else if (peakRate != null) {
+                    totalPrice = totalPrice.add(peakRatePrice);
+                    list.add(peakRate);
+                } else {
+                    totalPrice = totalPrice.add(normalRatePrice);
+                    list.add(normalRate);
+                }
+
                 currDate = currDate.plusDays(1);
             }
         }
-        System.out.println("calc 4");
         Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
         return pair;
     }
 
     @Override
     public void setReservationToCheckedIn(ReservationEntity reservationEntity) {
-        ReservationEntity res = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
+        ReservationEntity res = em.find(ReservationEntity.class,
+                reservationEntity.getReservationEntityId());
         res.setIsCheckedIn(true);
         res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.UNAVAILABLE);
 
@@ -537,7 +578,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
     @Override
     public void setReservationToCheckedOut(ReservationEntity reservationEntity) {
-        ReservationEntity res = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
+        ReservationEntity res = em.find(ReservationEntity.class,
+                reservationEntity.getReservationEntityId());
         res.setIsCheckedIn(false);
         res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
         res.setRoomEntity(null);

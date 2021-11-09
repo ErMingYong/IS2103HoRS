@@ -44,9 +44,13 @@ public class ExceptionReportEntity implements Serializable {
     private ReservationEntity reservationEntity;
     
     public ExceptionReportEntity() {
-
     }
 
+    public ExceptionReportEntity(LocalDateTime generationDate, ExceptionReportTypeEnum exceptionReportTypeEnum) {
+        this.generationDate = generationDate;
+        this.exceptionReportTypeEnum = exceptionReportTypeEnum;
+    }
+    
     public Long getExceptionReportId() {
         return exceptionReportId;
     }

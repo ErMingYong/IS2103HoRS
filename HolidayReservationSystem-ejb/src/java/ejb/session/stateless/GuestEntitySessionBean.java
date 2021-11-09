@@ -100,7 +100,9 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
         Query query = em.createQuery("SELECT g FROM GuestEntity g WHERE g.username = :inUsername").setParameter("inUsername", guestUsername);
 
         try {
-            return (GuestEntity) query.getSingleResult();
+            GuestEntity guest = (GuestEntity) query.getSingleResult();
+            guest.getReservationEntities().size();
+            return guest;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new GuestNotFoundException("Staff Username " + guestUsername + " does not exist!");
         }
@@ -147,7 +149,7 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
     public GuestEntity guestLogin(String guestUsername, String guestPassword) throws GuestNotFoundException, InvalidLoginCredentialException {
         try {
             GuestEntity guest = retrieveGuestByUsername(guestUsername);
-
+            guest.getReservationEntities().size();
             if (guest != null) {
                 if (guest.getPassword().equals(guestPassword)) {
                     return guest;

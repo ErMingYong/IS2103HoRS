@@ -395,23 +395,27 @@ public class FrontOfficeModule {
                         //awaiting what prof will say
                         System.out.println("SECOND TYPE EXCEPTION");
                         System.out.println("No room has been allocated for this reservation");
-                        System.out.println("Press any key to continue to manually allocate...");
+                        System.out.println("Please Handle Reservation Manually");
+                        System.out.println("");
+                        System.out.println("Press any key to continue...");
                         String response = scanner.nextLine();
-                        try {
-                            RoomEntity roomAllocated = doManualAllocation(res);
-                            System.out.println("-----------------------");
-                            System.out.println("Reservation: " + counter);
-                            counter += 1;
-                            System.out.println("");
-                            System.out.println("Room Allocated: " + displayRoomFloorAndNumber(roomAllocated.getRoomFloor(), roomAllocated.getRoomNumber()));
-                            System.out.println("::::::::::::::::::::::::::::::::::::::");
-                            System.out.println("Press any key to continue...");
-                            response = scanner.nextLine();
-                        } catch (InsufficientRoomAvailableForManualAllocationException ex) {
-                            System.out.println("THERE IS CURRENTLY NO ROOMS LEFT TO ALLOCATE");
-                            System.out.println("PLEASE PROCEED TO REFUND GUEST FOR RESERVATION");
-                            System.out.println("");
-                        }
+//                        System.out.println("Press any key to continue to manually allocate...");
+//                        String response = scanner.nextLine();
+//                        try {
+//                            RoomEntity roomAllocated = doManualAllocation(res);
+//                            System.out.println("-----------------------");
+//                            System.out.println("Reservation: " + counter);
+//                            counter += 1;
+//                            System.out.println("");
+//                            System.out.println("Room Allocated: " + displayRoomFloorAndNumber(roomAllocated.getRoomFloor(), roomAllocated.getRoomNumber()));
+//                            System.out.println("::::::::::::::::::::::::::::::::::::::");
+//                            System.out.println("Press any key to continue...");
+//                            response = scanner.nextLine();
+//                        } catch (InsufficientRoomAvailableForManualAllocationException ex) {
+//                            System.out.println("THERE IS CURRENTLY NO ROOMS LEFT TO ALLOCATE");
+//                            System.out.println("PLEASE PROCEED TO REFUND GUEST FOR RESERVATION");
+//                            System.out.println("");
+//                        }
                     }
                 } catch (NoExceptionReportFoundException ex) {
                     //No exception means will have a room allcoated
@@ -431,52 +435,51 @@ public class FrontOfficeModule {
         System.out.println("There is no more reservation to display.");
     }
 
-    private RoomEntity doManualAllocation(ReservationEntity reservationEntity) throws InsufficientRoomAvailableForManualAllocationException {
-        //if guest was able to book, but was unable to be allocated a room on the day of stay, 
-        //then the staff must see what room there is available and manually allocate a room, otherwise,
-        //if there is no room available, then offer a refund?
-        //during allocaation, should not look at price, since you cant expect them to pay again
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("*** Hotel Management Client :: Front Office Module :: Guest Check In :: Manual Allocation ***\n");
-        LocalDateTime reservationStartDate = reservationEntity.getReservationStartDate();
-        LocalDateTime reservationEndDate = reservationEntity.getReservationEndDate();
-
-        try {
-            HashMap<String, HashMap<String, BigDecimal>> map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypes(reservationEntity.getReservationStartDate(), reservationEntity.getReservationEndDate(), 1);
-            List<String> listOfKeys = new ArrayList<>(map.keySet());
-
-            System.out.println("");
-            System.out.println("------------------------");
-            System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
-            System.out.printf("%5.5s%20.20s%20.20s\n", "S/N", "Room Type", "Quantity Available");
-            int counter = 1;
-            for (String roomType : listOfKeys) {
-                HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
-                if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                    System.out.printf("%5d%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("numRoomType"));
-                    counter += 1;
-                }
-            }
-            RoomEntity roomAllocated = null;
-            System.out.println("------------------------");
-            Integer response = 0;
-            System.out.println("Please select Room Type to allocate for this reservation:");
-            System.out.println("");
-            while (response < 1 || response > listOfKeys.size()) {
-                response = scanner.nextInt();
-                if (response > 0 && response < listOfKeys.size() + 1) {
-                    String selectedRoomTypeName = listOfKeys.get(response - 1);
-                    roomAllocated = allocationReportSessionBeanRemote.manualAllocationOfRoomToReservation(selectedRoomTypeName, reservationEntity);
-                } else {
-                    System.out.println("Invalid option, please try again!\n");
-                }
-            }
-            return roomAllocated;
-        } catch (InsufficientRoomsAvailableException ex) {
-            throw new InsufficientRoomAvailableForManualAllocationException();
-        }
-    }
-
+//    private RoomEntity doManualAllocation(ReservationEntity reservationEntity) throws InsufficientRoomAvailableForManualAllocationException {
+//        //if guest was able to book, but was unable to be allocated a room on the day of stay, 
+//        //then the staff must see what room there is available and manually allocate a room, otherwise,
+//        //if there is no room available, then offer a refund?
+//        //during allocaation, should not look at price, since you cant expect them to pay again
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("*** Hotel Management Client :: Front Office Module :: Guest Check In :: Manual Allocation ***\n");
+//        LocalDateTime reservationStartDate = reservationEntity.getReservationStartDate();
+//        LocalDateTime reservationEndDate = reservationEntity.getReservationEndDate();
+//
+//        try {
+//            HashMap<String, HashMap<String, BigDecimal>> map = reservationEntitySessionBeanRemote.retrieveAvailableRoomTypes(reservationEntity.getReservationStartDate(), reservationEntity.getReservationEndDate(), 1);
+//            List<String> listOfKeys = new ArrayList<>(map.keySet());
+//
+//            System.out.println("");
+//            System.out.println("------------------------");
+//            System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
+//            System.out.printf("%5.5s%20.20s%20.20s\n", "S/N", "Room Type", "Quantity Available");
+//            int counter = 1;
+//            for (String roomType : listOfKeys) {
+//                HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
+//                if (roomTypeMap.get("numRoomType").intValue() > 0) {
+//                    System.out.printf("%5d%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("numRoomType"));
+//                    counter += 1;
+//                }
+//            }
+//            RoomEntity roomAllocated = null;
+//            System.out.println("------------------------");
+//            Integer response = 0;
+//            System.out.println("Please select Room Type to allocate for this reservation:");
+//            System.out.println("");
+//            while (response < 1 || response > listOfKeys.size()) {
+//                response = scanner.nextInt();
+//                if (response > 0 && response < listOfKeys.size() + 1) {
+//                    String selectedRoomTypeName = listOfKeys.get(response - 1);
+//                    roomAllocated = allocationReportSessionBeanRemote.manualAllocationOfRoomToReservation(selectedRoomTypeName, reservationEntity);
+//                } else {
+//                    System.out.println("Invalid option, please try again!\n");
+//                }
+//            }
+//            return roomAllocated;
+//        } catch (InsufficientRoomsAvailableException ex) {
+//            throw new InsufficientRoomAvailableForManualAllocationException();
+//        }
+//    }
     public void doCheckOut() {
         //check guest out by taking in their passport they stayed in
         //detach room from reservation, set reservation isCheckIn to be false, set room to Available

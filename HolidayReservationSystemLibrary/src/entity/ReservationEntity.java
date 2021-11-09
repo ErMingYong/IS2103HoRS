@@ -16,10 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
@@ -77,9 +74,7 @@ public class ReservationEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
     private RoomEntity roomEntity;
-    @ManyToMany(fetch = FetchType.LAZY)//, mappedBy = "roomRateEntity")
-    //@JoinColumn(nullable = true)
-//@JoinTable(name = "ReservationToRoomRates")
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<RoomRateEntity> roomRateEntities;
 
     public ReservationEntity() {
