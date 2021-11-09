@@ -92,8 +92,8 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
 
     @Override
     public ExceptionReportEntity retrieveExceptionReportByReservation(ReservationEntity res) throws NoExceptionReportFoundException {
-        Query query = em.createQuery("SELECT er FROM ExceptionReportEntity er WHERE er.reservationEntity = :inReservationEntity ")
-                .setParameter("inReservationEntity", res);
+        Query query = em.createQuery("SELECT er FROM ExceptionReportEntity er WHERE er.reservationEntity.reservationEntityId = :inReservationEntity ")
+                .setParameter("inReservationEntity", res.getReservationEntityId());
         ExceptionReportEntity exceptionReportEntity;
         try {
             exceptionReportEntity = (ExceptionReportEntity) query.getSingleResult();

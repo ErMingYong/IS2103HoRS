@@ -383,10 +383,10 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();
             LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate))
-                    || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate))
-                    || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate))
-                    && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+            if (((resStartDate.isBefore(startDate) || resStartDate.isEqual(startDate) || resStartDate.isAfter(startDate)) && (resEndDate.isBefore(endDate) || resEndDate.isEqual(endDate))) //front
+                    || ((resStartDate.isEqual(startDate) || resStartDate.isBefore(startDate)) && (resEndDate.isAfter(endDate) || resEndDate.isBefore(endDate) || resEndDate.isEqual(endDate))) //back
+                    || ((resStartDate.isAfter(startDate)) || resStartDate.isEqual(startDate)) && (resEndDate.isEqual(endDate) || resEndDate.isBefore(endDate))) //within
+            {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
                 BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
                 numRoomsUsed += 1;
@@ -396,6 +396,20 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 }
                 stringToBigDecimalMap.put("numRoomType", newNum);
             }
+
+//            if ((resStartDate.isAfter(startDate) && ((resStartDate.isBefore(endDate)) || resStartDate.isBefore(endDate)))
+//                    || (resEndDate.isAfter(startDate) && (resEndDate.isBefore(endDate) || resEndDate.isEqual(endDate)))
+//                    || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate))
+//                    && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+//                HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
+//                BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
+//                numRoomsUsed += 1;
+//                //shouldnt be possible but just in case
+//                if (newNum.intValue() < 0) {
+//                    newNum = BigDecimal.ZERO;
+//                }
+//                stringToBigDecimalMap.put("numRoomType", newNum);
+//            }
         }
         if (totalRooms - numRoomsUsed < numRooms) {
             throw new InsufficientRoomsAvailableException();
@@ -444,10 +458,11 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         for (ReservationEntity res : listOfReservationEntities) {
             LocalDateTime resStartDate = res.getReservationStartDate();
             LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate))
-                    || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate))
-                    || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate))
-                    && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+
+            if (((resStartDate.isBefore(startDate) || resStartDate.isEqual(startDate) || resStartDate.isAfter(startDate)) && (resEndDate.isBefore(endDate) || resEndDate.isEqual(endDate))) //front
+                    || ((resStartDate.isEqual(startDate) || resStartDate.isBefore(startDate)) && (resEndDate.isAfter(endDate) || resEndDate.isBefore(endDate) || resEndDate.isEqual(endDate))) //back
+                    || ((resStartDate.isAfter(startDate)) || resStartDate.isEqual(startDate)) && (resEndDate.isEqual(endDate) || resEndDate.isBefore(endDate))) //within
+            {
                 HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
                 BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
                 numRoomsUsed += 1;
@@ -457,6 +472,19 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 }
                 stringToBigDecimalMap.put("numRoomType", newNum);
             }
+//            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate))
+//                    || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate))
+//                    || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate))
+//                    && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+//                HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(res.getRoomTypeName());
+//                BigDecimal newNum = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.ONE);
+//                numRoomsUsed += 1;
+//                //shouldnt be possible but just in case
+//                if (newNum.intValue() < 0) {
+//                    newNum = BigDecimal.ZERO;
+//                }
+//                stringToBigDecimalMap.put("numRoomType", newNum);
+//            }
         }
         if (totalRooms - numRoomsUsed < numRooms) {
             throw new InsufficientRoomsAvailableException();
@@ -548,20 +576,21 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 //                        }
                     }
                 }
-
-                if (promoRate != null) {
-                    totalPrice = totalPrice.add(promoRatePrice);
-                    list.add(promoRate);
-                } else if (peakRate != null) {
-                    totalPrice = totalPrice.add(peakRatePrice);
-                    list.add(peakRate);
-                } else {
-                    totalPrice = totalPrice.add(normalRatePrice);
-                    list.add(normalRate);
-                }
-
-                currDate = currDate.plusDays(1);
             }
+
+            if (promoRate != null) {
+                totalPrice = totalPrice.add(promoRatePrice);
+                list.add(promoRate);
+            } else if (peakRate != null) {
+                totalPrice = totalPrice.add(peakRatePrice);
+                list.add(peakRate);
+            } else {
+                totalPrice = totalPrice.add(normalRatePrice);
+                list.add(normalRate);
+            }
+
+            currDate = currDate.plusDays(1);
+
         }
         Pair<List<RoomRateEntity>, BigDecimal> pair = new Pair<>(list, totalPrice);
         return pair;

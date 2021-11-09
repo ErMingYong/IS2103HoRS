@@ -41,7 +41,6 @@ import util.exception.UnknownPersistenceException;
  */
 public class MainApp {
 
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
@@ -309,8 +308,9 @@ public class MainApp {
             System.out.println("If You Do Not Have An Account, Please Register For One For Free!");
             System.out.println("------------------------");
             System.out.println("");
-            
+            System.out.println("Press any key to go back...");
             String response = scanner.nextLine();
+            System.out.println("");
             
 
         } catch (InsufficientRoomsAvailableException ex) {
