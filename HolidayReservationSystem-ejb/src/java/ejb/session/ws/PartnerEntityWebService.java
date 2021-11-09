@@ -6,8 +6,10 @@
 package ejb.session.ws;
 
 import ejb.session.stateless.PartnerEntitySessionBeanLocal;
-import ejb.session.stateless.ReservationEntitySessionBeanLocal;
 import entity.PartnerEntity;
+import entity.ReservationEntity;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
@@ -22,45 +24,54 @@ import util.exception.PartnerNotFoundException;
  *
  * @author mingy
  */
-
-
-
 @WebService(serviceName = "PartnerEntityWebService")
 @Stateless()
 public class PartnerEntityWebService {
 
+    @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
+    private EntityManager em;
+
     @EJB
     private PartnerEntitySessionBeanLocal partnerEntitySessionBeanLocal;
+
     /*
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
-    */
+     */
 
-    /*
+ /*
     @EJB
     private ReservationEntitySessionBeanLocal reservationEntitySessionBeanLocal;
-    */
-
+     */
     /**
      * This is a sample web service operation
      */
-    
-    
     @WebMethod(operationName = "partnerLogin")
     public PartnerEntity partnerLogin(@WebParam(name = "username") String partnerUsername,
-            @WebParam(name = "password") String partnerPassword) {
+            @WebParam(name = "password") String partnerPassword) throws PartnerNotFoundException, InvalidLoginCredentialException {
 
         PartnerEntity partner = null;
-        try {
-            partner = partnerEntitySessionBeanLocal.partnerLogin(partnerUsername, partnerPassword);
+        partner = partnerEntitySessionBeanLocal.retrievePartnerByUsername(partnerUsername);
 
-            return partner;
-        } catch (PartnerNotFoundException ex) {
-            System.out.println("Partner Record does not exist");
-        } catch (InvalidLoginCredentialException ex) {
-            System.out.println("Username or Password is invalid");
+        if (partner == null) {
+            throw new PartnerNotFoundException("Partner with username " + partnerUsername + " does not exist");
+        } else if (!partner.getPassword().equals(partnerPassword)) {
+            throw new InvalidLoginCredentialException("Wrong password");
         }
 
         return partner;
+    }
+
+    @WebMethod(operationName = "retrieveAllPartnerReservations")
+    public List<ReservationEntity> retrieveAllPartnerReservations(@WebParam(name = "partnerId") Long partnerId) throws PartnerNotFoundException {
+
+        try {
+            PartnerEntity partner = partnerEntitySessionBeanLocal.retrievePartnerByPartnerId(partnerId);
+            List<ReservationEntity> partnerReservations = partner.getReservationEntities();
+
+            return partnerReservations;
+        } catch (PartnerNotFoundException ex) {
+            throw new PartnerNotFoundException("Partner does not exist");
+        }
     }
 }

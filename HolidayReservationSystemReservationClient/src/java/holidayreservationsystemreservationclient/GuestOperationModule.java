@@ -355,7 +355,7 @@ public class GuestOperationModule {
     private void doViewMyReservationDetails() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("*** Hotel Reservation System Reservation Client  System :: Guest Operation :: View My Reservation Details***\n");
+        System.out.println("*** Hotel Reservation System Reservation Client System :: Guest Operation :: View My Reservation Details***\n");
         GuestEntity managedGuest;
         try {
             managedGuest = guestEntitySessionBeanRemote.retrieveGuestById(currentGuest.getUserEntityId());
@@ -426,7 +426,7 @@ public class GuestOperationModule {
         GuestEntity managedGuest;
         try {
             managedGuest = guestEntitySessionBeanRemote.retrieveGuestById(currentGuest.getUserEntityId());
-            System.out.println("*** Hotel Reservation System Reservation Client  System :: Guest Operation :: View All My Reservations ***\n");
+            System.out.println("*** Hotel Reservation System Reservation Client System :: Guest Operation :: View All My Reservations ***\n");
             List<ReservationEntity> reservationEntities = managedGuest.getReservationEntities();
             reservationEntities.sort((ReservationEntity x, ReservationEntity y) -> {
                 if (x.getReservationStartDate().isAfter(y.getReservationStartDate())) {
