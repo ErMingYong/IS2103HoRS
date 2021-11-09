@@ -146,21 +146,18 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
     }
 
     @Override
-    public GuestEntity guestLogin(String guestUsername, String guestPassword) throws GuestNotFoundException, InvalidLoginCredentialException {
+    public GuestEntity guestLogin(String guestUsername, String guestPassword) throws InvalidLoginCredentialException {
+
         try {
             GuestEntity guest = retrieveGuestByUsername(guestUsername);
-            guest.getReservationEntities().size();
-            if (guest != null) {
-                if (guest.getPassword().equals(guestPassword)) {
-                    return guest;
-                } else {
-                    throw new InvalidLoginCredentialException("Password do not match");
-                }
+
+            if (guest.getPassword().equals(guestPassword)) {
+                return guest;
             } else {
-                throw new InvalidLoginCredentialException("Username does not exist");
+                throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
             }
         } catch (GuestNotFoundException ex) {
-            throw new GuestNotFoundException("Guest Username " + guestUsername + " does not exist");
+            throw new InvalidLoginCredentialException("Username does not exist or invalid password!");
         }
     }
 
