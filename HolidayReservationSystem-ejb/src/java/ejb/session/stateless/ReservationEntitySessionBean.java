@@ -42,6 +42,7 @@ import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.ReservationNotFoundException;
 import util.exception.RoomRateNotFoundException;
+import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateReservationException;
 
@@ -76,110 +77,198 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     @Override
     public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
-        //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
-        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
-        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus  AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
-        List<RoomEntity> listOfRoomEntities = query.getResultList();
-        listOfRoomEntities.addAll(queryUnavailable.getResultList());
-        int currInventory = listOfRoomEntities.size();
-        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeName", newReservation.getRoomTypeName());
-        List<ReservationEntity> list = query.getResultList();
-        LocalDateTime startDate = newReservation.getReservationStartDate();
-        LocalDateTime endDate = newReservation.getReservationEndDate();
-        for (ReservationEntity res : list) {
-            LocalDateTime resStartDate = res.getReservationStartDate();
-            LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
-                currInventory -= 1;
-            }
-        }
-        if (currInventory == 0) {
-            throw new CreateNewReservationException();
-        }
+//        //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
+//        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+//        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus  AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+//        List<RoomEntity> listOfRoomEntities = query.getResultList();
+//        listOfRoomEntities.addAll(queryUnavailable.getResultList());
+//        int currInventory = listOfRoomEntities.size();
+//        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeName", newReservation.getRoomTypeName());
+//        List<ReservationEntity> list = query.getResultList();
+//        LocalDateTime startDate = newReservation.getReservationStartDate();
+//        LocalDateTime endDate = newReservation.getReservationEndDate();
+//        for (ReservationEntity res : list) {
+//            LocalDateTime resStartDate = res.getReservationStartDate();
+//            LocalDateTime resEndDate = res.getReservationEndDate();
+//            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+//                currInventory -= 1;
+//            }
+//        }
+//        if (currInventory == 0) {
+//            throw new CreateNewReservationException();
+//        }
         //throw new CreateNewReservationException();
         //
-        if (constraintViolations.isEmpty()) {
-            try {
-                for (String roomRateName : listOfRoomRateNames) {
-                    RoomRateEntity roomRate;
+
+        LocalDateTime startDate = newReservation.getReservationStartDate();
+        LocalDateTime endDate = newReservation.getReservationEndDate();
+        try {
+            HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = retrieveRoomTypeAvailabilities(startDate, endDate, 1, true);
+            RoomTypeEntity roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName(newReservation.getRoomTypeName());
+            if (map.get(roomType).get("numRoomType").equals(BigDecimal.ZERO)) {
+                throw new CreateNewReservationException();
+            } else {
+                if (constraintViolations.isEmpty()) {
                     try {
-                        roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
-                        newReservation.getRoomRateEntities().add(roomRate);
-                    } catch (RoomRateNotFoundException ex) {
-                        Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                        for (String roomRateName : listOfRoomRateNames) {
+                            RoomRateEntity roomRate;
+                            try {
+                                roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
+                                if (!newReservation.getRoomRateEntities().contains(roomRate)) {
+                                    newReservation.getRoomRateEntities().add(roomRate);
+                                }
+                            } catch (RoomRateNotFoundException ex) {
+                                Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+
+                        em.persist(newReservation);
+                        em.flush();
+
+                        return newReservation.getReservationEntityId();
+                    } catch (PersistenceException ex) {
+                        throw new UnknownPersistenceException(ex.getMessage());
                     }
+                } else {
+                    throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
                 }
-
-                em.persist(newReservation);
-                em.flush();
-
-                return newReservation.getReservationEntityId();
-            } catch (PersistenceException ex) {
-                throw new UnknownPersistenceException(ex.getMessage());
             }
-        } else {
-            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+        } catch (InsufficientRoomsAvailableException | RoomTypeNotFoundException ex) {
+            throw new CreateNewReservationException();
+        }
+
+    }
+
+    @Override
+    public Long createNewReservationForGuest(ReservationEntity newReservation, List<String> listOfRoomRateNames, GuestEntity guest) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+        Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
+        //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
+//        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+//        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus  AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+//        List<RoomEntity> listOfRoomEntities = query.getResultList();
+//        listOfRoomEntities.addAll(queryUnavailable.getResultList());
+//        int currInventory = listOfRoomEntities.size();
+//        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeName", newReservation.getRoomTypeName());
+//        List<ReservationEntity> list = query.getResultList();
+//        LocalDateTime startDate = newReservation.getReservationStartDate();
+//        LocalDateTime endDate = newReservation.getReservationEndDate();
+//        for (ReservationEntity res : list) {
+//            LocalDateTime resStartDate = res.getReservationStartDate();
+//            LocalDateTime resEndDate = res.getReservationEndDate();
+//            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+//                currInventory -= 1;
+//            }
+//        }
+        LocalDateTime startDate = newReservation.getReservationStartDate();
+        LocalDateTime endDate = newReservation.getReservationEndDate();
+        try {
+            HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = retrieveRoomTypeAvailabilities(startDate, endDate, 1, true);
+            RoomTypeEntity roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName(newReservation.getRoomTypeName());
+            if (map.get(roomType).get("numRoomType").equals(BigDecimal.ZERO)) {
+                throw new CreateNewReservationException();
+            } else {
+                if (constraintViolations.isEmpty()) {
+                    try {
+                        for (String roomRateName : listOfRoomRateNames) {
+                            RoomRateEntity roomRate;
+                            try {
+                                roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
+                                if (!newReservation.getRoomRateEntities().contains(roomRate)) {
+                                    newReservation.getRoomRateEntities().add(roomRate);
+                                }
+                            } catch (RoomRateNotFoundException ex) {
+                                Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+
+                        GuestEntity guestEntity = em.find(GuestEntity.class, guest.getUserEntityId());
+                        guestEntity.getReservationEntities().add(newReservation);
+
+                        em.persist(newReservation);
+                        em.flush();
+
+                        return newReservation.getReservationEntityId();
+                    } catch (PersistenceException ex) {
+                        throw new UnknownPersistenceException(ex.getMessage());
+                    }
+                } else {
+                    throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+                }
+            }
+        } catch (InsufficientRoomsAvailableException | RoomTypeNotFoundException ex) {
+            throw new CreateNewReservationException();
         }
     }
 
     @Override
-    public Long createNewReservationForUser(ReservationEntity newReservation, List<String> listOfRoomRateNames, UserEntity user) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+    public Long createNewReservationForPartner(ReservationEntity newReservation, List<String> listOfRoomRateNames, PartnerEntity partner) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
-        //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
-        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
-        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus  AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
-        List<RoomEntity> listOfRoomEntities = query.getResultList();
-        listOfRoomEntities.addAll(queryUnavailable.getResultList());
-        int currInventory = listOfRoomEntities.size();
-        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeName", newReservation.getRoomTypeName());
-        List<ReservationEntity> list = query.getResultList();
-        LocalDateTime startDate = newReservation.getReservationStartDate();
-        LocalDateTime endDate = newReservation.getReservationEndDate();
-        for (ReservationEntity res : list) {
-            LocalDateTime resStartDate = res.getReservationStartDate();
-            LocalDateTime resEndDate = res.getReservationEndDate();
-            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
-                currInventory -= 1;
-            }
-        }
-        if (currInventory == 0) {
-            throw new CreateNewReservationException();
-        }
+//        //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
+//        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+//        Query queryUnavailable = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus  AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.UNAVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
+//        List<RoomEntity> listOfRoomEntities = query.getResultList();
+//        listOfRoomEntities.addAll(queryUnavailable.getResultList());
+//        int currInventory = listOfRoomEntities.size();
+//        query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationEndDate > :inDate AND r.roomTypeName = :inRoomTypeName").setParameter("inDate", LocalDateTime.now()).setParameter("inRoomTypeName", newReservation.getRoomTypeName());
+//        List<ReservationEntity> list = query.getResultList();
+//        LocalDateTime startDate = newReservation.getReservationStartDate();
+//        LocalDateTime endDate = newReservation.getReservationEndDate();
+//        for (ReservationEntity res : list) {
+//            LocalDateTime resStartDate = res.getReservationStartDate();
+//            LocalDateTime resEndDate = res.getReservationEndDate();
+//            if ((resStartDate.isAfter(startDate) && resStartDate.isBefore(endDate)) || (resEndDate.isAfter(startDate) && resEndDate.isBefore(endDate)) || ((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resEndDate.isBefore(endDate)) || resEndDate.isEqual(endDate))) {
+//                currInventory -= 1;
+//            }
+//        }
+//        if (currInventory == 0) {
+//            throw new CreateNewReservationException();
+//        }
         //throw new CreateNewReservationException();
         //
-        if (constraintViolations.isEmpty()) {
-            try {
-                for (String roomRateName : listOfRoomRateNames) {
-                    RoomRateEntity roomRate;
+        LocalDateTime startDate = newReservation.getReservationStartDate();
+        LocalDateTime endDate = newReservation.getReservationEndDate();
+        try {
+            HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = retrieveRoomTypeAvailabilities(startDate, endDate, 1, true);
+            RoomTypeEntity roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName(newReservation.getRoomTypeName());
+            if (map.get(roomType).get("numRoomType").equals(BigDecimal.ZERO)) {
+                throw new CreateNewReservationException();
+            } else {
+                if (constraintViolations.isEmpty()) {
                     try {
-                        roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
-                        newReservation.getRoomRateEntities().add(roomRate);
-                    } catch (RoomRateNotFoundException ex) {
-                        Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                        for (String roomRateName : listOfRoomRateNames) {
+                            RoomRateEntity roomRate;
+                            try {
+                                roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
+                                if (!newReservation.getRoomRateEntities().contains(roomRate)) {
+                                    newReservation.getRoomRateEntities().add(roomRate);
+                                }
+                            } catch (RoomRateNotFoundException ex) {
+                                Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+
+                        PartnerEntity partnerEntity = em.find(PartnerEntity.class, partner.getUserEntityId());
+                        partnerEntity.getReservationEntities().add(newReservation);
+
+                        em.persist(newReservation);
+                        em.flush();
+
+                        return newReservation.getReservationEntityId();
+                    } catch (PersistenceException ex) {
+                        throw new UnknownPersistenceException(ex.getMessage());
                     }
-                }
-                if (user instanceof GuestEntity) {
-                    GuestEntity guestEntity = em.find(GuestEntity.class, user.getUserEntityId());
-                    guestEntity.getReservationEntities().add(newReservation);
                 } else {
-                    PartnerEntity partnerEntity = em.find(PartnerEntity.class, user.getUserEntityId());
-                    partnerEntity.getReservationEntities().add(newReservation);
+                    throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
                 }
-
-                em.persist(newReservation);
-                em.flush();
-
-                return newReservation.getReservationEntityId();
-            } catch (PersistenceException ex) {
-                throw new UnknownPersistenceException(ex.getMessage());
             }
-        } else {
-            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+        } catch (InsufficientRoomsAvailableException | RoomTypeNotFoundException ex) {
+            throw new CreateNewReservationException();
         }
     }
 
     @Override
     public void createNewReservations(List<Pair<ReservationEntity, List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+
         for (Pair<ReservationEntity, List<String>> pair : list) {
             try {
                 createNewReservation(pair.getKey(), pair.getValue());
@@ -191,10 +280,22 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public void createNewReservationsForUser(List<Pair<ReservationEntity, List<String>>> list, UserEntity user) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+    public void createNewReservationsForGuest(List<Pair<ReservationEntity, List<String>>> list, GuestEntity guest) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         for (Pair<ReservationEntity, List<String>> pair : list) {
             try {
-                createNewReservationForUser(pair.getKey(), pair.getValue(), user);
+                createNewReservationForGuest(pair.getKey(), pair.getValue(), guest);
+            } catch (CreateNewReservationException ex) {
+                eJBContext.setRollbackOnly();
+                throw new CreateNewReservationException();
+            }
+        }
+    }
+
+    @Override
+    public void createNewReservationsForPartner(List<Pair<ReservationEntity, List<String>>> list, PartnerEntity partner) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+        for (Pair<ReservationEntity, List<String>> pair : list) {
+            try {
+                createNewReservationForPartner(pair.getKey(), pair.getValue(), partner);
             } catch (CreateNewReservationException ex) {
                 eJBContext.setRollbackOnly();
                 throw new CreateNewReservationException();

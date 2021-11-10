@@ -291,9 +291,10 @@ public class GuestOperationModule {
         }
 
         try {
-            reservationEntitySessionBeanRemote.createNewReservationsForUser(listOfNewReservationPairs, currentGuest);
+            reservationEntitySessionBeanRemote.createNewReservationsForGuest(listOfNewReservationPairs, currentGuest);
             System.out.println("::::::::::::::::::::::::::::::::::::::::::");
             System.out.println("Reservations are successful!");
+            System.out.println("Total Payment: " + totalPayment.toString());
             System.out.println("");
             LocalDateTime currDateTime = LocalDateTime.now();
             LocalDateTime currDate2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));

@@ -25,12 +25,6 @@
 <message name="UnknownPersistenceException">
 <part name="fault" element="tns:UnknownPersistenceException"/>
 </message>
-<message name="retrieveAllPartnerReservations">
-<part name="parameters" element="tns:retrieveAllPartnerReservations"/>
-</message>
-<message name="retrieveAllPartnerReservationsResponse">
-<part name="parameters" element="tns:retrieveAllPartnerReservationsResponse"/>
-</message>
 <message name="retrieveRoomTypeAvailabilities">
 <part name="parameters" element="tns:retrieveRoomTypeAvailabilities"/>
 </message>
@@ -40,17 +34,23 @@
 <message name="InsufficientRoomsAvailableException">
 <part name="fault" element="tns:InsufficientRoomsAvailableException"/>
 </message>
-<message name="createNewReservationsForUser">
-<part name="parameters" element="tns:createNewReservationsForUser"/>
+<message name="createNewReservationsForPartner">
+<part name="parameters" element="tns:createNewReservationsForPartner"/>
 </message>
-<message name="createNewReservationsForUserResponse">
-<part name="parameters" element="tns:createNewReservationsForUserResponse"/>
+<message name="createNewReservationsForPartnerResponse">
+<part name="parameters" element="tns:createNewReservationsForPartnerResponse"/>
 </message>
 <message name="CreateNewReservationException">
 <part name="fault" element="tns:CreateNewReservationException"/>
 </message>
 <message name="InputDataValidationException">
 <part name="fault" element="tns:InputDataValidationException"/>
+</message>
+<message name="retrieveAllPartnerReservations">
+<part name="parameters" element="tns:retrieveAllPartnerReservations"/>
+</message>
+<message name="retrieveAllPartnerReservationsResponse">
+<part name="parameters" element="tns:retrieveAllPartnerReservationsResponse"/>
 </message>
 <portType name="PartnerEntityWebService">
 <operation name="partnerLogin">
@@ -64,22 +64,22 @@
 <output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManualResponse" message="tns:allocationReportCheckTimerManualResponse"/>
 <fault message="tns:UnknownPersistenceException" name="UnknownPersistenceException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManual/Fault/UnknownPersistenceException"/>
 </operation>
-<operation name="retrieveAllPartnerReservations">
-<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsRequest" message="tns:retrieveAllPartnerReservations"/>
-<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsResponse" message="tns:retrieveAllPartnerReservationsResponse"/>
-<fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservations/Fault/PartnerNotFoundException"/>
-</operation>
 <operation name="retrieveRoomTypeAvailabilities">
 <input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesRequest" message="tns:retrieveRoomTypeAvailabilities"/>
 <output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesResponse" message="tns:retrieveRoomTypeAvailabilitiesResponse"/>
 <fault message="tns:InsufficientRoomsAvailableException" name="InsufficientRoomsAvailableException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InsufficientRoomsAvailableException"/>
 </operation>
-<operation name="createNewReservationsForUser">
-<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForUserRequest" message="tns:createNewReservationsForUser"/>
-<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForUserResponse" message="tns:createNewReservationsForUserResponse"/>
-<fault message="tns:CreateNewReservationException" name="CreateNewReservationException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForUser/Fault/CreateNewReservationException"/>
-<fault message="tns:UnknownPersistenceException" name="UnknownPersistenceException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForUser/Fault/UnknownPersistenceException"/>
-<fault message="tns:InputDataValidationException" name="InputDataValidationException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForUser/Fault/InputDataValidationException"/>
+<operation name="createNewReservationsForPartner">
+<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartnerRequest" message="tns:createNewReservationsForPartner"/>
+<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartnerResponse" message="tns:createNewReservationsForPartnerResponse"/>
+<fault message="tns:CreateNewReservationException" name="CreateNewReservationException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/CreateNewReservationException"/>
+<fault message="tns:UnknownPersistenceException" name="UnknownPersistenceException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/UnknownPersistenceException"/>
+<fault message="tns:InputDataValidationException" name="InputDataValidationException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/InputDataValidationException"/>
+</operation>
+<operation name="retrieveAllPartnerReservations">
+<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsRequest" message="tns:retrieveAllPartnerReservations"/>
+<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsResponse" message="tns:retrieveAllPartnerReservationsResponse"/>
+<fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservations/Fault/PartnerNotFoundException"/>
 </operation>
 </portType>
 <binding name="PartnerEntityWebServicePortBinding" type="tns:PartnerEntityWebService">
@@ -111,18 +111,6 @@
 <soap:fault name="UnknownPersistenceException" use="literal"/>
 </fault>
 </operation>
-<operation name="retrieveAllPartnerReservations">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="PartnerNotFoundException">
-<soap:fault name="PartnerNotFoundException" use="literal"/>
-</fault>
-</operation>
 <operation name="retrieveRoomTypeAvailabilities">
 <soap:operation soapAction=""/>
 <input>
@@ -135,7 +123,7 @@
 <soap:fault name="InsufficientRoomsAvailableException" use="literal"/>
 </fault>
 </operation>
-<operation name="createNewReservationsForUser">
+<operation name="createNewReservationsForPartner">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -151,6 +139,18 @@
 </fault>
 <fault name="InputDataValidationException">
 <soap:fault name="InputDataValidationException" use="literal"/>
+</fault>
+</operation>
+<operation name="retrieveAllPartnerReservations">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="PartnerNotFoundException">
+<soap:fault name="PartnerNotFoundException" use="literal"/>
 </fault>
 </operation>
 </binding>

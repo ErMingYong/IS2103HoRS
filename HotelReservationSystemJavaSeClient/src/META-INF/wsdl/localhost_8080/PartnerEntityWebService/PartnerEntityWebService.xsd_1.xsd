@@ -16,9 +16,9 @@
 
 <xs:element name="allocationReportCheckTimerManualResponse" type="tns:allocationReportCheckTimerManualResponse"/>
 
-<xs:element name="createNewReservationsForUser" type="tns:createNewReservationsForUser"/>
+<xs:element name="createNewReservationsForPartner" type="tns:createNewReservationsForPartner"/>
 
-<xs:element name="createNewReservationsForUserResponse" type="tns:createNewReservationsForUserResponse"/>
+<xs:element name="createNewReservationsForPartnerResponse" type="tns:createNewReservationsForPartnerResponse"/>
 
 <xs:element name="partnerLogin" type="tns:partnerLogin"/>
 
@@ -57,11 +57,50 @@
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="createNewReservationsForUser">
+<xs:complexType name="allocationReportCheckTimerManual">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="allocationReportCheckTimerManualResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="UnknownPersistenceException">
 <xs:sequence>
-<xs:element name="listOfNewReservation" type="tns:reservationEntity" minOccurs="0" maxOccurs="unbounded"/>
-<xs:element name="listOfNewReservationsStringOfRoomRateNames" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-<xs:element name="partner" type="tns:userEntity" minOccurs="0"/>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="partnerLogin">
+<xs:sequence>
+<xs:element name="partnerUsername" type="xs:string" minOccurs="0"/>
+<xs:element name="partnerPassword" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="partnerLoginResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:partnerEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="partnerEntity">
+<xs:complexContent>
+<xs:extension base="tns:userEntity">
+<xs:sequence>
+<xs:element name="reservationEntities" type="tns:reservationEntity" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="userEntity" abstract="true">
+<xs:sequence>
+<xs:element name="firstName" type="xs:string" minOccurs="0"/>
+<xs:element name="lastName" type="xs:string" minOccurs="0"/>
+<xs:element name="password" type="xs:string" minOccurs="0"/>
+<xs:element name="userEntityId" type="xs:long" minOccurs="0"/>
+<xs:element name="userName" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -127,17 +166,33 @@
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="userEntity" abstract="true">
+<xs:complexType name="PartnerNotFoundException">
 <xs:sequence>
-<xs:element name="firstName" type="xs:string" minOccurs="0"/>
-<xs:element name="lastName" type="xs:string" minOccurs="0"/>
-<xs:element name="password" type="xs:string" minOccurs="0"/>
-<xs:element name="userEntityId" type="xs:long" minOccurs="0"/>
-<xs:element name="userName" type="xs:string" minOccurs="0"/>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="createNewReservationsForUserResponse">
+<xs:complexType name="InvalidLoginCredentialException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createNewReservationsForPartner">
+<xs:sequence>
+<xs:element name="listOfNewReservation" type="tns:reservationEntity" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="listOfNewReservationsStringOfRoomRateNames" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="startDay" type="xs:int" minOccurs="0"/>
+<xs:element name="startMonth" type="xs:int" minOccurs="0"/>
+<xs:element name="startYear" type="xs:int" minOccurs="0"/>
+<xs:element name="endDay" type="xs:int" minOccurs="0"/>
+<xs:element name="endMonth" type="xs:int" minOccurs="0"/>
+<xs:element name="endYear" type="xs:int" minOccurs="0"/>
+<xs:element name="partner" type="tns:partnerEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createNewReservationsForPartnerResponse">
 <xs:sequence/>
 </xs:complexType>
 
@@ -147,56 +202,7 @@
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="UnknownPersistenceException">
-<xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
 <xs:complexType name="InputDataValidationException">
-<xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="allocationReportCheckTimerManual">
-<xs:sequence/>
-</xs:complexType>
-
-<xs:complexType name="allocationReportCheckTimerManualResponse">
-<xs:sequence/>
-</xs:complexType>
-
-<xs:complexType name="partnerLogin">
-<xs:sequence>
-<xs:element name="partnerUsername" type="xs:string" minOccurs="0"/>
-<xs:element name="partnerPassword" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="partnerLoginResponse">
-<xs:sequence>
-<xs:element name="return" type="tns:partnerEntity" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="partnerEntity">
-<xs:complexContent>
-<xs:extension base="tns:userEntity">
-<xs:sequence>
-<xs:element name="reservationEntities" type="tns:reservationEntity" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
-</xs:complexType>
-
-<xs:complexType name="PartnerNotFoundException">
-<xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="InvalidLoginCredentialException">
 <xs:sequence>
 <xs:element name="message" type="xs:string" minOccurs="0"/>
 </xs:sequence>

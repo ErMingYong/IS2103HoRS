@@ -14,6 +14,7 @@ import entity.RoomTypeEntity;
 import entity.UserEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -164,24 +165,28 @@ public class PartnerEntityWebService {
 //            Logger.getLogger(PartnerEntityWebService.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
-    @WebMethod(operationName = "createNewReservationsForUser")
-    public void createNewReservationsForUser(@WebParam(name = "listOfNewReservation") List<ReservationEntity> listOfNewReservation, @WebParam(name = "listOfNewReservationsStringOfRoomRateNames") List<String> listOfNewReservationsStringOfRoomRateNames, @WebParam(name = "partner") UserEntity partner) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+    @WebMethod(operationName = "createNewReservationsForPartner")
+    public void createNewReservationsForPartner(@WebParam(name = "listOfNewReservation") List<ReservationEntity> listOfNewReservation, @WebParam(name = "listOfNewReservationsStringOfRoomRateNames") List<String> listOfNewReservationsStringOfRoomRateNames, @WebParam(name = "startDay") Integer startDay, @WebParam(name = "startMonth") Integer startMonth, @WebParam(name = "startYear") Integer startYear, @WebParam(name = "endDay") Integer endDay, @WebParam(name = "endMonth") Integer endMonth, @WebParam(name = "endYear") Integer endYear, @WebParam(name = "partner") PartnerEntity partner) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         List<List<String>> listOfNewReservationsListOfRoomRateNames = new ArrayList<>();
         for (String roomRateNames : listOfNewReservationsStringOfRoomRateNames) {
             String[] arr = roomRateNames.split(",");
             List<String> roomRateNameList = Arrays.asList(arr);
             listOfNewReservationsListOfRoomRateNames.add(roomRateNameList);
         }
-
+        LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 0, 0);
+        List<Pair<ReservationEntity, List<String>>> list = new ArrayList<>();
         for (int i = 0; i < listOfNewReservation.size(); i++) {
-            try {
-                reservationEntitySessionBeanLocal.createNewReservationForUser(listOfNewReservation.get(i), listOfNewReservationsListOfRoomRateNames.get(i), partner);
-            } catch (CreateNewReservationException ex) {
-                eJBContext.setRollbackOnly();
-                throw new CreateNewReservationException();
-            }
+            ReservationEntity res = listOfNewReservation.get(i);
+            res.setReservationStartDate(startDate);
+            res.setReservationEndDate(endDate);
+            Pair pair = new Pair(res, listOfNewReservationsListOfRoomRateNames.get(i));
+            list.add(pair);
         }
+        reservationEntitySessionBeanLocal.createNewReservationsForPartner(list, partner);
+
     }
+    //createNewReservationsForPartner(List<Pair<ReservationEntity, List<String>>> list, PartnerEntity partner)
 
     @WebMethod(operationName = "allocationReportCheckTimerManual")
     public void allocationReportCheckTimerManual() throws UnknownPersistenceException {

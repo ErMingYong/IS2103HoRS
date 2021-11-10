@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +48,15 @@ public class PartnerOperationModule {
 
         while (true) {
             System.out.println("*** Hotel Reservation System Reservation Partner System :: Partner Operation ***\n");
-            System.out.println("1: Partner Reserve Hotel Room");
+            System.out.println("1: Search Hotel Room");
             System.out.println("2: View Partner Reservation Details");
             System.out.println("3: View All Partner Reservations");
             System.out.println("4: Exit");
+            System.out.println("");
             response = 0;
 
             while (response < 1 || response > 4) {
+                System.out.println(">");
                 response = scanner.nextInt();
 
                 if (response == 1) {
@@ -184,7 +187,7 @@ public class PartnerOperationModule {
                 while (response < 1 || response > 2) {
                     response = scanner.nextInt();
                     if (response == 1) {
-                        doHotelReserve(map, reservationStartDate, reservationEndDate, noRooms);
+                        doHotelReserve(map, startDay, startMonth, startYear, endDay, endMonth, endYear, noRooms);
                     } else if (response == 2) {
                         break;
                     } else {
@@ -201,7 +204,7 @@ public class PartnerOperationModule {
         }
     }
 
-    private void doHotelReserve(HashMap<String, HashMap<String, Integer>> map, java.time.LocalDateTime reservationStartDate, java.time.LocalDateTime reservationEndDate, Integer numRooms) {
+    private void doHotelReserve(HashMap<String, HashMap<String, Integer>> map, Integer startDay, Integer startMonth, Integer startYear, Integer endDay, Integer endMonth, Integer endYear, Integer numRooms) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** Hotel Management Client :: Front Office Module :: Partner Reserve ***\n");
         System.out.println("");
@@ -209,64 +212,68 @@ public class PartnerOperationModule {
         List<String> listOfNewReservationsStringOfRoomRateNames = new ArrayList<>();
         BigDecimal totalPayment = BigDecimal.ZERO;
 
+        String firstName = "";
+        String lastName = "";
+        String email = "";
+        String contactNumber = "";
+        String passportNumber = "";
+
+        while (true) {
+            System.out.println("Enter Partner Guest's First Name>");
+            firstName = scanner.nextLine();
+            if (firstName.length() > 0) {
+                break;
+            } else {
+                System.out.println("Please input a First Name");
+            }
+        }
+
+        while (true) {
+            System.out.println("Enter Partner Guest's Last Name>");
+            lastName = scanner.nextLine();
+            if (lastName.length() > 0) {
+                break;
+            } else {
+                System.out.println("Please input a Last Name");
+            }
+        }
+
+        //unsure how to check if email is valid at the client side
+        System.out.println("Enter Partner Guest's Email>");
+        email = scanner.nextLine();
+
+        while (true) {
+            System.out.println("Enter Partner Guest's Contact Number>");
+            contactNumber = scanner.nextLine();
+            if (contactNumber.length() == 8) {
+                break;
+            } else {
+                System.out.println("Please input a valid Contact Number");
+            }
+        }
+
+        while (true) {
+            System.out.println("Enter Partner Guest's Passport Number>");
+            passportNumber = scanner.nextLine();
+            if (passportNumber.length() == 8) {
+                break;
+            } else {
+                System.out.println("Please input a valid Passport Number");
+            }
+        }
         List<String> listOfKeys = new ArrayList<>(map.keySet());
         int numReservation = 1;
         while (numRooms >= numReservation) {
             ReservationEntity newReservation = new ReservationEntity();
-
-            String firstName = "";
-            String lastName = "";
-            String email = "";
-            String contactNumber = "";
-            String passportNumber = "";
-
-            while (true) {
-                System.out.println("Enter Partner Guest's First Name>");
-                firstName = scanner.nextLine();
-                if (firstName.length() > 0) {
-                    break;
-                } else {
-                    System.out.println("Please input a First Name");
-                }
-            }
-
-            while (true) {
-                System.out.println("Enter Partner Guest's Last Name>");
-                lastName = scanner.nextLine();
-                if (lastName.length() > 0) {
-                    break;
-                } else {
-                    System.out.println("Please input a Last Name");
-                }
-            }
-
-            //unsure how to check if email is valid at the client side
-            System.out.println("Enter Partner Guest's Email>");
-            email = scanner.nextLine();
-
-            while (true) {
-                System.out.println("Enter Partner Guest's Contact Number>");
-                contactNumber = scanner.nextLine();
-                if (contactNumber.length() == 8) {
-                    break;
-                } else {
-                    System.out.println("Please input a valid Contact Number");
-                }
-            }
-
-            while (true) {
-                System.out.println("Enter Partner Guest's Passport Number>");
-                passportNumber = scanner.nextLine();
-                if (passportNumber.length() == 8) {
-                    break;
-                } else {
-                    System.out.println("Please input a valid Passport Number");
-                }
-            }
+            newReservation.setFirstName(firstName);
+            newReservation.setLastName(lastName);
+            newReservation.setEmail(email);
+            newReservation.setContactNumber(contactNumber);
+            newReservation.setPassportNumber(passportNumber);
 
             System.out.println("");
             System.out.println("------------------------");
-            System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
+            System.out.println("Available Rooms to book from " + startDay + ":" + startMonth + ":" + startYear + " to " + endDay + ":" + endMonth + ":" + endYear);
             System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
             List<String> roomTypeNameList = new ArrayList<>();
             int counter = 1;
@@ -315,14 +322,15 @@ public class PartnerOperationModule {
         }
 
         try {
-            
-            webServicePort.createNewReservationsForUser(listOfNewReservation, listOfNewReservationsStringOfRoomRateNames, currentPartner);
+
+            webServicePort.createNewReservationsForPartner(listOfNewReservation, listOfNewReservationsStringOfRoomRateNames, startDay, startMonth, startYear, endDay, endMonth, endYear, currentPartner);
             System.out.println("::::::::::::::::::::::::::::::::::::::::::");
             System.out.println("Reservations are successful!");
+            System.out.println("Total Payment: " + totalPayment.toString());
             System.out.println("");
             java.time.LocalDateTime currDateTime = java.time.LocalDateTime.now();
             java.time.LocalDateTime currDate2Am = java.time.LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
-
+            java.time.LocalDateTime reservationStartDate = java.time.LocalDateTime.of(startYear, startMonth, startDay, 0, 0);
             //after 2am walk in, if reservations are for TODAY, then immediately allcoate
             if (currDateTime.isAfter(currDate2Am) && reservationStartDate.isEqual(java.time.LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
                 webServicePort.allocationReportCheckTimerManual();
@@ -336,57 +344,65 @@ public class PartnerOperationModule {
 
     private void doViewPartnerReservationDetails() throws PartnerNotFoundException_Exception {
         Scanner scanner = new Scanner(System.in);
-
+        System.out.println("*** Hotel Reservation System Reservation Partner System :: Partner Operation :: View Partner Reservation Details***\n");
         try {
-            System.out.println("*** Hotel Reservation System Reservation Partner System :: Partner Operation :: View Partner Reservation Details***\n");
             List<ReservationEntity> partnerReservations = webServicePort.retrieveAllPartnerReservations(currentPartner.getUserEntityId());
 
             Integer option = 0;
-            while (true) {
-                System.out.println("----------------------------------------");
-                for (int i = 0; i < partnerReservations.size(); i++) {
-                    System.out.println((i + 1) + " Reservation Id: " + partnerReservations.get(i).getReservationEntityId());
-                }
-                option = 0;
-                while (option < 1 || option > partnerReservations.size()) {
+            if (!partnerReservations.isEmpty()) {
+                while (true) {
                     System.out.println("----------------------------------------");
-                    System.out.println("Enter Reservation Number Option");
-                    option = scanner.nextInt();
-
-                    if (option >= 1 && option <= partnerReservations.size()) {
-                        ReservationEntity reservation = partnerReservations.get(option - 1);
-                        Long reservationId = reservation.getReservationEntityId();
-                        LocalDateTime reservationStartDate = reservation.getReservationStartDate();
-                        LocalDateTime reservationEndDate = reservation.getReservationEndDate();
-                        String reservationFirstName = reservation.getFirstName();
-                        String reservationLastname = reservation.getLastName();
-                        String reservationEmail = reservation.getEmail();
-                        String reservationContactNumber = reservation.getContactNumber();
-                        String reservationPassportNumber = reservation.getPassportNumber();
-                        System.out.println("Reservation successfully retrieved. Reservation Id: " + reservationId);
-                        System.out.println("Reservation First Name: " + reservationFirstName);
-                        System.out.println("Reservation Last Name: " + reservationLastname);
-                        System.out.println("Reservation Start Date: " + reservationStartDate.toString());
-                        System.out.println("Reservation End Date: " + reservationEndDate.toString());
-                        System.out.println("Reservation Email: " + reservationEmail);
-                        System.out.println("Reservation Contact Number: " + reservationContactNumber);
-                        System.out.println("Reservation Passport Number: " + reservationPassportNumber);
-
-                        System.out.print("Press any key to continue...> ");
-                        scanner.nextLine();
-                    } else {
-                        System.out.println("Please select a valid input!");
-                        System.out.println("");
+                    for (int i = 0; i < partnerReservations.size(); i++) {
+                        System.out.println((i + 1) + " Reservation Id: " + partnerReservations.get(i).getReservationEntityId());
                     }
+                    option = 0;
+                    while (option < 1 || option > partnerReservations.size()) {
+                        System.out.println("----------------------------------------");
+                        System.out.println("Enter Reservation Number Option");
+                        option = scanner.nextInt();
+
+                        if (option >= 1 && option <= partnerReservations.size()) {
+                            ReservationEntity reservation = partnerReservations.get(option - 1);
+                            Long reservationId = reservation.getReservationEntityId();
+                            LocalDateTime reservationStartDate = reservation.getReservationStartDate();
+                            LocalDateTime reservationEndDate = reservation.getReservationEndDate();
+                            String reservationFirstName = reservation.getFirstName();
+                            String reservationLastname = reservation.getLastName();
+                            String reservationEmail = reservation.getEmail();
+                            String reservationContactNumber = reservation.getContactNumber();
+                            String reservationPassportNumber = reservation.getPassportNumber();
+                            System.out.println("Reservation successfully retrieved. Reservation Id: " + reservationId);
+                            System.out.println("Reservation First Name: " + reservationFirstName);
+                            System.out.println("Reservation Last Name: " + reservationLastname);
+                            System.out.println("Reservation Start Date: " + reservationStartDate.toString());
+                            System.out.println("Reservation End Date: " + reservationEndDate.toString());
+                            System.out.println("Reservation Email: " + reservationEmail);
+                            System.out.println("Reservation Contact Number: " + reservationContactNumber);
+                            System.out.println("Reservation Passport Number: " + reservationPassportNumber);
+
+                            System.out.print("Press any key to continue...> ");
+                            scanner.nextLine();
+                        } else {
+                            System.out.println("Please select a valid input!");
+                            System.out.println("");
+                        }
+                    }
+                    System.out.println("");
+                    System.out.println("Continue to view Reservation? Press 'Y', to Exit Press any other key...");
+                    String response = scanner.nextLine();
+                    if (response == "Y") {
+                        continue;
+                    }
+                    break;
                 }
+            } else {
+                System.out.println("-----------------------------------------");
+                System.out.println("You do not have any Reservations!");
                 System.out.println("");
-                System.out.println("Continue to view Reservation? Press 'Y', to Exit Press any other key...");
-                String response = scanner.nextLine();
-                if (response == "Y") {
-                    continue;
-                }
-                break;
+                System.out.println("Press any key to go back...");
+                scanner.nextLine();
             }
+
         } catch (PartnerNotFoundException_Exception ex) {
             System.out.println("Partner account does not exist");
         }
@@ -400,17 +416,24 @@ public class PartnerOperationModule {
             System.out.println("*** Hotel Reservation System Reservation Partner System :: Partner Operation :: View All Parnter Reservations ***\n");
 
             List<ReservationEntity> partnerReservations = webServicePort.retrieveAllPartnerReservations(currentPartner.getUserEntityId());
-
-            System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
-            for (ReservationEntity reservationEntity : partnerReservations) {
-                System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
+            if (!partnerReservations.isEmpty()) {
+                System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
+                for (ReservationEntity reservationEntity : partnerReservations) {
+                    System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
+                }
+                System.out.print("Press any key to continue...> ");
+                scanner.nextLine();
+            } else {
+                System.out.println("-----------------------------------------");
+                System.out.println("You do not have any Reservations!");
+                System.out.println("");
+                System.out.println("Press any key to go back...");
+                scanner.nextLine();
             }
+
         } catch (PartnerNotFoundException_Exception ex) {
             System.out.println("Partner does not exist");
         }
-
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
 
     }
 }
