@@ -486,12 +486,12 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                         if (roomRate.getRoomRateTypeEnum() == RoomRateTypeEnum.NORMAL) {
                             normalRate = roomRate;
                         } else if (roomRate.getRoomRateTypeEnum() == RoomRateTypeEnum.PEAK) {
-                            if (peakRate.getRatePerNight().compareTo(peakPrice) < 0) {
+                            if (roomRate.getRatePerNight().compareTo(peakPrice) < 0) {
                                 peakRate = roomRate;
                                 peakPrice = roomRate.getRatePerNight();
                             }
                         } else {
-                            if (promoRate.getRatePerNight().compareTo(promoPrice) < 0) {
+                            if (roomRate.getRatePerNight().compareTo(promoPrice) < 0) {
                                 promoRate = roomRate;
                                 promoPrice = roomRate.getRatePerNight();
                             }
