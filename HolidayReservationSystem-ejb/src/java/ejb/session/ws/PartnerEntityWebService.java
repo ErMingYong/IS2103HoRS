@@ -6,9 +6,14 @@
 package ejb.session.ws;
 
 import ejb.session.stateless.PartnerEntitySessionBeanLocal;
+import ejb.session.stateless.ReservationEntitySessionBeanLocal;
 import entity.PartnerEntity;
 import entity.ReservationEntity;
+import entity.RoomTypeEntity;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.jws.WebService;
@@ -17,6 +22,7 @@ import javax.jws.WebParam;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.exception.InsufficientRoomsAvailableException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.PartnerNotFoundException;
 
@@ -28,16 +34,15 @@ import util.exception.PartnerNotFoundException;
 @Stateless()
 public class PartnerEntityWebService {
 
+    @EJB
+    private ReservationEntitySessionBeanLocal reservationEntitySessionBeanLocal;
+
     @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
     private EntityManager em;
 
     @EJB
     private PartnerEntitySessionBeanLocal partnerEntitySessionBeanLocal;
-
-    /*
-    @PersistenceContext(unitName = "HolidayReservationSystem-ejbPU")
-    private EntityManager em;
-     */
+    
 
  /*
     @EJB
@@ -72,6 +77,18 @@ public class PartnerEntityWebService {
             return partnerReservations;
         } catch (PartnerNotFoundException ex) {
             throw new PartnerNotFoundException("Partner does not exist");
+        }
+    }
+    
+    @WebMethod(operationName = "retrieveRoomTypeAvailabilities")
+    public HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> retrieveRoomTypeAvailabilities(@WebParam(name = "reservationStartDate") LocalDateTime reservationStartDate, @WebParam(name = "reservationEndDate") LocalDateTime reservationEndDate, @WebParam(name = "numRooms") Integer numRooms, @WebParam(name = "isWalkIn") Boolean isWalkIn) throws InsufficientRoomsAvailableException {
+
+        try {
+            HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = reservationEntitySessionBeanLocal.retrieveRoomTypeAvailabilities(reservationStartDate, reservationEndDate, numRooms, false);
+
+            return map;
+        } catch (InsufficientRoomsAvailableException ex) {
+            throw new InsufficientRoomsAvailableException();
         }
     }
 }
