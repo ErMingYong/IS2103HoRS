@@ -13,7 +13,9 @@ import entity.ReservationEntity;
 import entity.RoomTypeEntity;
 import entity.UserEntity;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,6 +144,8 @@ public class PartnerEntityWebService {
                 }
                 listOfResults.add(msg);
             }
+            System.out.println("HEREHERERE");
+            System.out.println(listOfResults.toString());
             //format "roomTypeName, numRoomType, bestPrice, roomRateName, roomRateName ....
             return listOfResults;
         } catch (InsufficientRoomsAvailableException ex) {
@@ -171,7 +175,12 @@ public class PartnerEntityWebService {
         for (String roomRateNames : listOfNewReservationsStringOfRoomRateNames) {
             String[] arr = roomRateNames.split(",");
             List<String> roomRateNameList = Arrays.asList(arr);
+            System.out.println(roomRateNameList);
             listOfNewReservationsListOfRoomRateNames.add(roomRateNameList);
+        }
+        System.out.println("THERE");
+        for (List<String> list : listOfNewReservationsListOfRoomRateNames) {
+            System.out.println(list.toString());
         }
         LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 0, 0);
@@ -184,6 +193,12 @@ public class PartnerEntityWebService {
             list.add(pair);
         }
         reservationEntitySessionBeanLocal.createNewReservationsForPartner(list, partner);
+        ReservationEntity res = em.find(ReservationEntity.class, list.get(0).getKey().getReservationEntityId());
+        LocalDateTime currDateTime = LocalDateTime.now();
+        LocalDateTime dateTime2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2,0));
+        if (currDateTime.isAfter(dateTime2Am) && res.getReservationStartDate().isEqual(currDateTime)) {
+            allocationReportSessionBeanLocal.allocationReportCheckTimerManual();
+        }
 
     }
     //createNewReservationsForPartner(List<Pair<ReservationEntity, List<String>>> list, PartnerEntity partner)

@@ -164,6 +164,10 @@ public class PartnerOperationModule {
                 stringToIntegerMap.put("numRoomType", numRoomType);
                 stringToIntegerMap.put("bestPrice", bestPrice);
                 map.put(roomTypeName, stringToIntegerMap);
+
+                for (int i = 3; i < arr.length; i++) {
+                    stringToIntegerMap.put(arr[i], 1);
+                }
             }
             List<String> listOfKeys = new ArrayList<>(map.keySet());
 
@@ -300,6 +304,8 @@ public class PartnerOperationModule {
                     List<String> listOfRoomRateNames = new ArrayList<>(selectedRoomTypeMap.keySet());
                     listOfRoomRateNames.remove("bestPrice");
                     listOfRoomRateNames.remove("numRoomType");
+                    System.out.println("HERE");
+                    System.out.println(listOfRoomRateNames);
                     for (String roomRateName : listOfRoomRateNames) {
                         stringOfRoomRateNames += roomRateName + ",";
                     }
@@ -328,13 +334,7 @@ public class PartnerOperationModule {
             System.out.println("Reservations are successful!");
             System.out.println("Total Payment: " + totalPayment.toString());
             System.out.println("");
-            java.time.LocalDateTime currDateTime = java.time.LocalDateTime.now();
-            java.time.LocalDateTime currDate2Am = java.time.LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
-            java.time.LocalDateTime reservationStartDate = java.time.LocalDateTime.of(startYear, startMonth, startDay, 0, 0);
-            //after 2am walk in, if reservations are for TODAY, then immediately allcoate
-            if (currDateTime.isAfter(currDate2Am) && reservationStartDate.isEqual(java.time.LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
-                webServicePort.allocationReportCheckTimerManual();
-            }
+
         } catch (UnknownPersistenceException_Exception | CreateNewReservationException_Exception ex) {
             System.out.println("Unable to create Reservations, Please Try Again!");
         } catch (InputDataValidationException_Exception ex) {
