@@ -6,10 +6,12 @@
 package ejb.session.stateless;
 
 import entity.GuestEntity;
+import entity.PartnerEntity;
 import entity.ReservationEntity;
 import entity.RoomEntity;
 import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
+import entity.UserEntity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -121,7 +123,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public Long createNewReservationForGuest(ReservationEntity newReservation, List<String> listOfRoomRateNames, GuestEntity guest) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+    public Long createNewReservationForUser(ReservationEntity newReservation, List<String> listOfRoomRateNames, UserEntity user) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         Set<ConstraintViolation<ReservationEntity>> constraintViolations = validator.validate(newReservation);
         //CHECK INVENTORY FOR THAT ROOMTYPE ONCE MORE BEFORE PERSISTING RESERVATION
         Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomStatusEnum = :inRoomStatus AND r.roomTypeEntity.roomTypeName = :inRoomTypeEntity").setParameter("inRoomStatus", RoomStatusEnum.AVAILABLE).setParameter("inRoomTypeEntity", newReservation.getRoomTypeName());
@@ -156,8 +158,13 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                         Logger.getLogger(ReservationEntitySessionBean.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                GuestEntity guestEntity = em.find(GuestEntity.class, guest.getUserEntityId());
-                guestEntity.getReservationEntities().add(newReservation);
+                if (user instanceof GuestEntity) {
+                    GuestEntity guestEntity = em.find(GuestEntity.class, user.getUserEntityId());
+                    guestEntity.getReservationEntities().add(newReservation);
+                } else {
+                    PartnerEntity partnerEntity = em.find(PartnerEntity.class, user.getUserEntityId());
+                    partnerEntity.getReservationEntities().add(newReservation);
+                }
 
                 em.persist(newReservation);
                 em.flush();
@@ -184,10 +191,10 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     }
 
     @Override
-    public void createNewReservationsForGuest(List<Pair<ReservationEntity, List<String>>> list, GuestEntity guest) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
+    public void createNewReservationsForUser(List<Pair<ReservationEntity, List<String>>> list, UserEntity user) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         for (Pair<ReservationEntity, List<String>> pair : list) {
             try {
-                createNewReservationForGuest(pair.getKey(), pair.getValue(), guest);
+                createNewReservationForUser(pair.getKey(), pair.getValue(), user);
             } catch (CreateNewReservationException ex) {
                 eJBContext.setRollbackOnly();
                 throw new CreateNewReservationException();
@@ -516,8 +523,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
         return new Pair(totalBestPrice, listRoomRateEntity);
     }
-
-    
 
     @Override
     public void setReservationToCheckedIn(ReservationEntity reservationEntity) {

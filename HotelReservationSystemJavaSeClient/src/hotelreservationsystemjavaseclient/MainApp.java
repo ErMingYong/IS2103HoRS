@@ -66,7 +66,7 @@ public class MainApp {
         String username = "";
         String password = "";
 
-        System.out.println("*** Hotel Reservation System Reservationz Client :: Login ***\n");
+        System.out.println("*** Hotel Reservation System Reservation System :: Login ***\n");
         System.out.println("Enter Username: ");
         username = scanner.nextLine().trim();
         System.out.println("Enter Password: ");
@@ -90,7 +90,6 @@ public class MainApp {
             System.out.println("You are login as " + currentPartner.getFirstName() + " " + currentPartner.getLastName());
             System.out.println("1: Partner Operation Module");
             System.out.println("2: Logout\n");
-            System.out.println(">");
             System.out.println("");
             response = 0;
 

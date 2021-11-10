@@ -291,7 +291,7 @@ public class GuestOperationModule {
         }
 
         try {
-            reservationEntitySessionBeanRemote.createNewReservations(listOfNewReservationPairs);
+            reservationEntitySessionBeanRemote.createNewReservationsForUser(listOfNewReservationPairs, currentGuest);
             System.out.println("::::::::::::::::::::::::::::::::::::::::::");
             System.out.println("Reservations are successful!");
             System.out.println("");
