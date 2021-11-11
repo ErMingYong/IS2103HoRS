@@ -37,8 +37,6 @@ public class PartnerEntitySessionBean implements PartnerEntitySessionBeanRemote,
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
     public PartnerEntitySessionBean() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
@@ -109,6 +107,7 @@ public class PartnerEntitySessionBean implements PartnerEntitySessionBeanRemote,
         }
     }
 
+    //UNUSED
     @Override
     public void deletePartner(Long partnerId) throws PartnerNotFoundException {
         PartnerEntity partner = em.find(PartnerEntity.class, partnerId);
@@ -120,18 +119,7 @@ public class PartnerEntitySessionBean implements PartnerEntitySessionBeanRemote,
         }
     }
 
-//    @Override
-//    public void updatePartner(Long oldPartnerId, PartnerEntity newPartner) throws UnknownPersistenceException {
-//        try {
-//            PartnerEntity oldPartner = em.find(PartnerEntity.class, oldPartnerId);
-//            Long newPartnerId = createNewPartner(newPartner);
-//            
-//            newPartner.setReservationEntities(oldPartner.getReservationEntities());
-//            em.remove(oldPartner);
-//        } catch (PersistenceException ex) {
-//            throw new UnknownPersistenceException(ex.getMessage());
-//        }
-//    }
+    //UNUSED
     @Override
     public void updatePartner(PartnerEntity partnerEntity) throws PartnerNotFoundException, UpdatePartnerException, InputDataValidationException {
         if (partnerEntity != null && partnerEntity.getUserEntityId() != null) {

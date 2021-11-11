@@ -101,6 +101,7 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
         }
     }
 
+    //UNUSED
     @Override
     public void deleteEmployee(Long employeeId) throws EmployeeNotFoundException {
         EmployeeEntity employee = em.find(EmployeeEntity.class, employeeId);
@@ -113,21 +114,7 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
         }
     }
 
-//    @Override
-//    public void updateEmployee(Long oldEmployeeId, EmployeeEntity newEmployee) throws EmployeeNotFoundException, UnknownPersistenceException {
-//        try {
-//            EmployeeEntity oldEmployee = retrieveEmployeeById(oldEmployeeId);
-//            Long newEmployeeId = createNewEmployee(newEmployee);
-//            newEmployee.setExceptionReportEntities(oldEmployee.getExceptionReportEntities());
-//
-//            //DID NOT DO HANDLING OF RELATIONSHIP TO RESERVATIONS AS RELATIONSHIP IS STILL UNNDER CONSIDERATION
-//            em.remove(oldEmployee);
-//        } catch (PersistenceException ex) {
-//            throw new UnknownPersistenceException(ex.getMessage());
-//        } catch (EmployeeNotFoundException ex) {
-//            throw new EmployeeNotFoundException("Employee ID " + oldEmployeeId + " does not exist");
-//        }
-//    }
+    //UNUSED
     @Override
     public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException {
         if (employeeEntity != null && employeeEntity.getUserEntityId() != null) {

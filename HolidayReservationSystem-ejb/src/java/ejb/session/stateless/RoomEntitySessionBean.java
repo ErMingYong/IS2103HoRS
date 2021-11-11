@@ -9,6 +9,8 @@ import entity.RoomEntity;
 import entity.RoomTypeEntity;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -20,9 +22,11 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.enumeration.RoomStatusEnum;
 import util.exception.InputDataValidationException;
 import util.exception.RoomFloorAndNumberExistException;
 import util.exception.RoomNotFoundException;
+import util.exception.UnableToDisableRoomException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateRoomException;
 
@@ -123,11 +127,22 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
     }
 
     @Override
-    public void deleteRoom(RoomEntity roomToDelete) throws RoomNotFoundException {
+    public void deleteRoom(RoomEntity roomToDelete) throws RoomNotFoundException, UnableToDisableRoomException {
+
         RoomEntity room = retrieveRoomByRoomId(roomToDelete.getRoomId());
         if (room != null) {
-            room.getRoomTypeEntity().getRoomEntities().remove(room);
-            em.remove(room);
+            Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomEntity = :inRoom").setParameter("inRoom", room);
+            if (room.getRoomStatusEnum() == RoomStatusEnum.UNAVAILABLE || query.getResultList().size() > 0) {
+                room.setRoomStatusEnum(RoomStatusEnum.DISABLED);
+                try {
+                    updateRoom(room);
+                } catch (RoomFloorAndNumberExistException | UpdateRoomException | InputDataValidationException ex) {
+                    throw new UnableToDisableRoomException();
+                }
+            } else {
+                room.getRoomTypeEntity().getRoomEntities().remove(room);
+                em.remove(room);
+            }
         } else {
             throw new RoomNotFoundException("Room ID " + room.getRoomId() + " does not exist");
         }
@@ -158,7 +173,15 @@ public class RoomEntitySessionBean implements RoomEntitySessionBeanRemote, RoomE
                     roomEntityToUpdate.setRoomFloor(roomEntity.getRoomFloor());
                     roomEntityToUpdate.setRoomNumber(roomEntity.getRoomNumber());
                     roomEntityToUpdate.setRoomStatusEnum(roomEntity.getRoomStatusEnum());
-                    roomEntityToUpdate.setRoomTypeEntity(roomEntity.getRoomTypeEntity());
+
+                    if (!roomEntityToUpdate.getRoomTypeEntity().equals(roomEntity.getRoomTypeEntity())) {
+                        RoomTypeEntity oldRoomType = em.find(RoomTypeEntity.class, roomEntityToUpdate.getRoomTypeEntity().getRoomTypeId());
+                        oldRoomType.getRoomEntities().remove(roomEntityToUpdate);
+                        roomEntityToUpdate.setRoomTypeEntity(roomEntity.getRoomTypeEntity());
+
+                        RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomEntity.getRoomTypeEntity().getRoomTypeId());
+                        roomType.getRoomEntities().add(roomEntityToUpdate);
+                    }
 
                 } else {
                     throw new UpdateRoomException("SKU Code of room record to be updated does not match the existing record");

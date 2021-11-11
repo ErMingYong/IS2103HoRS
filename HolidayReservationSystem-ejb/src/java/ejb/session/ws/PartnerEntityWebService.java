@@ -172,10 +172,7 @@ public class PartnerEntityWebService {
         ReservationEntity res = em.find(ReservationEntity.class, list.get(0).getKey().getReservationEntityId());
         LocalDateTime currDateTime = LocalDateTime.now();
         LocalDateTime dateTime2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
-        System.out.println("HEREEEE");
-        System.out.println(res.getReservationEndDate());
         if (currDateTime.isAfter(dateTime2Am) && res.getReservationStartDate().isEqual(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)))) {
-            System.out.println("THEREEEE");
             allocationReportSessionBeanLocal.allocationReportCheckTimerManual();
         }
 

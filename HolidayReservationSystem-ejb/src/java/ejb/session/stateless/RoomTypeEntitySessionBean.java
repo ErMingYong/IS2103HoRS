@@ -5,6 +5,8 @@
  */
 package ejb.session.stateless;
 
+import entity.RoomEntity;
+import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.util.HashMap;
 import java.util.List;
@@ -162,16 +164,11 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
             boolean isNameUsed = false;
 
             if (query.getResultList().size() > 0) {
-                isNameUsed = true;
+                RoomTypeEntity rt = (RoomTypeEntity) query.getSingleResult();
+                if (rt.getRoomTypeId().equals(roomTypeEntity)) {
+                    isNameUsed = true;
+                }
             }
-//            try {
-//                RoomTypeEntity roomType = (RoomTypeEntity) query.getSingleResult();
-//                if (!roomType.getRoomTypeId().equals(roomTypeEntity.getRoomTypeId())) {
-//                    isNameUsed = true;
-//                }
-//            } catch (NoResultException ex) {
-//                isNameUsed = false;
-//            }
 
             if (isNameUsed) {
                 throw new RoomTypeNameExistException();
@@ -185,7 +182,7 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                 roomTypeEntityToUpdate.setBed(roomTypeEntity.getBed());
                 roomTypeEntityToUpdate.setCapacity(roomTypeEntity.getCapacity());
                 roomTypeEntityToUpdate.setAmenities(roomTypeEntity.getAmenities());
-                //RED FLAG
+                roomTypeEntityToUpdate.setIsDisabled(roomTypeEntity.getIsDisabled());
                 if (roomTypeEntityToUpdate.getRanking() != roomTypeEntity.getRanking()) {
                     roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
                     updateRankings(roomTypeEntity, roomTypeEntity.getRanking());
@@ -203,11 +200,12 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
     @Override
     public void deleteRoomType(Long roomTypeId) throws RoomTypeNotFoundException {
         //if i not wrong must check through the rooms and make sure none using the roomtype before you can delete
-        //RED FLAG
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
-
-        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomTypeEntity.roomTypeName = :inName").setParameter("inName", roomType.getRoomTypeName());
-        if (query.getResultList().size() > 0) {
+        List<RoomEntity> listOfRoomEntities = roomType.getRoomEntities();
+        List<RoomRateEntity> listOfRoomRateEntities = roomType.getRoomRateEntities();
+        //Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomTypeEntity.roomTypeName = :inName").setParameter("inName", roomType.getRoomTypeName());
+        //if (query.getResultList().size() > 0) {
+        if (listOfRoomEntities.size() > 0 || listOfRoomRateEntities.size() > 0) {
             try {
                 //means roomType still in use so you should disable it so no new rooms can be created with that room type
                 disableRoomType(roomType);

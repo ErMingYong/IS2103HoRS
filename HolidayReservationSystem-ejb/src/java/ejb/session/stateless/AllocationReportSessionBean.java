@@ -248,6 +248,8 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         }
     }
 
+    
+    //UNUSED
     @Override
     public RoomEntity manualAllocationOfRoomToReservation(String roomTypeName, ReservationEntity reservationEntity) {
         ReservationEntity reservation = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());

@@ -378,8 +378,8 @@ public class GuestOperationModule {
                             System.out.println("Reserved Room Type: " + roomTypeName);
                             System.out.println("Reservation Price: " + reservationPrice);
                             System.out.println("");
-                            System.out.println("Reservation Start Date: " + reservationStartDate);
-                            System.out.println("Reservation End Date: " + reservationEndDate);
+                            System.out.println("Reservation Start Date: " + reservationStartDate.toLocalDate());
+                            System.out.println("Reservation End Date: " + reservationEndDate.toLocalDate());
                             System.out.println("-----------------------------------------------");
                             System.out.print("Press any key to continue...> ");
                             System.out.println("");
@@ -428,12 +428,9 @@ public class GuestOperationModule {
                         return -1;
                     }
                 });
-                //List<ReservationEntity> reservationEntitires = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(managedGuest.getPassportNumber());
-                //System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
                 System.out.printf("%15.15s%25.25s%25.25s%20.20s%20.20s\n", "Reservation Id", "Reservation Start Date", "Reservation End Date", "Room Type Name", "Reservation Price");
                 for (ReservationEntity reservationEntity : reservationEntities) {
                     System.out.printf("%15.15s%25.25s%25.25s%20.20s%20.20s\n", reservationEntity.getReservationEntityId(), reservationEntity.getReservationStartDate().toLocalDate().toString(), reservationEntity.getReservationEndDate().toLocalDate().toString(), reservationEntity.getRoomTypeName(), reservationEntity.getReservationPrice());
-                    //System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
                 }
                 System.out.print("Press any key to continue...> ");
                 scanner.nextLine();

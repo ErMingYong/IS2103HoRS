@@ -14,12 +14,9 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.ExceptionReportEntity;
 import entity.ReservationEntity;
-import entity.RoomEntity;
-import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
@@ -30,14 +27,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.util.Pair;
 import util.enumeration.EmployeeAccessRightEnum;
 import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
-import util.exception.InsufficientRoomAvailableForManualAllocationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.InvalidAccessRightException;
 import util.exception.NoExceptionReportFoundException;
@@ -422,23 +416,6 @@ public class FrontOfficeModule {
                         System.out.println("");
                         System.out.println("Press any key to continue...");
                         String response = scanner.nextLine();
-//                        System.out.println("Press any key to continue to manually allocate...");
-//                        String response = scanner.nextLine();
-//                        try {
-//                            RoomEntity roomAllocated = doManualAllocation(res);
-//                            System.out.println("-----------------------");
-//                            System.out.println("Reservation: " + counter);
-//                            counter += 1;
-//                            System.out.println("");
-//                            System.out.println("Room Allocated: " + displayRoomFloorAndNumber(roomAllocated.getRoomFloor(), roomAllocated.getRoomNumber()));
-//                            System.out.println("::::::::::::::::::::::::::::::::::::::");
-//                            System.out.println("Press any key to continue...");
-//                            response = scanner.nextLine();
-//                        } catch (InsufficientRoomAvailableForManualAllocationException ex) {
-//                            System.out.println("THERE IS CURRENTLY NO ROOMS LEFT TO ALLOCATE");
-//                            System.out.println("PLEASE PROCEED TO REFUND GUEST FOR RESERVATION");
-//                            System.out.println("");
-//                        }
                     }
                 } catch (NoExceptionReportFoundException ex) {
                     //No exception means will have a room allcoated

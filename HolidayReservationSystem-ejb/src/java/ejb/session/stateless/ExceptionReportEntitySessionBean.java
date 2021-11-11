@@ -36,8 +36,6 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
     public ExceptionReportEntitySessionBean() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
@@ -105,6 +103,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         return exceptionReportEntity;
     }
 
+    //UNUSED
     @Override
     public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException {
         ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
@@ -116,6 +115,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         }
     }
 
+    //UNUSED
     @Override
     public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException {
         try {

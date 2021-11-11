@@ -8,11 +8,8 @@ package ejb.session.stateless;
 import entity.ReservationEntity;
 import entity.RoomRateEntity;
 import entity.RoomTypeEntity;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -126,17 +123,10 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
         //Get reservations that are ongoing where the roomrate is the name of the roomrate to be deleted
         //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
-        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE :inName MEMBER OF r.roomRateEntity").setParameter("inName", roomRate);
-
+        //Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE :inName MEMBER OF r.roomRateEntity").setParameter("inName", roomRate);
+        Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE :inName MEMBER OF r.roomRateEntities").setParameter("inName", roomRate);
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
-//        LocalDateTime currentDate = LocalDateTime.now();
         boolean toDisable = false;
-//        for (ReservationEntity res : listOReservationEntities) {
-//            if (res.getReservationStartDate().isAfter(currentDate) && res.getRoomRateName().equals(roomRate.getRoomRateName())) {
-//                toDisable = true;
-//                break;
-//            }
-//        }
         if (listOfReservationEntities.size() > 0) {
             toDisable = true;
         }
@@ -150,6 +140,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         } else {
 
             if (roomRate != null) {
+                roomRate.getRoomTypeEntity().getRoomRateEntities().remove(roomRate);
                 em.remove(roomRate);
             } else {
                 throw new RoomRateNotFoundException("Room Type ID " + roomRateId + " does not exist");
@@ -187,6 +178,7 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
                     roomRateToUpdate.setValidPeriodFrom(roomRate.getValidPeriodFrom());
                     roomRateToUpdate.setValidPeriodTo(roomRate.getValidPeriodTo());
                     roomRateToUpdate.setRoomRateTypeEnum(roomRate.getRoomRateTypeEnum());
+                    roomRateToUpdate.setIsDisabled(roomRate.getIsDisabled());
 
                     // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
                     //cannot set isDisabled through this method as well

@@ -258,8 +258,9 @@ public class SalesOperationModule {
         try {
             RoomRateEntity roomRate = roomRateEntitySessionBeanRemote.retrieveRoomRateByName(roomRateName);
 
-            System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To", "Room Rate Type Enum");
-            System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", roomRate.getRoomRateName(), roomRate.getRatePerNight().toString(), roomRate.getValidPeriodFrom().toString(), roomRate.getValidPeriodTo().toString(), roomRate.getRoomRateTypeEnum().toString());
+            System.out.printf("%25.25s%25.25s%25.25s%25.25s%25.25s%25.25s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To", "Room Rate Type Enum", "Disabled");
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------------------");
+            System.out.printf("%25.25s%25.25s%25.25s%25.25s%25.25s%25.25s\n", roomRate.getRoomRateName(), roomRate.getRatePerNight().toString(), roomRate.getValidPeriodFrom().toLocalDate().toString(), roomRate.getValidPeriodTo().toLocalDate().toString(), roomRate.getRoomRateTypeEnum().toString(), roomRate.getIsDisabled());
 
             System.out.println("------------------------");
             System.out.println("1: Update Room Rate");
@@ -309,7 +310,6 @@ public class SalesOperationModule {
             }
         }
 
-        scanner.nextLine();
         System.out.println("Would you like to update Valid Period? Press 1 to update and any other key to skip");
         input = scanner.nextLine();
         if (input.equals("1")) {
@@ -419,6 +419,21 @@ public class SalesOperationModule {
             }
         }
 
+        while (true) {
+            System.out.print("Disable Room Rate (\"T\" for true, \"F\" for false)> ");
+            input = scanner.nextLine().trim();
+            if (input.equals("T")) {
+                roomRate.setIsDisabled(true);
+            } else if (input.equals("F")) {
+                roomRate.setIsDisabled(false);
+            } else {
+                System.out.println("Please input valid option!");
+                System.out.println("");
+                continue;
+            }
+            break;
+        }
+
         Set<ConstraintViolation<RoomRateEntity>> constraintViolations = validator.validate(roomRate);
 
         if (constraintViolations.isEmpty()) {
@@ -472,10 +487,10 @@ public class SalesOperationModule {
 
         } else {
 
-            System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To", "Room Rate Type Enum");
-
+            System.out.printf("%30.30s%25.25s%25.25s%25.25s%25.25s%25.25s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To", "Room Rate Type Enum", " Room Rate Disabled");
+            System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------------");
             for (RoomRateEntity roomRateEntity : roomRateEntities) {
-                System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toLocalDate().toString(), roomRateEntity.getValidPeriodTo().toLocalDate().toString(), roomRateEntity.getRoomRateTypeEnum().toString());
+                System.out.printf("%30.30s%25.25s%25.25s%25.25s%25.25s%25.25s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toLocalDate().toString(), roomRateEntity.getValidPeriodTo().toLocalDate().toString(), roomRateEntity.getRoomRateTypeEnum().toString(), roomRateEntity.getIsDisabled());
             }
 
             System.out.println("Press any key to continue...> ");

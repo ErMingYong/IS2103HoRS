@@ -13,7 +13,6 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.ExceptionReportEntity;
 import entity.RoomEntity;
@@ -39,9 +38,9 @@ import util.exception.RoomFloorAndNumberExistException;
 import util.exception.RoomNotFoundException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomTypeNotFoundException;
+import util.exception.UnableToDisableRoomException;
 import util.exception.UnknownPersistenceException;
 import util.exception.UpdateRoomException;
-import util.exception.UpdateRoomTypeException;
 
 /**
  *
@@ -100,7 +99,7 @@ public class HotelOperationModule {
             System.out.println("4: Create New Room");
             System.out.println("5: Update Room");
             System.out.println("6: Delete Room");
-            System.out.println("7: View All Room");
+            System.out.println("7: View All Rooms");
             System.out.println("8: View Room Allocation Exception Report");
             System.out.println("9: Exit");
             System.out.println(">");
@@ -267,6 +266,20 @@ public class HotelOperationModule {
         input = scanner.nextLine().trim();
         if (input.length() > 0) {
             roomType.setAmenities(input);
+        }
+        while (true) {
+            System.out.print("Disable Room Type (\"T\" for true, \"F\" for false)> ");
+            input = scanner.nextLine().trim();
+            if (input.equals("T")) {
+                roomType.setIsDisabled(true);
+            } else if (input.equals("F")) {
+                roomType.setIsDisabled(false);
+            } else {
+                System.out.println("Please input valid option!");
+                System.out.println("");
+                continue;
+            }
+            break;
         }
 
         System.out.print("Enter Room Type Ranking (Original Rank: " + roomType.getRanking() + ")> ");
@@ -517,30 +530,14 @@ public class HotelOperationModule {
             }
             break;
         }
-        //check if room has someone staying inside
-        if (roomToDelete.getRoomStatusEnum() == RoomStatusEnum.UNAVAILABLE) {
-            //if have customer staying, DISABLE
-            roomToDelete.setRoomStatusEnum(RoomStatusEnum.DISABLED);
-            try {
-                roomEntitySessionBeanRemote.updateRoom(roomToDelete);
-            } catch (UpdateRoomException ex) {
-                System.out.println("Unable to update Room status to Disabled");
-            } catch (InputDataValidationException | RoomFloorAndNumberExistException ex) {
-                System.out.println(ex.getMessage() + "\n");
-            } catch (RoomNotFoundException ex) {
-                System.out.println("Room to be disabled cannot be found");
-            }
 
-            System.out.println("Room Status has been set to DISABLED as it is currently occupied");
-        } else {
-            try {
-                // can delete
-                roomEntitySessionBeanRemote.deleteRoom(roomToDelete);
-            } catch (RoomNotFoundException ex) {
-                System.out.println("Room to be deleted cannot be found");
-            }
-        }
-
+        try {
+            // can delete
+            roomEntitySessionBeanRemote.deleteRoom(roomToDelete);
+        } catch (RoomNotFoundException ex) {
+            System.out.println("Room to be deleted cannot be found");
+        } catch (UnableToDisableRoomException ex) {
+            System.out.println("Room Cannot be disabled/deleted!");        }
     }
 
     private void doViewAllRooms() {
