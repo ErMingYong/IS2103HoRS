@@ -175,7 +175,7 @@ public class GuestOperationModule {
 
                 continue;
             }
-            
+
             if (!reservationEndDate.isAfter(reservationStartDate)) {
                 System.out.println("PLEASE SELECT A DATE AFTER START DATE!");
                 System.out.println("::::::::::::::::::::");
@@ -303,6 +303,8 @@ public class GuestOperationModule {
 
             numReservation += 1;
         }
+
+
 
         try {
             reservationEntitySessionBeanRemote.createNewReservationsForGuest(listOfNewReservationPairs, currentGuest);

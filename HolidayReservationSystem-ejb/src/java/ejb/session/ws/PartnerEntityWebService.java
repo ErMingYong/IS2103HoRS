@@ -60,29 +60,6 @@ public class PartnerEntityWebService {
     @Resource
     private EJBContext eJBContext;
 
-//    public class MyHash {
-//
-//        private HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map;
-//
-//        public MyHash(HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map) {
-//            this.map = map;
-//        }
-//
-//        /**
-//         * @return the map
-//         */
-//        public HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> getMap() {
-//            return map;
-//        }
-//
-//        /**
-//         * @param map the map to set
-//         */
-//        public void setMap(HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map) {
-//            this.map = map;
-//        }
-//
-//    }
     @WebMethod(operationName = "partnerLogin")
     public PartnerEntity partnerLogin(@WebParam(name = "partnerUsername") String partnerUsername,
             @WebParam(name = "partnerPassword") String partnerPassword) throws PartnerNotFoundException, InvalidLoginCredentialException {
@@ -91,13 +68,7 @@ public class PartnerEntityWebService {
         partner = partnerEntitySessionBeanLocal.retrievePartnerByUsername(partnerUsername);
         em.detach(partner);
         partner.setReservationEntities(new ArrayList<>());
-//        partner.getReservationEntities().size();
-//        for (ReservationEntity res : partner.getReservationEntities()) {
-//            res.getRoomRateEntities().size();
-//            em.detach(res);
-//            res.setRoomEntity(null);
-//            res.
-//        }
+
 
         if (partner == null) {
             throw new PartnerNotFoundException("Partner with username " + partnerUsername + " does not exist");
@@ -178,22 +149,6 @@ public class PartnerEntityWebService {
         }
     }
 
-//    public void () throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
-//        try {
-//            reservationEntitySessionBeanLocal.createNewReservations(listOfNewReservationPairs);
-//            List<ReservationEntity> partnerReservations = partner.getReservationEntities();
-//
-//            return partnerReservations;
-//        } catch (PartnerNotFoundException ex) {
-//            throw new PartnerNotFoundException("Partner does not exist");
-//        } catch (CreateNewReservationException ex) {
-//            Logger.getLogger(PartnerEntityWebService.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (UnknownPersistenceException ex) {
-//            Logger.getLogger(PartnerEntityWebService.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InputDataValidationException ex) {
-//            Logger.getLogger(PartnerEntityWebService.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
     @WebMethod(operationName = "createNewReservationsForPartner")
     public void createNewReservationsForPartner(@WebParam(name = "listOfNewReservation") List<ReservationEntity> listOfNewReservation, @WebParam(name = "listOfNewReservationsStringOfRoomRateNames") List<String> listOfNewReservationsStringOfRoomRateNames, @WebParam(name = "startDay") Integer startDay, @WebParam(name = "startMonth") Integer startMonth, @WebParam(name = "startYear") Integer startYear, @WebParam(name = "endDay") Integer endDay, @WebParam(name = "endMonth") Integer endMonth, @WebParam(name = "endYear") Integer endYear, @WebParam(name = "partner") PartnerEntity partner) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         List<List<String>> listOfNewReservationsListOfRoomRateNames = new ArrayList<>();
@@ -217,7 +172,10 @@ public class PartnerEntityWebService {
         ReservationEntity res = em.find(ReservationEntity.class, list.get(0).getKey().getReservationEntityId());
         LocalDateTime currDateTime = LocalDateTime.now();
         LocalDateTime dateTime2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
-        if (currDateTime.isAfter(dateTime2Am) && res.getReservationStartDate().isEqual(currDateTime)) {
+        System.out.println("HEREEEE");
+        System.out.println(res.getReservationEndDate());
+        if (currDateTime.isAfter(dateTime2Am) && res.getReservationStartDate().isEqual(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)))) {
+            System.out.println("THEREEEE");
             allocationReportSessionBeanLocal.allocationReportCheckTimerManual();
         }
 
