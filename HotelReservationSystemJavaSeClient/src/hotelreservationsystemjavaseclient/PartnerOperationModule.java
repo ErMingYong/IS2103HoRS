@@ -19,6 +19,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ws.client.CreateNewReservationException_Exception;
 import ws.client.InputDataValidationException_Exception;
 import ws.client.InsufficientRoomsAvailableException_Exception;
+import ws.client.InvalidDateRangeException_Exception;
 import ws.client.LocalDateTime;
 import ws.client.PartnerEntity;
 import ws.client.PartnerEntityWebService;
@@ -207,6 +208,10 @@ public class PartnerOperationModule {
 
         } catch (InsufficientRoomsAvailableException_Exception ex) {
             System.out.println("Insufficient rooms are available from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
+            System.out.println("");
+        } catch (InvalidDateRangeException_Exception ex) {
+            System.out.println("Date range given for Reservation is Invalid!");
+            System.out.println("");
         }
     }
 

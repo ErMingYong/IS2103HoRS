@@ -22,6 +22,9 @@
 <message name="InsufficientRoomsAvailableException">
 <part name="fault" element="tns:InsufficientRoomsAvailableException"/>
 </message>
+<message name="InvalidDateRangeException">
+<part name="fault" element="tns:InvalidDateRangeException"/>
+</message>
 <message name="createNewReservationsForPartner">
 <part name="parameters" element="tns:createNewReservationsForPartner"/>
 </message>
@@ -62,6 +65,7 @@
 <input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesRequest" message="tns:retrieveRoomTypeAvailabilities"/>
 <output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesResponse" message="tns:retrieveRoomTypeAvailabilitiesResponse"/>
 <fault message="tns:InsufficientRoomsAvailableException" name="InsufficientRoomsAvailableException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InsufficientRoomsAvailableException"/>
+<fault message="tns:InvalidDateRangeException" name="InvalidDateRangeException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InvalidDateRangeException"/>
 </operation>
 <operation name="createNewReservationsForPartner">
 <input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartnerRequest" message="tns:createNewReservationsForPartner"/>
@@ -106,6 +110,9 @@
 </output>
 <fault name="InsufficientRoomsAvailableException">
 <soap:fault name="InsufficientRoomsAvailableException" use="literal"/>
+</fault>
+<fault name="InvalidDateRangeException">
+<soap:fault name="InvalidDateRangeException" use="literal"/>
 </fault>
 </operation>
 <operation name="createNewReservationsForPartner">

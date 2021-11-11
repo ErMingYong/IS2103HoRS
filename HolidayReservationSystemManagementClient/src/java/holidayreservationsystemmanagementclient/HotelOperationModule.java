@@ -324,14 +324,23 @@ public class HotelOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Types ***\n");
 
         List<RoomTypeEntity> roomTypeEntities = roomTypeEntitySessionBeanRemote.retrieveAllRoomTypes();
-        System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
+        if (roomTypeEntities.isEmpty()) {
+            System.out.println("-----------------------------------------");
+            System.out.println("You do not have any Room Types!");
+            System.out.println("");
+            System.out.println("Press any key to go back...");
+            scanner.nextLine();
+        } else {
+            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
 
-        for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled(), roomTypeEntity.getRanking());
+            for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
+                System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled(), roomTypeEntity.getRanking());
+            }
+
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
 
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
     }
 
     public void doCreateNewRoom() {
@@ -540,14 +549,23 @@ public class HotelOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Rooms ***\n");
 
         List<RoomEntity> roomEntities = roomEntitySessionBeanRemote.retrieveAllRooms();
-        System.out.printf("%15s%15s%15s%15s\n", "Room Floor", "Room Number", "Room Type", "Room Status");
+        if (roomEntities.isEmpty()) {
+            System.out.println("-----------------------------------------");
+            System.out.println("You do not have any Rooms!");
+            System.out.println("");
+            System.out.println("Press any key to go back...");
+            scanner.nextLine();
+        } else {
+            System.out.printf("%15s%15s%15s%15s\n", "Room Floor", "Room Number", "Room Type", "Room Status");
 
-        for (RoomEntity roomEntity : roomEntities) {
-            System.out.printf("%15d%15d%15s%15s\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber(), roomEntity.getRoomTypeEntity().getRoomTypeName(), roomEntity.getRoomStatusEnum());
+            for (RoomEntity roomEntity : roomEntities) {
+                System.out.printf("%15d%15d%15s%15s\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber(), roomEntity.getRoomTypeEntity().getRoomTypeName(), roomEntity.getRoomStatusEnum());
+            }
+
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
 
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
     }
 
     public void doViewRoomAllocationExceptionReport() {

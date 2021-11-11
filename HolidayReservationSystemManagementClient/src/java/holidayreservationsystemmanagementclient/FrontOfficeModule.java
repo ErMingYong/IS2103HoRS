@@ -141,9 +141,16 @@ public class FrontOfficeModule {
                 reservationStartDate = LocalDateTime.of(year, month, day, 0, 0, 0);
             } catch (DateTimeException ex) {
                 System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
-                System.out.println(":::");
+                System.out.println("::::::::::::::::::::");
                 System.out.println("");
 
+                continue;
+            }
+
+            if (reservationStartDate.isBefore(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
+                System.out.println("PLEASE SELECT A DATE FROM TODAY ONWARDS!");
+                System.out.println("::::::::::::::::::::");
+                System.out.println("");
                 continue;
             }
             break;
@@ -164,9 +171,16 @@ public class FrontOfficeModule {
                 reservationEndDate = LocalDateTime.of(year, month, day, 0, 0, 0);
             } catch (DateTimeException ex) {
                 System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
-                System.out.println(":::");
+                System.out.println("::::::::::::::::::::");
                 System.out.println("");
 
+                continue;
+            }
+
+            if (!reservationEndDate.isAfter(reservationStartDate)) {
+                System.out.println("PLEASE SELECT A DATE AFTER START DATE!");
+                System.out.println("::::::::::::::::::::");
+                System.out.println("");
                 continue;
             }
             break;

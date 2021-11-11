@@ -19,7 +19,9 @@ import entity.GuestEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
 import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -249,6 +251,13 @@ public class MainApp {
 
                 continue;
             }
+
+            if (reservationStartDate.isBefore(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
+                System.out.println("PLEASE SELECT A DATE FROM TODAY ONWARDS!");
+                System.out.println("::::::::::::::::::::");
+                System.out.println("");
+                continue;
+            }
             break;
         }
 
@@ -272,6 +281,13 @@ public class MainApp {
 
                 continue;
             }
+            if (!reservationEndDate.isAfter(reservationStartDate)) {
+                System.out.println("PLEASE SELECT A DATE AFTER START DATE!");
+                System.out.println("::::::::::::::::::::");
+                System.out.println("");
+                continue;
+            }
+
             break;
         }
         int noRooms = 0;
@@ -312,7 +328,6 @@ public class MainApp {
             System.out.println("Press any key to go back...");
             String response = scanner.nextLine();
             System.out.println("");
-            
 
         } catch (InsufficientRoomsAvailableException ex) {
             System.out.println("Insufficient rooms are available from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());

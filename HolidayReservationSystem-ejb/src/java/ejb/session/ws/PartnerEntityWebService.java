@@ -32,6 +32,7 @@ import javax.persistence.PersistenceContext;
 import util.exception.CreateNewReservationException;
 import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
+import util.exception.InvalidDateRangeException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.PartnerNotFoundException;
 import util.exception.UnknownPersistenceException;
@@ -123,7 +124,7 @@ public class PartnerEntityWebService {
                 msg += res.getContactNumber() + ",";
                 msg += res.getPassportNumber() + ",";
                 msg += res.getRoomTypeName() + ",";
-                msg += res.getReservationPrice()+ ",";
+                msg += res.getReservationPrice() + ",";
                 msg += res.getReservationStartDate().toLocalDate().toString() + ",";
                 msg += res.getReservationEndDate().toLocalDate().toString();
                 listOfStrings.add(msg);
@@ -138,11 +139,17 @@ public class PartnerEntityWebService {
     @WebMethod(operationName = "retrieveRoomTypeAvailabilities")
     public List<String> retrieveRoomTypeAvailabilities(@WebParam(name = "reservationStartDateDay") Integer reservationStartDateDay, @WebParam(name = "reservationStartDateMonth") Integer reservationStartDateMonth, @WebParam(name = "reservationStartDateYear") Integer reservationStartDateYear,
             @WebParam(name = "reservationEndDateDay") Integer reservationEndDateDay, @WebParam(name = "reservationEndDateMonth") Integer reservationEndDateMonth, @WebParam(name = "reservationEndDateYear") Integer reservationEndDateYear,
-            @WebParam(name = "numRooms") Integer numRooms, @WebParam(name = "isWalkIn") Boolean isWalkIn) throws InsufficientRoomsAvailableException {
+            @WebParam(name = "numRooms") Integer numRooms, @WebParam(name = "isWalkIn") Boolean isWalkIn) throws InsufficientRoomsAvailableException, InvalidDateRangeException {
 
         try {
             LocalDateTime reservationStartDate = LocalDateTime.of(reservationStartDateYear, reservationStartDateMonth, reservationStartDateDay, 0, 0);
             LocalDateTime reservationEndDate = LocalDateTime.of(reservationEndDateYear, reservationEndDateMonth, reservationEndDateDay, 0, 0);
+            LocalDateTime currDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+
+            if (reservationStartDate.isBefore(currDate) || !reservationEndDate.isAfter(reservationStartDate)) {
+                throw new InvalidDateRangeException();
+            }
+
             HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = reservationEntitySessionBeanLocal.retrieveRoomTypeAvailabilities(reservationStartDate, reservationEndDate, numRooms, false);
             List<String> listOfResults = new ArrayList<>();
             List<RoomTypeEntity> listOfKeys = new ArrayList<>(map.keySet());

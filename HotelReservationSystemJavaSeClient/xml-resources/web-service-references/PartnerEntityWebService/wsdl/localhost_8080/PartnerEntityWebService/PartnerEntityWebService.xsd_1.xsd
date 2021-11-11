@@ -6,6 +6,8 @@
 
 <xs:element name="InsufficientRoomsAvailableException" type="tns:InsufficientRoomsAvailableException"/>
 
+<xs:element name="InvalidDateRangeException" type="tns:InvalidDateRangeException"/>
+
 <xs:element name="InvalidLoginCredentialException" type="tns:InvalidLoginCredentialException"/>
 
 <xs:element name="PartnerNotFoundException" type="tns:PartnerNotFoundException"/>
@@ -52,6 +54,12 @@
 </xs:complexType>
 
 <xs:complexType name="InsufficientRoomsAvailableException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InvalidDateRangeException">
 <xs:sequence>
 <xs:element name="message" type="xs:string" minOccurs="0"/>
 </xs:sequence>

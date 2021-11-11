@@ -283,6 +283,7 @@ public class SalesOperationModule {
 
         } catch (RoomRateNotFoundException ex) {
             System.out.println("Room Rate Name: " + roomRateName + " does not exist");
+            System.out.println("");
         }
     }
 
@@ -462,14 +463,25 @@ public class SalesOperationModule {
         System.out.println("*** Hotel Management Client :: Hotal Operation Module :: View All Room Rates ***\n");
 
         List<RoomRateEntity> roomRateEntities = roomRateEntitySessionBeanRemote.retrieveAllRoomRates();
-        System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To", "Room Rate Type Enum");
+        if (roomRateEntities.isEmpty()) {
+            System.out.println("-----------------------------------------");
+            System.out.println("You do not have any Room Rates!");
+            System.out.println("");
+            System.out.println("Press any key to go back...");
+            scanner.nextLine();
 
-        for (RoomRateEntity roomRateEntity : roomRateEntities) {
-            System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toString(), roomRateEntity.getValidPeriodTo().toString(), roomRateEntity.getRoomRateTypeEnum().toString());
+        } else {
+
+            System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", "Room Rate Name", "Rate per Night", "Valid Period From", "Valid Period To", "Room Rate Type Enum");
+
+            for (RoomRateEntity roomRateEntity : roomRateEntities) {
+                System.out.printf("%30.30s%30.30s%30.30s%30.30s%30.30s\n", roomRateEntity.getRoomRateName(), roomRateEntity.getRatePerNight().toString(), roomRateEntity.getValidPeriodFrom().toLocalDate().toString(), roomRateEntity.getValidPeriodTo().toLocalDate().toString(), roomRateEntity.getRoomRateTypeEnum().toString());
+            }
+
+            System.out.println("Press any key to continue...> ");
+            scanner.nextLine();
         }
 
-        System.out.println("Press any key to continue...> ");
-        scanner.nextLine();
     }
 
     private void showInputDataValidationErrorsForRoomRateEntity(Set<ConstraintViolation<RoomRateEntity>> constraintViolations) {

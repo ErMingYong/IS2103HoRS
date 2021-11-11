@@ -145,6 +145,13 @@ public class GuestOperationModule {
 
                 continue;
             }
+
+            if (reservationStartDate.isBefore(LocalDateTime.of(LocalDate.now(), LocalTime.MIN))) {
+                System.out.println("PLEASE SELECT A DATE FROM TODAY ONWARDS!");
+                System.out.println("::::::::::::::::::::");
+                System.out.println("");
+                continue;
+            }
             break;
         }
 
@@ -166,6 +173,13 @@ public class GuestOperationModule {
                 System.out.println(":::");
                 System.out.println("");
 
+                continue;
+            }
+            
+            if (!reservationEndDate.isAfter(reservationStartDate)) {
+                System.out.println("PLEASE SELECT A DATE AFTER START DATE!");
+                System.out.println("::::::::::::::::::::");
+                System.out.println("");
                 continue;
             }
             break;

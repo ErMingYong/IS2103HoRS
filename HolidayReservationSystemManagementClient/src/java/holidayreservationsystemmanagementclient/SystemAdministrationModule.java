@@ -56,7 +56,7 @@ public class SystemAdministrationModule {
         validator = validatorFactory.getValidator();
     }
 
-    public SystemAdministrationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote,  EmployeeEntity currentEmployee) {
+    public SystemAdministrationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
@@ -178,14 +178,23 @@ public class SystemAdministrationModule {
         System.out.println("*** Hotel Reservation System Management Client  System :: System Administration :: View All Employees ***\n");
 
         List<EmployeeEntity> employeeEntities = employeeEntitySessionBeanRemote.retrieveAllEmployees();
-        System.out.printf("%8s%20s%20s%30s%20s%20s\n", "Employee ID", "First Name", "Last Name", "Access Right", "Username", "Password");
+        if (employeeEntities.isEmpty()) {
+            System.out.println("-----------------------------------------");
+            System.out.println("You do not have any Employees!");
+            System.out.println("");
+            System.out.println("Press any key to go back...");
+            scanner.nextLine();
 
-        for (EmployeeEntity employeeEntity : employeeEntities) {
-            System.out.printf("%8s%20s%20s%30s%20s%20s\n", employeeEntity.getUserEntityId().toString(), employeeEntity.getFirstName(), employeeEntity.getLastName(), employeeEntity.getEmployeeAccessRightEnum().toString(), employeeEntity.getUserName(), employeeEntity.getPassword());
+        } else {
+            System.out.printf("%8.8s%20.20s%20.20s%30.30s%20.20s%20.20s\n", "Employee ID", "First Name", "Last Name", "Access Right", "Username", "Password");
+
+            for (EmployeeEntity employeeEntity : employeeEntities) {
+                System.out.printf("%8.8s%20.20s%20.20s%30.30s%20.20s%20.20s\n", employeeEntity.getUserEntityId().toString(), employeeEntity.getFirstName(), employeeEntity.getLastName(), employeeEntity.getEmployeeAccessRightEnum().toString(), employeeEntity.getUserName(), employeeEntity.getPassword());
+            }
+
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
-
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
     }
 
     private void doCreateNewPartner() {
@@ -224,24 +233,32 @@ public class SystemAdministrationModule {
             showInputDataValidationErrorsForPartnerEntity(constraintViolations);
         }
     }
-    
-    
+
     private void doViewAllPartners() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** Hotel Reservation System Management Client  System :: System Administration :: View All Partners ***\n");
 
         List<PartnerEntity> partnerEntities = partnerEntitySessionBeanRemote.retrieveAllPartners();
-        System.out.printf("%8s%20s%20s%20s%20s\n", "Partner ID", "First Name", "Last Name", "Username", "Password");
+        if (partnerEntities.isEmpty()) {
+            System.out.println("-----------------------------------------");
+            System.out.println("You do not have any Partners!");
+            System.out.println("");
+            System.out.println("Press any key to go back...");
+            scanner.nextLine();
+        } else {
 
-        for (PartnerEntity partnerEntity : partnerEntities) {
-            System.out.printf("%8s%20s%20s%20s%20s\n", partnerEntity.getUserEntityId().toString(), partnerEntity.getFirstName(), partnerEntity.getLastName(), partnerEntity.getUserName(), partnerEntity.getPassword());
+            System.out.printf("%8.8s%20.20s%20.20s%20.20s%20.20s\n", "Partner ID", "First Name", "Last Name", "Username", "Password");
+
+            for (PartnerEntity partnerEntity : partnerEntities) {
+                System.out.printf("%8.8s%20.20s%20.20s%20.20s%20.20s\n", partnerEntity.getUserEntityId().toString(), partnerEntity.getFirstName(), partnerEntity.getLastName(), partnerEntity.getUserName(), partnerEntity.getPassword());
+            }
+
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
 
-        System.out.print("Press any key to continue...> ");
-        scanner.nextLine();
     }
-    
 
     private void showInputDataValidationErrorsForEmployeeEntity(Set<ConstraintViolation<EmployeeEntity>> constraintViolations) {
         System.out.println("\nInput data validation error!:");
