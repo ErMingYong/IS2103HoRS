@@ -14,8 +14,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
@@ -57,7 +55,9 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         List<ReservationEntity> reservationsEndingToday = reservationEntitySessionBeanLocal.retrieveAllReservationsWithEndDate(todayDate);
         if (!reservationsEndingToday.isEmpty()) {
             for (ReservationEntity reservation : reservationsEndingToday) {
-                reservation.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+                if (!reservation.getRoomEntity().getRoomStatusEnum().equals(RoomStatusEnum.DISABLED)) {
+                    reservation.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+                }
             }
         }
 
@@ -68,17 +68,33 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         //maps a room type name to the list of RoomEntities that are available
         HashMap<String, List<RoomEntity>> roomMapping = new HashMap<>();
         for (RoomEntity room : listOfAvailableRoomEntities) {
-            if (roomMapping.containsKey(room.getRoomTypeEntity().getRoomTypeName())) {
-                //if the room type name exists in the roomMapping hash map
-                List<RoomEntity> listRooms = roomMapping.remove(room.getRoomTypeEntity().getRoomTypeName());
-                listRooms.add(room);
-                roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), listRooms);
-            } else {
-                //if the room type name does not exist in the roomMapping hash map
-                List<RoomEntity> list = new ArrayList<>();
-                list.add(room);
-                roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), list);
+            Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomEntity = :inRoom").setParameter("inRoom", room);
+            List<ReservationEntity> listOfRes = query.getResultList();
+            boolean notCounted = false;
+            if (listOfRes.size() > 0) {
+                for (ReservationEntity res : listOfRes) {
+                    if ((res.getReservationStartDate().isEqual(todayDate) || res.getReservationStartDate().isBefore(todayDate))
+                            && (res.getReservationEndDate().isAfter(todayDate))) {
+                        notCounted = true;
+                        break;
+                    }
+                }
             }
+
+            if (notCounted == false) {
+                if (roomMapping.containsKey(room.getRoomTypeEntity().getRoomTypeName())) {
+                    //if the room type name exists in the roomMapping hash map
+                    List<RoomEntity> listRooms = roomMapping.remove(room.getRoomTypeEntity().getRoomTypeName());
+                    listRooms.add(room);
+                    roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), listRooms);
+                } else {
+                    //if the room type name does not exist in the roomMapping hash map
+                    List<RoomEntity> list = new ArrayList<>();
+                    list.add(room);
+                    roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), list);
+                }
+            }
+
         }
 
         //list of reservations that has to be assigned today
@@ -150,7 +166,9 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         List<ReservationEntity> reservationsEndingToday = reservationEntitySessionBeanLocal.retrieveAllReservationsWithEndDate(todayDate);
         if (!reservationsEndingToday.isEmpty()) {
             for (ReservationEntity reservation : reservationsEndingToday) {
-                reservation.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+                if (!reservation.getRoomEntity().getRoomStatusEnum().equals(RoomStatusEnum.DISABLED)) {
+                    reservation.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+                }
             }
         }
 
@@ -161,17 +179,33 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         //maps a room type name to the list of RoomEntities that are available
         HashMap<String, List<RoomEntity>> roomMapping = new HashMap<>();
         for (RoomEntity room : listOfAvailableRoomEntities) {
-            if (roomMapping.containsKey(room.getRoomTypeEntity().getRoomTypeName())) {
-                //if the room type name exists in the roomMapping hash map
-                List<RoomEntity> listRooms = roomMapping.remove(room.getRoomTypeEntity().getRoomTypeName());
-                listRooms.add(room);
-                roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), listRooms);
-            } else {
-                //if the room type name does not exist in the roomMapping hash map
-                List<RoomEntity> list = new ArrayList<>();
-                list.add(room);
-                roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), list);
+            Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.roomEntity = :inRoom").setParameter("inRoom", room);
+            List<ReservationEntity> listOfRes = query.getResultList();
+            boolean notCounted = false;
+            if (listOfRes.size() > 0) {
+                for (ReservationEntity res : listOfRes) {
+                    if ((res.getReservationStartDate().isEqual(todayDate) || res.getReservationStartDate().isBefore(todayDate))
+                            && (res.getReservationEndDate().isAfter(todayDate))) {
+                        notCounted = true;
+                        break;
+                    }
+                }
             }
+
+            if (notCounted == false) {
+                if (roomMapping.containsKey(room.getRoomTypeEntity().getRoomTypeName())) {
+                    //if the room type name exists in the roomMapping hash map
+                    List<RoomEntity> listRooms = roomMapping.remove(room.getRoomTypeEntity().getRoomTypeName());
+                    listRooms.add(room);
+                    roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), listRooms);
+                } else {
+                    //if the room type name does not exist in the roomMapping hash map
+                    List<RoomEntity> list = new ArrayList<>();
+                    list.add(room);
+                    roomMapping.put(room.getRoomTypeEntity().getRoomTypeName(), list);
+                }
+            }
+
         }
 
         //list of reservations that has to be assigned today
@@ -248,7 +282,6 @@ public class AllocationReportSessionBean implements AllocationReportSessionBeanR
         }
     }
 
-    
     //UNUSED
     @Override
     public RoomEntity manualAllocationOfRoomToReservation(String roomTypeName, ReservationEntity reservationEntity) {
