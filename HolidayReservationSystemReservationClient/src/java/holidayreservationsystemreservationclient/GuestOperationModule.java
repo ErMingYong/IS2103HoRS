@@ -348,18 +348,25 @@ public class GuestOperationModule {
                             String reservationFirstName = reservation.getFirstName();
                             String reservationLastname = reservation.getLastName();
                             String reservationEmail = reservation.getEmail();
+                            String roomTypeName = reservation.getRoomTypeName();
+                            String reservationPrice = reservation.getReservationPrice().toString();
                             String reservationContactNumber = reservation.getContactNumber();
                             String reservationPassportNumber = reservation.getPassportNumber();
+
                             System.out.println("Reservation successfully retrieved. Reservation Id: " + reservationId);
                             System.out.println("Reservation First Name: " + reservationFirstName);
                             System.out.println("Reservation Last Name: " + reservationLastname);
-                            System.out.println("Reservation Start Date: " + reservationStartDate.toString());
-                            System.out.println("Reservation End Date: " + reservationEndDate.toString());
                             System.out.println("Reservation Email: " + reservationEmail);
                             System.out.println("Reservation Contact Number: " + reservationContactNumber);
                             System.out.println("Reservation Passport Number: " + reservationPassportNumber);
-
+                            System.out.println("Reserved Room Type: " + roomTypeName);
+                            System.out.println("Reservation Price: " + reservationPrice);
+                            System.out.println("");
+                            System.out.println("Reservation Start Date: " + reservationStartDate);
+                            System.out.println("Reservation End Date: " + reservationEndDate);
+                            System.out.println("-----------------------------------------------");
                             System.out.print("Press any key to continue...> ");
+                            System.out.println("");
                             scanner.nextLine();
                         } else {
                             System.out.println("Please select a valid input!");
@@ -369,7 +376,7 @@ public class GuestOperationModule {
                     System.out.println("");
                     System.out.println("Continue to view Reservation? Press 'Y', to Exit Press any other key...");
                     String response = scanner.nextLine();
-                    if (response == "Y") {
+                    if (response.equals("Y")) {
                         continue;
                     }
                     break;
@@ -406,9 +413,11 @@ public class GuestOperationModule {
                     }
                 });
                 //List<ReservationEntity> reservationEntitires = reservationEntitySessionBeanRemote.retrieveReservationByPassportNumber(managedGuest.getPassportNumber());
-                System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
+                //System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", "Reservation Start Date", "Reservation End Date", "First Name", "Last Name", "Email", "Contact Number", "Passport Number");
+                System.out.printf("%15.15s%25.25s%25.25s%20.20s%20.20s\n", "Reservation Id", "Reservation Start Date", "Reservation End Date", "Room Type Name", "Reservation Price");
                 for (ReservationEntity reservationEntity : reservationEntities) {
-                    System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
+                    System.out.printf("%15.15s%25.25s%25.25s%20.20s%20.20s\n", reservationEntity.getReservationEntityId(), reservationEntity.getReservationStartDate().toLocalDate().toString(), reservationEntity.getReservationEndDate().toLocalDate().toString(), reservationEntity.getRoomTypeName(), reservationEntity.getReservationPrice());
+                    //System.out.printf("%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s%15.15s\n", reservationEntity.getReservationStartDate().toString(), reservationEntity.getReservationEndDate().toString(), reservationEntity.getFirstName(), reservationEntity.getLastName(), reservationEntity.getEmail(), reservationEntity.getContactNumber(), reservationEntity.getPassportNumber());
                 }
                 System.out.print("Press any key to continue...> ");
                 scanner.nextLine();

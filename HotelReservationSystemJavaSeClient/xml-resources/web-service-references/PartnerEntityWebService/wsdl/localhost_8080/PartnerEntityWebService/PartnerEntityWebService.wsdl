@@ -4,18 +4,6 @@
 <xsd:import namespace="http://ws.session.ejb/" schemaLocation="http://localhost:8080/PartnerEntityWebService/PartnerEntityWebService?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="partnerLogin">
-<part name="parameters" element="tns:partnerLogin"/>
-</message>
-<message name="partnerLoginResponse">
-<part name="parameters" element="tns:partnerLoginResponse"/>
-</message>
-<message name="PartnerNotFoundException">
-<part name="fault" element="tns:PartnerNotFoundException"/>
-</message>
-<message name="InvalidLoginCredentialException">
-<part name="fault" element="tns:InvalidLoginCredentialException"/>
-</message>
 <message name="allocationReportCheckTimerManual">
 <part name="parameters" element="tns:allocationReportCheckTimerManual"/>
 </message>
@@ -52,13 +40,19 @@
 <message name="retrieveAllPartnerReservationsResponse">
 <part name="parameters" element="tns:retrieveAllPartnerReservationsResponse"/>
 </message>
+<message name="PartnerNotFoundException">
+<part name="fault" element="tns:PartnerNotFoundException"/>
+</message>
+<message name="partnerLogin">
+<part name="parameters" element="tns:partnerLogin"/>
+</message>
+<message name="partnerLoginResponse">
+<part name="parameters" element="tns:partnerLoginResponse"/>
+</message>
+<message name="InvalidLoginCredentialException">
+<part name="fault" element="tns:InvalidLoginCredentialException"/>
+</message>
 <portType name="PartnerEntityWebService">
-<operation name="partnerLogin">
-<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginRequest" message="tns:partnerLogin"/>
-<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginResponse" message="tns:partnerLoginResponse"/>
-<fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/PartnerNotFoundException"/>
-<fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/InvalidLoginCredentialException"/>
-</operation>
 <operation name="allocationReportCheckTimerManual">
 <input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManualRequest" message="tns:allocationReportCheckTimerManual"/>
 <output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManualResponse" message="tns:allocationReportCheckTimerManualResponse"/>
@@ -81,24 +75,15 @@
 <output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsResponse" message="tns:retrieveAllPartnerReservationsResponse"/>
 <fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservations/Fault/PartnerNotFoundException"/>
 </operation>
+<operation name="partnerLogin">
+<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginRequest" message="tns:partnerLogin"/>
+<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginResponse" message="tns:partnerLoginResponse"/>
+<fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/PartnerNotFoundException"/>
+<fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/InvalidLoginCredentialException"/>
+</operation>
 </portType>
 <binding name="PartnerEntityWebServicePortBinding" type="tns:PartnerEntityWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="partnerLogin">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-<fault name="PartnerNotFoundException">
-<soap:fault name="PartnerNotFoundException" use="literal"/>
-</fault>
-<fault name="InvalidLoginCredentialException">
-<soap:fault name="InvalidLoginCredentialException" use="literal"/>
-</fault>
-</operation>
 <operation name="allocationReportCheckTimerManual">
 <soap:operation soapAction=""/>
 <input>
@@ -151,6 +136,21 @@
 </output>
 <fault name="PartnerNotFoundException">
 <soap:fault name="PartnerNotFoundException" use="literal"/>
+</fault>
+</operation>
+<operation name="partnerLogin">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="PartnerNotFoundException">
+<soap:fault name="PartnerNotFoundException" use="literal"/>
+</fault>
+<fault name="InvalidLoginCredentialException">
+<soap:fault name="InvalidLoginCredentialException" use="literal"/>
 </fault>
 </operation>
 </binding>

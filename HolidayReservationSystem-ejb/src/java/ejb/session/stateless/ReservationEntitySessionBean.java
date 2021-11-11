@@ -237,10 +237,8 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                     try {
                         System.out.println(listOfRoomRateNames.toString());
                         for (String roomRateName : listOfRoomRateNames) {
-                            System.out.println("ROOMRATE NAME WITH PROBLEM BEFORE DYING: " + roomRateName);
                             RoomRateEntity roomRate;
                             try {
-                                System.out.println("ROOMRATE NAME WITH PROBLEM: " + roomRateName);
                                 roomRate = roomRateEntitySessionBeanLocal.retrieveRoomRateByName(roomRateName);
                                 if (!newReservation.getRoomRateEntities().contains(roomRate)) {
                                     newReservation.getRoomRateEntities().add(roomRate);
@@ -297,7 +295,6 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     @Override
     public void createNewReservationsForPartner(List<Pair<ReservationEntity, List<String>>> list, PartnerEntity partner) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException {
         for (Pair<ReservationEntity, List<String>> pair : list) {
-            System.out.println(pair.getValue().toString());
             try {
                 createNewReservationForPartner(pair.getKey(), pair.getValue(), partner);
             } catch (CreateNewReservationException ex) {

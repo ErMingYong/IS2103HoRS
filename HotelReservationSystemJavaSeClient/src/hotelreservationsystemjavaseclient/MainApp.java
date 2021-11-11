@@ -90,7 +90,6 @@ public class MainApp {
             System.out.println("You are login as " + currentPartner.getFirstName() + " " + currentPartner.getLastName());
             System.out.println("1: Partner Operation Module");
             System.out.println("2: Logout\n");
-            System.out.println("");
             response = 0;
 
             while (response < 1 || response > 2) {

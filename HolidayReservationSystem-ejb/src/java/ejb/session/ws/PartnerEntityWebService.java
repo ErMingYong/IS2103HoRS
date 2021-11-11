@@ -11,18 +11,14 @@ import ejb.session.stateless.ReservationEntitySessionBeanLocal;
 import entity.PartnerEntity;
 import entity.ReservationEntity;
 import entity.RoomTypeEntity;
-import entity.UserEntity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.util.Pair;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -92,6 +88,15 @@ public class PartnerEntityWebService {
 
         PartnerEntity partner = null;
         partner = partnerEntitySessionBeanLocal.retrievePartnerByUsername(partnerUsername);
+        em.detach(partner);
+        partner.setReservationEntities(new ArrayList<>());
+//        partner.getReservationEntities().size();
+//        for (ReservationEntity res : partner.getReservationEntities()) {
+//            res.getRoomRateEntities().size();
+//            em.detach(res);
+//            res.setRoomEntity(null);
+//            res.
+//        }
 
         if (partner == null) {
             throw new PartnerNotFoundException("Partner with username " + partnerUsername + " does not exist");
@@ -103,13 +108,28 @@ public class PartnerEntityWebService {
     }
 
     @WebMethod(operationName = "retrieveAllPartnerReservations")
-    public List<ReservationEntity> retrieveAllPartnerReservations(@WebParam(name = "partnerId") Long partnerId) throws PartnerNotFoundException {
+    public List<String> retrieveAllPartnerReservations(@WebParam(name = "partnerId") Long partnerId) throws PartnerNotFoundException {
 
         try {
             PartnerEntity partner = partnerEntitySessionBeanLocal.retrievePartnerByPartnerId(partnerId);
             List<ReservationEntity> partnerReservations = partner.getReservationEntities();
+            List<String> listOfStrings = new ArrayList<>();
+            for (ReservationEntity res : partnerReservations) {
+                String msg = "";
+                msg += res.getReservationEntityId() + ",";
+                msg += res.getFirstName() + ",";
+                msg += res.getLastName() + ",";
+                msg += res.getEmail() + ",";
+                msg += res.getContactNumber() + ",";
+                msg += res.getPassportNumber() + ",";
+                msg += res.getRoomTypeName() + ",";
+                msg += res.getReservationPrice()+ ",";
+                msg += res.getReservationStartDate().toLocalDate().toString() + ",";
+                msg += res.getReservationEndDate().toLocalDate().toString();
+                listOfStrings.add(msg);
+            }
 
-            return partnerReservations;
+            return listOfStrings;
         } catch (PartnerNotFoundException ex) {
             throw new PartnerNotFoundException("Partner does not exist");
         }
@@ -144,8 +164,6 @@ public class PartnerEntityWebService {
                 }
                 listOfResults.add(msg);
             }
-            System.out.println("HEREHERERE");
-            System.out.println(listOfResults.toString());
             //format "roomTypeName, numRoomType, bestPrice, roomRateName, roomRateName ....
             return listOfResults;
         } catch (InsufficientRoomsAvailableException ex) {
@@ -178,10 +196,6 @@ public class PartnerEntityWebService {
             System.out.println(roomRateNameList);
             listOfNewReservationsListOfRoomRateNames.add(roomRateNameList);
         }
-        System.out.println("THERE");
-        for (List<String> list : listOfNewReservationsListOfRoomRateNames) {
-            System.out.println(list.toString());
-        }
         LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, startDay, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, endDay, 0, 0);
         List<Pair<ReservationEntity, List<String>>> list = new ArrayList<>();
@@ -195,7 +209,7 @@ public class PartnerEntityWebService {
         reservationEntitySessionBeanLocal.createNewReservationsForPartner(list, partner);
         ReservationEntity res = em.find(ReservationEntity.class, list.get(0).getKey().getReservationEntityId());
         LocalDateTime currDateTime = LocalDateTime.now();
-        LocalDateTime dateTime2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2,0));
+        LocalDateTime dateTime2Am = LocalDateTime.of(LocalDate.now(), LocalTime.of(2, 0));
         if (currDateTime.isAfter(dateTime2Am) && res.getReservationStartDate().isEqual(currDateTime)) {
             allocationReportSessionBeanLocal.allocationReportCheckTimerManual();
         }
