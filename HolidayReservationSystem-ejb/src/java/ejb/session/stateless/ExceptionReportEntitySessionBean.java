@@ -83,7 +83,11 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
                 .setParameter("inDate", date)
                 .getResultList();
         for (ExceptionReportEntity exceptionReportEntity : listOfExceptionReportEntities) {
-            exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity();
+            if (exceptionReportEntity.getReservationEntity().getRoomEntity() != null) {
+                exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity();
+            }
+            
+            
         }
         return listOfExceptionReportEntities;
     }

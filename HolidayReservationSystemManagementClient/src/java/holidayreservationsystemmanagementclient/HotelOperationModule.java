@@ -648,7 +648,7 @@ public class HotelOperationModule {
                     String guestEmail = exceptionReportEntity.getReservationEntity().getEmail();
                     String bookedRoomType = exceptionReportEntity.getReservationEntity().getRoomTypeName();
                     String roomTypeAllocation;
-                    if (exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
+                    if (exceptionReportEntity.getReservationEntity().getRoomEntity() != null) {
                         roomTypeAllocation = exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName();
                     } else {
                         roomTypeAllocation = "NO ROOM ALLOCATED";

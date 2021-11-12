@@ -402,6 +402,99 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
     ////
     // PREVIOUS IMPLEMENTATION
     ////
+//    @Override
+//    public HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> retrieveRoomTypeAvailabilities(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms, Boolean isWalkIn) throws InsufficientRoomsAvailableException {
+//        HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = new HashMap<>();
+//        HashMap<RoomTypeEntity, Integer> highestNumOfInventoryUsedPerRoomType = new HashMap<>();
+//        int totalInventoryRooms = 0;
+//
+//        //get list of roomtypes that are not disabled
+//        List<RoomTypeEntity> listOfAllRoomTypes = roomTypeEntitySessionBeanLocal.retrieveAllRoomTypes();
+//        List<RoomTypeEntity> listOfAvailableRoomTypes = new ArrayList<>();
+//        for (RoomTypeEntity roomType : listOfAllRoomTypes) {
+//            if (roomType.getIsDisabled() == false) {
+//                listOfAvailableRoomTypes.add(roomType);
+//            }
+//        }
+//        //HERE
+//        //get number of rooms of each room type that is not disabled (INVENTORY)
+//        for (RoomTypeEntity roomType : listOfAvailableRoomTypes) {
+//            HashMap<String, BigDecimal> stringToBigDecimalMap = new HashMap<>();
+//            List<RoomEntity> listOfRooms = roomType.getRoomEntities();
+//
+//            int numInventory = 0;
+//            for (RoomEntity room : listOfRooms) {
+//                if (room.getRoomStatusEnum() != RoomStatusEnum.DISABLED) {
+//                    numInventory += 1;
+//                }
+//            }
+//            //get best price according to whether this is walk in or online
+//            Pair<BigDecimal, List<RoomRateEntity>> pair;
+//            if (isWalkIn) {
+//                pair = getPublishedPrice(startDate, endDate, roomType);
+//            } else {
+//                pair = getOnlinePrice(startDate, endDate, roomType);
+//            }
+//
+//            stringToBigDecimalMap.put("bestPrice", pair.getKey());
+//            stringToBigDecimalMap.put("numRoomType", BigDecimal.valueOf(numInventory));
+//            for (RoomRateEntity roomRate : pair.getValue()) {
+//                stringToBigDecimalMap.put(roomRate.getRoomRateName(), BigDecimal.ZERO);
+//            }
+//            map.put(roomType, stringToBigDecimalMap);
+//            highestNumOfInventoryUsedPerRoomType.put(roomType, 0);
+//        }
+//
+//        //checking for the number of reservations for each roomTypes there is per day, and store the numbers
+//        LocalDateTime currDate = startDate;
+//        while (currDate.isBefore(endDate)) {
+//            Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE r.reservationStartDate <= :inDate AND r.reservationEndDate > :inDate").setParameter("inDate", currDate);
+//            List<ReservationEntity> listOfReservations = query.getResultList();
+//            HashMap<RoomTypeEntity, Integer> numRoomUsedPerRoomType = new HashMap<>();
+//            if (!listOfReservations.isEmpty()) {
+//                for (ReservationEntity res : listOfReservations) {
+//                    RoomTypeEntity roomType = res.getRoomRateEntities().get(0).getRoomTypeEntity();
+//                    if (numRoomUsedPerRoomType.containsKey(roomType)) {
+//                        numRoomUsedPerRoomType.put(roomType, numRoomUsedPerRoomType.get(roomType) + 1);
+//                    } else {
+//                        numRoomUsedPerRoomType.put(roomType, 1);
+//                    }
+//                }
+//            }
+//            //compare to the map that stores the highest, so that later the inventory can be deducted by the highest number of rooms used per room type
+//            List<RoomTypeEntity> listOfRoomTypeEntities = new ArrayList<>(numRoomUsedPerRoomType.keySet());
+//            for (RoomTypeEntity roomType : listOfRoomTypeEntities) {
+//                if (highestNumOfInventoryUsedPerRoomType.containsKey(roomType)) {
+//                    if (highestNumOfInventoryUsedPerRoomType.get(roomType) < numRoomUsedPerRoomType.get(roomType)) {
+//                        highestNumOfInventoryUsedPerRoomType.put(roomType, numRoomUsedPerRoomType.get(roomType));
+//                    }
+//                }
+//
+//            }
+//            currDate = currDate.plusDays(1);
+//        }
+//
+//        List<RoomTypeEntity> listOfHighestUsedInventoryForRoomType = new ArrayList<>(highestNumOfInventoryUsedPerRoomType.keySet());
+//        for (RoomTypeEntity roomType : listOfHighestUsedInventoryForRoomType) {
+//            if (map.containsKey(roomType)) {
+//                HashMap<String, BigDecimal> stringToBigDecimalMap = map.get(roomType);
+//                BigDecimal numRoomsLeft = stringToBigDecimalMap.get("numRoomType").subtract(BigDecimal.valueOf(highestNumOfInventoryUsedPerRoomType.get(roomType)));
+//                if (numRoomsLeft.compareTo(BigDecimal.ZERO) <= 0) {
+//                    numRoomsLeft = BigDecimal.ZERO;
+//                }
+//                stringToBigDecimalMap.put("numRoomType", numRoomsLeft);
+//                totalInventoryRooms += numRoomsLeft.intValue();
+//                map.put(roomType, stringToBigDecimalMap);
+//            }
+//        }
+//
+//        if (totalInventoryRooms < numRooms) {
+//            throw new InsufficientRoomsAvailableException();
+//        }
+//
+//        return map;
+//    }
+    //NEW IMPLEMENTATION
     @Override
     public HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> retrieveRoomTypeAvailabilities(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms, Boolean isWalkIn) throws InsufficientRoomsAvailableException {
         HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = new HashMap<>();
@@ -422,9 +515,10 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
             HashMap<String, BigDecimal> stringToBigDecimalMap = new HashMap<>();
             List<RoomEntity> listOfRooms = roomType.getRoomEntities();
 
+            //check if there is a reservation that is checked in for the room, which means that the room has people staying in
             int numInventory = 0;
             for (RoomEntity room : listOfRooms) {
-                if (room.getRoomStatusEnum() != RoomStatusEnum.DISABLED) {
+                if (room.getRoomStatusEnum() == RoomStatusEnum.AVAILABLE) {
                     numInventory += 1;
                 }
             }
@@ -584,28 +678,46 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
         return new Pair(totalBestPrice, listRoomRateEntity);
     }
 
+    ////
+    //  OLD IMPLEMENTATION
+    ////
+//    @Override
+//    public void setReservationToCheckedIn(ReservationEntity reservationEntity
+//    ) {
+//        ReservationEntity res = em.find(ReservationEntity.class,
+//                reservationEntity.getReservationEntityId());
+//        res.setIsCheckedIn(true);
+//        if (!res.getRoomEntity().getRoomStatusEnum().equals(RoomStatusEnum.DISABLED)) {
+//            res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.UNAVAILABLE);
+//        }
+//
+//    }
+    //NEW IMPLEMENTATION
     @Override
-    public void setReservationToCheckedIn(ReservationEntity reservationEntity
-    ) {
-        ReservationEntity res = em.find(ReservationEntity.class,
-                reservationEntity.getReservationEntityId());
+    public void setReservationToCheckedIn(ReservationEntity reservationEntity) {
+        ReservationEntity res = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
         res.setIsCheckedIn(true);
-        if (!res.getRoomEntity().getRoomStatusEnum().equals(RoomStatusEnum.DISABLED)) {
-            res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.UNAVAILABLE);
-        }
-
     }
 
+    ////
+    //  OLD IMPLEMENTATION
+    ////
+//    @Override
+//    public void setReservationToCheckedOut(ReservationEntity reservationEntity
+//    ) {
+//        ReservationEntity res = em.find(ReservationEntity.class,
+//                reservationEntity.getReservationEntityId());
+//        res.setIsCheckedIn(false);
+//        if (!res.getRoomEntity().getRoomStatusEnum().equals(RoomStatusEnum.DISABLED)) {
+//            res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
+//        }
+//        res.setRoomEntity(null);
+//    }
+    // NEW IMPLEMENTATION
     @Override
-    public void setReservationToCheckedOut(ReservationEntity reservationEntity
-    ) {
-        ReservationEntity res = em.find(ReservationEntity.class,
-                reservationEntity.getReservationEntityId());
+    public void setReservationToCheckedOut(ReservationEntity reservationEntity) {
+        ReservationEntity res = em.find(ReservationEntity.class, reservationEntity.getReservationEntityId());
         res.setIsCheckedIn(false);
-        if (!res.getRoomEntity().getRoomStatusEnum().equals(RoomStatusEnum.DISABLED)) {
-            res.getRoomEntity().setRoomStatusEnum(RoomStatusEnum.AVAILABLE);
-        }
-        res.setRoomEntity(null);
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ReservationEntity>> constraintViolations) {
