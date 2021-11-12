@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &amp;lt;complexContent&amp;gt;
  *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
  *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element name="username" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
- *         &amp;lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="partnerUsername" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="partnerPassword" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
  *       &amp;lt;/sequence&amp;gt;
  *     &amp;lt;/restriction&amp;gt;
  *   &amp;lt;/complexContent&amp;gt;
@@ -28,60 +28,60 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "partnerLogin", propOrder = {
-    "username",
-    "password"
+    "partnerUsername",
+    "partnerPassword"
 })
 public class PartnerLogin {
 
-    protected String username;
-    protected String password;
+    protected String partnerUsername;
+    protected String partnerPassword;
 
     /**
-     * Gets the value of the username property.
+     * Gets the value of the partnerUsername property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUsername() {
-        return username;
+    public String getPartnerUsername() {
+        return partnerUsername;
     }
 
     /**
-     * Sets the value of the username property.
+     * Sets the value of the partnerUsername property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUsername(String value) {
-        this.username = value;
+    public void setPartnerUsername(String value) {
+        this.partnerUsername = value;
     }
 
     /**
-     * Gets the value of the password property.
+     * Gets the value of the partnerPassword property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPassword() {
-        return password;
+    public String getPartnerPassword() {
+        return partnerPassword;
     }
 
     /**
-     * Sets the value of the password property.
+     * Sets the value of the partnerPassword property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPassword(String value) {
-        this.password = value;
+    public void setPartnerPassword(String value) {
+        this.partnerPassword = value;
     }
 
 }

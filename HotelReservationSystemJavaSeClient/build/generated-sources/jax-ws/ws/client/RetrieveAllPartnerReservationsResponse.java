@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &amp;lt;complexContent&amp;gt;
  *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
  *       &amp;lt;sequence&amp;gt;
- *         &amp;lt;element name="return" type="{http://ws.session.ejb/}reservationEntity" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
  *       &amp;lt;/sequence&amp;gt;
  *     &amp;lt;/restriction&amp;gt;
  *   &amp;lt;/complexContent&amp;gt;
@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 public class RetrieveAllPartnerReservationsResponse {
 
     @XmlElement(name = "return")
-    protected List<ReservationEntity> _return;
+    protected List<String> _return;
 
     /**
      * Gets the value of the return property.
@@ -55,13 +55,13 @@ public class RetrieveAllPartnerReservationsResponse {
      * 
      * &lt;p&gt;
      * Objects of the following type(s) are allowed in the list
-     * {@link ReservationEntity }
+     * {@link String }
      * 
      * 
      */
-    public List<ReservationEntity> getReturn() {
+    public List<String> getReturn() {
         if (_return == null) {
-            _return = new ArrayList<ReservationEntity>();
+            _return = new ArrayList<String>();
         }
         return this._return;
     }

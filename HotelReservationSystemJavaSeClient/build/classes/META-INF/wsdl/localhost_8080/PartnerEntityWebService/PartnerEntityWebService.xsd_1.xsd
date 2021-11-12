@@ -1,8 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is Metro/2.4.3 (RELEASE-2.4.3-ad3323c; 2019-01-21T17:46:06+0000) JAXWS-RI/2.3.2 JAXWS-API/2.3.2 JAXB-RI/2.3.2 JAXB-API/2.3.2 git-revision#unknown. --><xs:schema xmlns:tns="http://ws.session.ejb/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://ws.session.ejb/">
 
+<xs:element name="CreateNewReservationException" type="tns:CreateNewReservationException"/>
+
+<xs:element name="InputDataValidationException" type="tns:InputDataValidationException"/>
+
+<xs:element name="InsufficientRoomsAvailableException" type="tns:InsufficientRoomsAvailableException"/>
+
+<xs:element name="InvalidDateRangeException" type="tns:InvalidDateRangeException"/>
+
 <xs:element name="InvalidLoginCredentialException" type="tns:InvalidLoginCredentialException"/>
 
 <xs:element name="PartnerNotFoundException" type="tns:PartnerNotFoundException"/>
+
+<xs:element name="UnknownPersistenceException" type="tns:UnknownPersistenceException"/>
+
+<xs:element name="allocationReportCheckTimerManual" type="tns:allocationReportCheckTimerManual"/>
+
+<xs:element name="allocationReportCheckTimerManualResponse" type="tns:allocationReportCheckTimerManualResponse"/>
+
+<xs:element name="createNewReservationsForPartner" type="tns:createNewReservationsForPartner"/>
+
+<xs:element name="createNewReservationsForPartnerResponse" type="tns:createNewReservationsForPartnerResponse"/>
 
 <xs:element name="partnerLogin" type="tns:partnerLogin"/>
 
@@ -12,10 +30,59 @@
 
 <xs:element name="retrieveAllPartnerReservationsResponse" type="tns:retrieveAllPartnerReservationsResponse"/>
 
+<xs:element name="retrieveRoomTypeAvailabilities" type="tns:retrieveRoomTypeAvailabilities"/>
+
+<xs:element name="retrieveRoomTypeAvailabilitiesResponse" type="tns:retrieveRoomTypeAvailabilitiesResponse"/>
+
+<xs:complexType name="retrieveRoomTypeAvailabilities">
+<xs:sequence>
+<xs:element name="reservationStartDateDay" type="xs:int" minOccurs="0"/>
+<xs:element name="reservationStartDateMonth" type="xs:int" minOccurs="0"/>
+<xs:element name="reservationStartDateYear" type="xs:int" minOccurs="0"/>
+<xs:element name="reservationEndDateDay" type="xs:int" minOccurs="0"/>
+<xs:element name="reservationEndDateMonth" type="xs:int" minOccurs="0"/>
+<xs:element name="reservationEndDateYear" type="xs:int" minOccurs="0"/>
+<xs:element name="numRooms" type="xs:int" minOccurs="0"/>
+<xs:element name="isWalkIn" type="xs:boolean" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="retrieveRoomTypeAvailabilitiesResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InsufficientRoomsAvailableException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InvalidDateRangeException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="allocationReportCheckTimerManual">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="allocationReportCheckTimerManualResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="UnknownPersistenceException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="partnerLogin">
 <xs:sequence>
-<xs:element name="username" type="xs:string" minOccurs="0"/>
-<xs:element name="password" type="xs:string" minOccurs="0"/>
+<xs:element name="partnerUsername" type="xs:string" minOccurs="0"/>
+<xs:element name="partnerPassword" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -119,6 +186,36 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="createNewReservationsForPartner">
+<xs:sequence>
+<xs:element name="listOfNewReservation" type="tns:reservationEntity" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="listOfNewReservationsStringOfRoomRateNames" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="startDay" type="xs:int" minOccurs="0"/>
+<xs:element name="startMonth" type="xs:int" minOccurs="0"/>
+<xs:element name="startYear" type="xs:int" minOccurs="0"/>
+<xs:element name="endDay" type="xs:int" minOccurs="0"/>
+<xs:element name="endMonth" type="xs:int" minOccurs="0"/>
+<xs:element name="endYear" type="xs:int" minOccurs="0"/>
+<xs:element name="partner" type="tns:partnerEntity" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="createNewReservationsForPartnerResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="CreateNewReservationException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InputDataValidationException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="retrieveAllPartnerReservations">
 <xs:sequence>
 <xs:element name="partnerId" type="xs:long" minOccurs="0"/>
@@ -127,7 +224,7 @@
 
 <xs:complexType name="retrieveAllPartnerReservationsResponse">
 <xs:sequence>
-<xs:element name="return" type="tns:reservationEntity" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 

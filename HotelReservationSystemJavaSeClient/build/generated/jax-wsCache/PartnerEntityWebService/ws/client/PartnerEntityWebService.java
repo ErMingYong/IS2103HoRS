@@ -28,8 +28,8 @@ public interface PartnerEntityWebService {
 
     /**
      * 
-     * @param password
-     * @param username
+     * @param partnerUsername
+     * @param partnerPassword
      * @return
      *     returns ws.client.PartnerEntity
      * @throws PartnerNotFoundException_Exception
@@ -44,18 +44,120 @@ public interface PartnerEntityWebService {
         @FaultAction(className = InvalidLoginCredentialException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/InvalidLoginCredentialException")
     })
     public PartnerEntity partnerLogin(
-        @WebParam(name = "username", targetNamespace = "")
-        String username,
-        @WebParam(name = "password", targetNamespace = "")
-        String password)
+        @WebParam(name = "partnerUsername", targetNamespace = "")
+        String partnerUsername,
+        @WebParam(name = "partnerPassword", targetNamespace = "")
+        String partnerPassword)
         throws InvalidLoginCredentialException_Exception, PartnerNotFoundException_Exception
+    ;
+
+    /**
+     * 
+     * @throws UnknownPersistenceException_Exception
+     */
+    @WebMethod
+    @RequestWrapper(localName = "allocationReportCheckTimerManual", targetNamespace = "http://ws.session.ejb/", className = "ws.client.AllocationReportCheckTimerManual")
+    @ResponseWrapper(localName = "allocationReportCheckTimerManualResponse", targetNamespace = "http://ws.session.ejb/", className = "ws.client.AllocationReportCheckTimerManualResponse")
+    @Action(input = "http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManualRequest", output = "http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManualResponse", fault = {
+        @FaultAction(className = UnknownPersistenceException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/allocationReportCheckTimerManual/Fault/UnknownPersistenceException")
+    })
+    public void allocationReportCheckTimerManual()
+        throws UnknownPersistenceException_Exception
+    ;
+
+    /**
+     * 
+     * @param listOfNewReservation
+     * @param partner
+     * @param startMonth
+     * @param listOfNewReservationsStringOfRoomRateNames
+     * @param startDay
+     * @param endDay
+     * @param startYear
+     * @param endMonth
+     * @param endYear
+     * @throws InputDataValidationException_Exception
+     * @throws UnknownPersistenceException_Exception
+     * @throws CreateNewReservationException_Exception
+     */
+    @WebMethod
+    @RequestWrapper(localName = "createNewReservationsForPartner", targetNamespace = "http://ws.session.ejb/", className = "ws.client.CreateNewReservationsForPartner")
+    @ResponseWrapper(localName = "createNewReservationsForPartnerResponse", targetNamespace = "http://ws.session.ejb/", className = "ws.client.CreateNewReservationsForPartnerResponse")
+    @Action(input = "http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartnerRequest", output = "http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartnerResponse", fault = {
+        @FaultAction(className = CreateNewReservationException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/CreateNewReservationException"),
+        @FaultAction(className = UnknownPersistenceException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/UnknownPersistenceException"),
+        @FaultAction(className = InputDataValidationException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/InputDataValidationException")
+    })
+    public void createNewReservationsForPartner(
+        @WebParam(name = "listOfNewReservation", targetNamespace = "")
+        List<ReservationEntity> listOfNewReservation,
+        @WebParam(name = "listOfNewReservationsStringOfRoomRateNames", targetNamespace = "")
+        List<String> listOfNewReservationsStringOfRoomRateNames,
+        @WebParam(name = "startDay", targetNamespace = "")
+        Integer startDay,
+        @WebParam(name = "startMonth", targetNamespace = "")
+        Integer startMonth,
+        @WebParam(name = "startYear", targetNamespace = "")
+        Integer startYear,
+        @WebParam(name = "endDay", targetNamespace = "")
+        Integer endDay,
+        @WebParam(name = "endMonth", targetNamespace = "")
+        Integer endMonth,
+        @WebParam(name = "endYear", targetNamespace = "")
+        Integer endYear,
+        @WebParam(name = "partner", targetNamespace = "")
+        PartnerEntity partner)
+        throws CreateNewReservationException_Exception, InputDataValidationException_Exception, UnknownPersistenceException_Exception
+    ;
+
+    /**
+     * 
+     * @param numRooms
+     * @param reservationEndDateYear
+     * @param reservationStartDateMonth
+     * @param reservationEndDateMonth
+     * @param reservationStartDateDay
+     * @param reservationEndDateDay
+     * @param reservationStartDateYear
+     * @param isWalkIn
+     * @return
+     *     returns java.util.List&lt;java.lang.String&gt;
+     * @throws InsufficientRoomsAvailableException_Exception
+     * @throws InvalidDateRangeException_Exception
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "retrieveRoomTypeAvailabilities", targetNamespace = "http://ws.session.ejb/", className = "ws.client.RetrieveRoomTypeAvailabilities")
+    @ResponseWrapper(localName = "retrieveRoomTypeAvailabilitiesResponse", targetNamespace = "http://ws.session.ejb/", className = "ws.client.RetrieveRoomTypeAvailabilitiesResponse")
+    @Action(input = "http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesRequest", output = "http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesResponse", fault = {
+        @FaultAction(className = InsufficientRoomsAvailableException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InsufficientRoomsAvailableException"),
+        @FaultAction(className = InvalidDateRangeException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InvalidDateRangeException")
+    })
+    public List<String> retrieveRoomTypeAvailabilities(
+        @WebParam(name = "reservationStartDateDay", targetNamespace = "")
+        Integer reservationStartDateDay,
+        @WebParam(name = "reservationStartDateMonth", targetNamespace = "")
+        Integer reservationStartDateMonth,
+        @WebParam(name = "reservationStartDateYear", targetNamespace = "")
+        Integer reservationStartDateYear,
+        @WebParam(name = "reservationEndDateDay", targetNamespace = "")
+        Integer reservationEndDateDay,
+        @WebParam(name = "reservationEndDateMonth", targetNamespace = "")
+        Integer reservationEndDateMonth,
+        @WebParam(name = "reservationEndDateYear", targetNamespace = "")
+        Integer reservationEndDateYear,
+        @WebParam(name = "numRooms", targetNamespace = "")
+        Integer numRooms,
+        @WebParam(name = "isWalkIn", targetNamespace = "")
+        Boolean isWalkIn)
+        throws InsufficientRoomsAvailableException_Exception, InvalidDateRangeException_Exception
     ;
 
     /**
      * 
      * @param partnerId
      * @return
-     *     returns java.util.List&lt;ws.client.ReservationEntity&gt;
+     *     returns java.util.List&lt;java.lang.String&gt;
      * @throws PartnerNotFoundException_Exception
      */
     @WebMethod
@@ -65,7 +167,7 @@ public interface PartnerEntityWebService {
     @Action(input = "http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsRequest", output = "http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsResponse", fault = {
         @FaultAction(className = PartnerNotFoundException_Exception.class, value = "http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservations/Fault/PartnerNotFoundException")
     })
-    public List<ReservationEntity> retrieveAllPartnerReservations(
+    public List<String> retrieveAllPartnerReservations(
         @WebParam(name = "partnerId", targetNamespace = "")
         Long partnerId)
         throws PartnerNotFoundException_Exception

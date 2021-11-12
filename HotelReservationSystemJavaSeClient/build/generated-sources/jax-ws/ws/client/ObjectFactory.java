@@ -24,18 +24,61 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _CreateNewReservationException_QNAME = new QName("http://ws.session.ejb/", "CreateNewReservationException");
+    private final static QName _InputDataValidationException_QNAME = new QName("http://ws.session.ejb/", "InputDataValidationException");
+    private final static QName _InsufficientRoomsAvailableException_QNAME = new QName("http://ws.session.ejb/", "InsufficientRoomsAvailableException");
+    private final static QName _InvalidDateRangeException_QNAME = new QName("http://ws.session.ejb/", "InvalidDateRangeException");
     private final static QName _InvalidLoginCredentialException_QNAME = new QName("http://ws.session.ejb/", "InvalidLoginCredentialException");
     private final static QName _PartnerNotFoundException_QNAME = new QName("http://ws.session.ejb/", "PartnerNotFoundException");
+    private final static QName _UnknownPersistenceException_QNAME = new QName("http://ws.session.ejb/", "UnknownPersistenceException");
+    private final static QName _AllocationReportCheckTimerManual_QNAME = new QName("http://ws.session.ejb/", "allocationReportCheckTimerManual");
+    private final static QName _AllocationReportCheckTimerManualResponse_QNAME = new QName("http://ws.session.ejb/", "allocationReportCheckTimerManualResponse");
+    private final static QName _CreateNewReservationsForPartner_QNAME = new QName("http://ws.session.ejb/", "createNewReservationsForPartner");
+    private final static QName _CreateNewReservationsForPartnerResponse_QNAME = new QName("http://ws.session.ejb/", "createNewReservationsForPartnerResponse");
     private final static QName _PartnerLogin_QNAME = new QName("http://ws.session.ejb/", "partnerLogin");
     private final static QName _PartnerLoginResponse_QNAME = new QName("http://ws.session.ejb/", "partnerLoginResponse");
     private final static QName _RetrieveAllPartnerReservations_QNAME = new QName("http://ws.session.ejb/", "retrieveAllPartnerReservations");
     private final static QName _RetrieveAllPartnerReservationsResponse_QNAME = new QName("http://ws.session.ejb/", "retrieveAllPartnerReservationsResponse");
+    private final static QName _RetrieveRoomTypeAvailabilities_QNAME = new QName("http://ws.session.ejb/", "retrieveRoomTypeAvailabilities");
+    private final static QName _RetrieveRoomTypeAvailabilitiesResponse_QNAME = new QName("http://ws.session.ejb/", "retrieveRoomTypeAvailabilitiesResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ws.client
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link CreateNewReservationException }
+     * 
+     */
+    public CreateNewReservationException createCreateNewReservationException() {
+        return new CreateNewReservationException();
+    }
+
+    /**
+     * Create an instance of {@link InputDataValidationException }
+     * 
+     */
+    public InputDataValidationException createInputDataValidationException() {
+        return new InputDataValidationException();
+    }
+
+    /**
+     * Create an instance of {@link InsufficientRoomsAvailableException }
+     * 
+     */
+    public InsufficientRoomsAvailableException createInsufficientRoomsAvailableException() {
+        return new InsufficientRoomsAvailableException();
+    }
+
+    /**
+     * Create an instance of {@link InvalidDateRangeException }
+     * 
+     */
+    public InvalidDateRangeException createInvalidDateRangeException() {
+        return new InvalidDateRangeException();
     }
 
     /**
@@ -52,6 +95,46 @@ public class ObjectFactory {
      */
     public PartnerNotFoundException createPartnerNotFoundException() {
         return new PartnerNotFoundException();
+    }
+
+    /**
+     * Create an instance of {@link UnknownPersistenceException }
+     * 
+     */
+    public UnknownPersistenceException createUnknownPersistenceException() {
+        return new UnknownPersistenceException();
+    }
+
+    /**
+     * Create an instance of {@link AllocationReportCheckTimerManual }
+     * 
+     */
+    public AllocationReportCheckTimerManual createAllocationReportCheckTimerManual() {
+        return new AllocationReportCheckTimerManual();
+    }
+
+    /**
+     * Create an instance of {@link AllocationReportCheckTimerManualResponse }
+     * 
+     */
+    public AllocationReportCheckTimerManualResponse createAllocationReportCheckTimerManualResponse() {
+        return new AllocationReportCheckTimerManualResponse();
+    }
+
+    /**
+     * Create an instance of {@link CreateNewReservationsForPartner }
+     * 
+     */
+    public CreateNewReservationsForPartner createCreateNewReservationsForPartner() {
+        return new CreateNewReservationsForPartner();
+    }
+
+    /**
+     * Create an instance of {@link CreateNewReservationsForPartnerResponse }
+     * 
+     */
+    public CreateNewReservationsForPartnerResponse createCreateNewReservationsForPartnerResponse() {
+        return new CreateNewReservationsForPartnerResponse();
     }
 
     /**
@@ -84,6 +167,22 @@ public class ObjectFactory {
      */
     public RetrieveAllPartnerReservationsResponse createRetrieveAllPartnerReservationsResponse() {
         return new RetrieveAllPartnerReservationsResponse();
+    }
+
+    /**
+     * Create an instance of {@link RetrieveRoomTypeAvailabilities }
+     * 
+     */
+    public RetrieveRoomTypeAvailabilities createRetrieveRoomTypeAvailabilities() {
+        return new RetrieveRoomTypeAvailabilities();
+    }
+
+    /**
+     * Create an instance of {@link RetrieveRoomTypeAvailabilitiesResponse }
+     * 
+     */
+    public RetrieveRoomTypeAvailabilitiesResponse createRetrieveRoomTypeAvailabilitiesResponse() {
+        return new RetrieveRoomTypeAvailabilitiesResponse();
     }
 
     /**
@@ -135,6 +234,58 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewReservationException }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CreateNewReservationException }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "CreateNewReservationException")
+    public JAXBElement<CreateNewReservationException> createCreateNewReservationException(CreateNewReservationException value) {
+        return new JAXBElement<CreateNewReservationException>(_CreateNewReservationException_QNAME, CreateNewReservationException.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InputDataValidationException }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link InputDataValidationException }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "InputDataValidationException")
+    public JAXBElement<InputDataValidationException> createInputDataValidationException(InputDataValidationException value) {
+        return new JAXBElement<InputDataValidationException>(_InputDataValidationException_QNAME, InputDataValidationException.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InsufficientRoomsAvailableException }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link InsufficientRoomsAvailableException }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "InsufficientRoomsAvailableException")
+    public JAXBElement<InsufficientRoomsAvailableException> createInsufficientRoomsAvailableException(InsufficientRoomsAvailableException value) {
+        return new JAXBElement<InsufficientRoomsAvailableException>(_InsufficientRoomsAvailableException_QNAME, InsufficientRoomsAvailableException.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InvalidDateRangeException }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link InvalidDateRangeException }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "InvalidDateRangeException")
+    public JAXBElement<InvalidDateRangeException> createInvalidDateRangeException(InvalidDateRangeException value) {
+        return new JAXBElement<InvalidDateRangeException>(_InvalidDateRangeException_QNAME, InvalidDateRangeException.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InvalidLoginCredentialException }{@code >}
      * 
      * @param value
@@ -158,6 +309,71 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "PartnerNotFoundException")
     public JAXBElement<PartnerNotFoundException> createPartnerNotFoundException(PartnerNotFoundException value) {
         return new JAXBElement<PartnerNotFoundException>(_PartnerNotFoundException_QNAME, PartnerNotFoundException.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UnknownPersistenceException }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link UnknownPersistenceException }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "UnknownPersistenceException")
+    public JAXBElement<UnknownPersistenceException> createUnknownPersistenceException(UnknownPersistenceException value) {
+        return new JAXBElement<UnknownPersistenceException>(_UnknownPersistenceException_QNAME, UnknownPersistenceException.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AllocationReportCheckTimerManual }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AllocationReportCheckTimerManual }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "allocationReportCheckTimerManual")
+    public JAXBElement<AllocationReportCheckTimerManual> createAllocationReportCheckTimerManual(AllocationReportCheckTimerManual value) {
+        return new JAXBElement<AllocationReportCheckTimerManual>(_AllocationReportCheckTimerManual_QNAME, AllocationReportCheckTimerManual.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AllocationReportCheckTimerManualResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link AllocationReportCheckTimerManualResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "allocationReportCheckTimerManualResponse")
+    public JAXBElement<AllocationReportCheckTimerManualResponse> createAllocationReportCheckTimerManualResponse(AllocationReportCheckTimerManualResponse value) {
+        return new JAXBElement<AllocationReportCheckTimerManualResponse>(_AllocationReportCheckTimerManualResponse_QNAME, AllocationReportCheckTimerManualResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewReservationsForPartner }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CreateNewReservationsForPartner }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "createNewReservationsForPartner")
+    public JAXBElement<CreateNewReservationsForPartner> createCreateNewReservationsForPartner(CreateNewReservationsForPartner value) {
+        return new JAXBElement<CreateNewReservationsForPartner>(_CreateNewReservationsForPartner_QNAME, CreateNewReservationsForPartner.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateNewReservationsForPartnerResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link CreateNewReservationsForPartnerResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "createNewReservationsForPartnerResponse")
+    public JAXBElement<CreateNewReservationsForPartnerResponse> createCreateNewReservationsForPartnerResponse(CreateNewReservationsForPartnerResponse value) {
+        return new JAXBElement<CreateNewReservationsForPartnerResponse>(_CreateNewReservationsForPartnerResponse_QNAME, CreateNewReservationsForPartnerResponse.class, null, value);
     }
 
     /**
@@ -210,6 +426,32 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "retrieveAllPartnerReservationsResponse")
     public JAXBElement<RetrieveAllPartnerReservationsResponse> createRetrieveAllPartnerReservationsResponse(RetrieveAllPartnerReservationsResponse value) {
         return new JAXBElement<RetrieveAllPartnerReservationsResponse>(_RetrieveAllPartnerReservationsResponse_QNAME, RetrieveAllPartnerReservationsResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RetrieveRoomTypeAvailabilities }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RetrieveRoomTypeAvailabilities }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "retrieveRoomTypeAvailabilities")
+    public JAXBElement<RetrieveRoomTypeAvailabilities> createRetrieveRoomTypeAvailabilities(RetrieveRoomTypeAvailabilities value) {
+        return new JAXBElement<RetrieveRoomTypeAvailabilities>(_RetrieveRoomTypeAvailabilities_QNAME, RetrieveRoomTypeAvailabilities.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RetrieveRoomTypeAvailabilitiesResponse }{@code >}
+     * 
+     * @param value
+     *     Java instance representing xml element's value.
+     * @return
+     *     the new instance of {@link JAXBElement }{@code <}{@link RetrieveRoomTypeAvailabilitiesResponse }{@code >}
+     */
+    @XmlElementDecl(namespace = "http://ws.session.ejb/", name = "retrieveRoomTypeAvailabilitiesResponse")
+    public JAXBElement<RetrieveRoomTypeAvailabilitiesResponse> createRetrieveRoomTypeAvailabilitiesResponse(RetrieveRoomTypeAvailabilitiesResponse value) {
+        return new JAXBElement<RetrieveRoomTypeAvailabilitiesResponse>(_RetrieveRoomTypeAvailabilitiesResponse_QNAME, RetrieveRoomTypeAvailabilitiesResponse.class, null, value);
     }
 
 }
