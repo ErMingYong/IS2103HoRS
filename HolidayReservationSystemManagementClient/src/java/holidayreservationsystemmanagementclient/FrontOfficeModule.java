@@ -81,6 +81,7 @@ public class FrontOfficeModule {
         Integer response = 0;
 
         while (true) {
+            System.out.println("-----------------------------------------------------------------------------------------------------------");
             System.out.println("*** Hotel Reservation System Management Client  System :: Front Office Module ***\n");
             System.out.println("1: Walk-in Search Room");
             System.out.println("2: Check-in Guest");
@@ -123,7 +124,7 @@ public class FrontOfficeModule {
         LocalDateTime reservationStartDate;
         while (true) {
             System.out.println("");
-            System.out.println("Please Enter Reservation Start Date> ");
+            System.out.println("Please Enter Search Start Date> ");
             System.out.println("------------------------");
             System.out.println("Enter Day>     (please select from 01 - 31)");
             int day = scanner.nextInt();
@@ -153,7 +154,7 @@ public class FrontOfficeModule {
         LocalDateTime reservationEndDate;
         while (true) {
             System.out.println("");
-            System.out.println("Please Enter Reservation End Date> ");
+            System.out.println("Please Enter Search End Date> ");
             System.out.println("------------------------");
             System.out.println("Enter Day>     (please select from 01 - 31)");
             int day = scanner.nextInt();
@@ -203,12 +204,12 @@ public class FrontOfficeModule {
                 System.out.println("");
                 System.out.println("------------------------");
                 System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
-                System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+                System.out.printf("%5.5s%30.30s%30.30s%30.30s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
                 int counter = 1;
                 for (RoomTypeEntity roomType : listOfKeys) {
                     HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                     if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                        System.out.printf("%5d%30.30s%30.30s%30.30s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                         counter += 1;
                     }
                 }

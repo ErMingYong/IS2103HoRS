@@ -38,7 +38,7 @@ public abstract class UserEntity implements Serializable {
     private String lastName;
     @Column(nullable = false, unique = true, length = 32)
     @NotNull
-    @Size(min = 6, max = 32)
+    @Size(min = 3, max = 32)
     private String username;
     @Column(nullable = false, length = 32)
     @NotNull

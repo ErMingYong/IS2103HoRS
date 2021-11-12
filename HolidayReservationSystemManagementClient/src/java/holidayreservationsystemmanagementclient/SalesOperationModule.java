@@ -86,6 +86,7 @@ public class SalesOperationModule {
         Integer response = 0;
 
         while (true) {
+            System.out.println("-----------------------------------------------------------------------------------------------------------");
             System.out.println("*** Hotel Reservation System Management Client  System :: Hotel Operation Module :: Sales Operation ***\n");
             System.out.println("1: Create New Room Rate");
             System.out.println("2: View Room Rate Details");
@@ -177,7 +178,7 @@ public class SalesOperationModule {
                 continue;
             }
 
-            if (dateToView.isAfter(newRoomRate.getValidPeriodFrom())) {
+            if (!dateToView.isBefore(newRoomRate.getValidPeriodFrom())) {
                 newRoomRate.setValidPeriodTo(dateToView);
                 break;
             }

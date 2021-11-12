@@ -91,9 +91,9 @@ public class MainApp {
                                 roomEntitySessionBeanRemote,
                                 roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
-                                //                                transactionEntitySessionBeanRemote,
                                 currentEmployee);
-                        hotelOperationModule = new HotelOperationModule(employeeEntitySessionBeanRemote,
+                        hotelOperationModule = new HotelOperationModule(allocationReportSessionBeanRemote,
+                                employeeEntitySessionBeanRemote,
                                 exceptionReportEntitySessionBeanRemote,
                                 guestEntitySessionBeanRemote,
                                 partnerEntitySessionBeanRemote,
@@ -101,7 +101,6 @@ public class MainApp {
                                 roomEntitySessionBeanRemote,
                                 roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
-                                //                                transactionEntitySessionBeanRemote,
                                 currentEmployee);
                         salesOperationModule = new SalesOperationModule(employeeEntitySessionBeanRemote,
                                 exceptionReportEntitySessionBeanRemote,
@@ -111,7 +110,6 @@ public class MainApp {
                                 roomEntitySessionBeanRemote,
                                 roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
-                                //                                transactionEntitySessionBeanRemote,
                                 currentEmployee);
                         frontOfficeModule = new FrontOfficeModule(allocationReportSessionBeanRemote,
                                 employeeEntitySessionBeanRemote,
@@ -122,7 +120,6 @@ public class MainApp {
                                 roomEntitySessionBeanRemote,
                                 roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
-                                //                                transactionEntitySessionBeanRemote,
                                 currentEmployee);
                         mainMenu();
                     } catch (InvalidLoginCredentialException ex) {
@@ -177,6 +174,7 @@ public class MainApp {
             response = 0;
 
             while (response < 1 || response > 5) {
+                response = 0;
                 response = scanner.nextInt();
                 if (response == 1) {
                     try {

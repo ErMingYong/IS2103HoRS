@@ -60,7 +60,7 @@ public class DataInitializationSessionBean {
     @PostConstruct
     public void postConstruct() {
         try {
-            employeeEntitySessionBeanLocal.retrieveEmployeeByUsername("manager");
+            employeeEntitySessionBeanLocal.retrieveEmployeeByUsername("sysadmin");
         } catch (EmployeeNotFoundException ex) {
             initializeData();
         }

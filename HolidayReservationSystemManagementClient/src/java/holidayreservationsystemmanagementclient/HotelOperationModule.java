@@ -5,6 +5,7 @@
  */
 package holidayreservationsystemmanagementclient;
 
+import ejb.session.stateless.AllocationReportSessionBeanRemote;
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
@@ -46,6 +47,7 @@ import util.exception.UpdateRoomException;
  */
 public class HotelOperationModule {
 
+    private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
     private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
     private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
     private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
@@ -66,8 +68,9 @@ public class HotelOperationModule {
         validator = validatorFactory.getValidator();
     }
 
-    public HotelOperationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+    public HotelOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
+        this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
         this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
@@ -89,6 +92,7 @@ public class HotelOperationModule {
         Integer response = 0;
 
         while (true) {
+            System.out.println("-----------------------------------------------------------------------------------------------------------");
             System.out.println("*** Hotel Reservation System Management Client System :: Hotel Operation Module :: Hotel Operation ***\n");
             System.out.println("1: Create New Room Type");
             System.out.println("2: View Room Type Details");
@@ -99,11 +103,12 @@ public class HotelOperationModule {
             System.out.println("6: Delete Room");
             System.out.println("7: View All Rooms");
             System.out.println("8: View Room Allocation Exception Report");
-            System.out.println("9: Exit");
+            System.out.println("9: Trigger Allocation By Date");
+            System.out.println("10: Exit");
             System.out.println(">");
             response = 0;
 
-            while (response < 1 || response > 9) {
+            while (response < 1 || response > 10) {
                 response = scanner.nextInt();
 
                 if (response == 1) {
@@ -130,13 +135,15 @@ public class HotelOperationModule {
                     //VIEW ROOM ALLOCATION EXCEPTION REPORT
                     doViewRoomAllocationExceptionReport();
                 } else if (response == 9) {
+                    doTriggerAllocationByDate();
+                } else if (response == 10) {
                     break;
                 } else {
                     System.out.println("Invalid option, please try again!\n");
                 }
             }
 
-            if (response == 9) {
+            if (response == 10) {
                 break;
             }
         }
@@ -188,6 +195,7 @@ public class HotelOperationModule {
         }
     }
 
+    //PROBLEM
     public void doViewRoomTypeDetails() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -198,8 +206,9 @@ public class HotelOperationModule {
 
         try {
             RoomTypeEntity roomType = roomTypeEntitySessionBeanRemote.retrieveRoomTypeByName(roomTypeName);
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
-            System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomType.getRoomTypeName(), roomType.getDescription(), roomType.getSize(), roomType.getBed(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled(), roomType.getRanking());
+            System.out.printf("%30.30s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
+            System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            System.out.printf("%30.30s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomType.getRoomTypeName(), roomType.getDescription(), roomType.getSize(), roomType.getBed(), roomType.getCapacity(), roomType.getAmenities(), roomType.getIsDisabled(), roomType.getRanking());
             System.out.println("------------------------");
             System.out.println("1: Update Room Type");
             System.out.println("2: Delete Room Type");
@@ -343,6 +352,7 @@ public class HotelOperationModule {
             scanner.nextLine();
         } else {
             System.out.printf("%15.15s%30.30s%10.10s%10.10s%10.10s%15.20s%10.10s%10.10s\n", "Room Type Name", "Description", "Size", "Bed", "Capacity", "Amenities", "Disabled", "Ranking");
+            System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             for (RoomTypeEntity roomTypeEntity : roomTypeEntities) {
                 System.out.printf("%15.15s%30.30s%10.10s%10.10s%10d%15.20s%10.10b%10d\n", roomTypeEntity.getRoomTypeName(), roomTypeEntity.getDescription(), roomTypeEntity.getSize(), roomTypeEntity.getBed(), roomTypeEntity.getCapacity(), roomTypeEntity.getAmenities(), roomTypeEntity.getIsDisabled(), roomTypeEntity.getRanking());
@@ -522,6 +532,7 @@ public class HotelOperationModule {
 
             try {
                 roomToDelete = roomEntitySessionBeanRemote.retrieveRoomByRoomFloorAndRoomNumber(roomFloor, roomNumber);
+                System.out.println("Room has been deleted/disabled!");
             } catch (RoomNotFoundException ex) {
                 System.out.println("Room cannot be Found! Please key in correct room floor and number");
                 continue;
@@ -535,7 +546,8 @@ public class HotelOperationModule {
         } catch (RoomNotFoundException ex) {
             System.out.println("Room to be deleted cannot be found");
         } catch (UnableToDisableRoomException ex) {
-            System.out.println("Room Cannot be disabled/deleted!");        }
+            System.out.println("Room Cannot be disabled/deleted!");
+        }
     }
 
     private void doViewAllRooms() {
@@ -551,10 +563,10 @@ public class HotelOperationModule {
             System.out.println("Press any key to go back...");
             scanner.nextLine();
         } else {
-            System.out.printf("%15s%15s%15s%15s\n", "Room Floor", "Room Number", "Room Type", "Room Status");
+            System.out.printf("%30s%30s%30s%30s\n", "Room Floor", "Room Number", "Room Type", "Room Status");
 
             for (RoomEntity roomEntity : roomEntities) {
-                System.out.printf("%15d%15d%15s%15s\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber(), roomEntity.getRoomTypeEntity().getRoomTypeName(), roomEntity.getRoomStatusEnum());
+                System.out.printf("%30d%30d%30.30s%30.30s\n", roomEntity.getRoomFloor(), roomEntity.getRoomNumber(), roomEntity.getRoomTypeEntity().getRoomTypeName(), roomEntity.getRoomStatusEnum());
             }
 
             System.out.print("Press any key to continue...> ");
@@ -622,56 +634,73 @@ public class HotelOperationModule {
                 System.out.println("No Exception Report Of " + exceptionReportTypeEnum.name() + " for the date " + dateToView.toString());
             } else {
 
-                while (true) {
-                    System.out.println("GENERATED LIST OF REPORTS");
-                    System.out.println("----------------------------------------------");
-                    System.out.println("Please select report to view");
-                    int counter = 1;
-                    for (ExceptionReportEntity exceptionReportEntity : listOfReports) {
-                        System.out.println(counter + ": " + exceptionReportEntity.getExceptionReportId());
-                        counter++;
-                    }
-                    int option = scanner.nextInt();
+                System.out.println("GENERATED LIST OF REPORTS (" + exceptionReportTypeEnum + ")");
+                System.out.println("----------------------------------------------");
+                System.out.println("Please select report to view");
+                int counter = 1;
+                for (ExceptionReportEntity exceptionReportEntity : listOfReports) {
+                    System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
-                    while (option < 1 || option > listOfReports.size()) {
-                        ExceptionReportEntity selectedReport = listOfReports.get(option - 1);
-                        System.out.println("********************");
-                        System.out.println("Exception Report Id: " + selectedReport.getExceptionReportId());
-                        System.out.println("Generated Date: " + selectedReport.getGenerationDate().toString());
-                        System.out.println("Exception Report Type:" + selectedReport.getExceptionReportTypeEnum());
-                        System.out.println("Guest: " + selectedReport.getReservationEntity().getFirstName() + " " + selectedReport.getReservationEntity().getLastName());
-                        System.out.println("Guest passport: " + selectedReport.getReservationEntity().getPassportNumber());
-                        System.out.println("Guest Email: " + selectedReport.getReservationEntity().getEmail());
-                        System.out.println("Room Type Booked: " + selectedReport.getReservationEntity().getRoomTypeName());
-
-                        if (selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
-                            System.out.println("Room Type Allocated: " + selectedReport.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName());
-                        } else {
-                            System.out.println("NO ROOM ALLOCATED");
-                        }
-                        System.out.println("********************");
-                        System.out.println("Type anything to exit back to view generated list of reports>");
-                        scanner.nextLine();
-                        break;
-                    }
-
-                    System.out.println("Press \"1\" to proceed back to list. To exit, press any other key>");
-                    String reply = scanner.nextLine();
-                    if (reply.equals("1")) {
-                        continue;
+                    String exceptionReportId = exceptionReportEntity.getExceptionReportId().toString();
+                    String generatedDate = exceptionReportEntity.getGenerationDate().toLocalDate().toString();
+                    String guestName = exceptionReportEntity.getReservationEntity().getFirstName() + " " + exceptionReportEntity.getReservationEntity().getLastName();
+                    String guestPassport = exceptionReportEntity.getReservationEntity().getPassportNumber();
+                    String guestEmail = exceptionReportEntity.getReservationEntity().getEmail();
+                    String bookedRoomType = exceptionReportEntity.getReservationEntity().getRoomTypeName();
+                    String roomTypeAllocation;
+                    if (exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity() != null) {
+                        roomTypeAllocation = exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity().getRoomTypeName();
                     } else {
-                        break;
+                        roomTypeAllocation = "NO ROOM ALLOCATED";
                     }
+
+                    System.out.printf("%5.5s%25.25s%25.25s%20.20s%20.20s%20.20s%20.20s%20.20s\n", "S/N", "Exception Report Id", "Generated Date", "Guest Name", "Guest Passport", "Guest Email", "Room Type Booked", "Room Type Allocated");
+                    System.out.printf("%5.5s%25.25s%25.25s%20.20s%20.20s%20.20s%20.20s%20.20s\n", counter, exceptionReportId, generatedDate, guestName, guestPassport, guestEmail, bookedRoomType, roomTypeAllocation);
+
+                    counter++;
                 }
-                System.out.println("Press \"1\" to proceed back to generating reports. To exit, press any other key>");
-                String reply = scanner.nextLine();
-                if (reply.equals("1")) {
-                    continue;
-                } else {
-                    break;
-                }
+                System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+                System.out.println("Press any key to go back...");
+                scanner.nextLine();
+                scanner.nextLine();
+                System.out.println("");
             }
+
         }
+    }
+
+    public void doTriggerAllocationByDate() {
+        System.out.println("*** Hotel Management Client :: Hotel Operation Module :: Trigger Allocation By Date ***\n");
+
+        Scanner scanner = new Scanner(System.in);
+        LocalDateTime allocationDate;
+        while (true) {
+            System.out.println("Please Enter Allocation Date> ");
+            System.out.println("------------------------");
+            System.out.println("Please Enter Day of Date>   (please select from 01 - 31)");
+            int day = scanner.nextInt();
+            System.out.println("Please Enter Month of Date>   (please select from 01 - 12)");
+            int month = scanner.nextInt();
+            System.out.println("Please Enter Year of Date>   (please select from 2000 - 2999)");
+            int year = scanner.nextInt();
+            try {
+                allocationDate = LocalDateTime.of(year, month, day, 0, 0, 0);
+            } catch (DateTimeException ex) {
+                System.out.println("DATE INVALID! PLEASE KEY IN APPROPRIATE DATE");
+                continue;
+            }
+            break;
+
+        }
+        try {
+            allocationReportSessionBeanRemote.allocateReservationByDate(allocationDate);
+            System.out.println("Allocation for Date: " + allocationDate.toLocalDate() + " has started");
+            System.out.println("");
+        } catch (UnknownPersistenceException ex) {
+            System.out.println("Something went wrong with the allcoation");
+            System.out.println("");
+        }
+
     }
 
     private void showInputDataValidationErrorsForRoomTypeEntity(Set<ConstraintViolation<RoomTypeEntity>> constraintViolations) {

@@ -79,6 +79,7 @@ public class SystemAdministrationModule {
         Integer response = 0;
 
         while (true) {
+            System.out.println("-----------------------------------------------------------------------------------------------------------");
             System.out.println("*** Hotel Reservation System Management Client  System :: System Administration ***\n");
             System.out.println("1: Create New Employee");
             System.out.println("2: View All Employees");

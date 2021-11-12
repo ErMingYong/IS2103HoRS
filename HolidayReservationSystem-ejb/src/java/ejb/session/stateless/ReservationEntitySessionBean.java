@@ -399,6 +399,9 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
 
     //iterate through each day, and find the highest number of reserved for each room type
     //minus the original inventory to get current inventory
+    ////
+    // PREVIOUS IMPLEMENTATION
+    ////
     @Override
     public HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> retrieveRoomTypeAvailabilities(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms, Boolean isWalkIn) throws InsufficientRoomsAvailableException {
         HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map = new HashMap<>();
@@ -413,7 +416,7 @@ public class ReservationEntitySessionBean implements ReservationEntitySessionBea
                 listOfAvailableRoomTypes.add(roomType);
             }
         }
-
+        //HERE
         //get number of rooms of each room type that is not disabled (INVENTORY)
         for (RoomTypeEntity roomType : listOfAvailableRoomTypes) {
             HashMap<String, BigDecimal> stringToBigDecimalMap = new HashMap<>();

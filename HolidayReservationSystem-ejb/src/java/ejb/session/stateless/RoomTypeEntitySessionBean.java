@@ -187,8 +187,10 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
                     roomTypeEntityToUpdate.setRanking(roomTypeEntity.getRanking());
                     updateRankings(roomTypeEntity, roomTypeEntity.getRanking());
                 }
-                // name is deliberately NOT updated to demonstrate that client is not allowed to update room name through this business method
-                //cannot set isDisabled through this method as well
+                for (RoomRateEntity rr : roomTypeEntityToUpdate.getRoomRateEntities()) {
+                    rr.setRoomTypeName(roomTypeEntityToUpdate.getRoomTypeName());
+                }
+
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }

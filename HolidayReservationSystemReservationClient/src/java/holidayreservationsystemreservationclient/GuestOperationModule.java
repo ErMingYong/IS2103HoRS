@@ -206,18 +206,19 @@ public class GuestOperationModule {
                 System.out.println("");
                 System.out.println("------------------------");
                 System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
-                System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+                System.out.printf("%5.5s%30.30s%30.30s%30.30s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+
                 int counter = 1;
                 for (RoomTypeEntity roomType : listOfKeys) {
                     HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                     if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                        System.out.printf("%5d%30.30s%30.30s%30.30s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                         counter += 1;
                     }
                 }
                 System.out.println("------------------------");
                 Integer response = 0;
-                System.out.println("1: Reserve room/s (Walk-In)");
+                System.out.println("1: Reserve room/s ");
                 System.out.println("2: Back\n");
                 while (response < 1 || response > 2) {
                     response = scanner.nextInt();
@@ -241,7 +242,7 @@ public class GuestOperationModule {
 
     private void doHotelReserve(HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> map, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate, Integer numRooms) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("*** Hotel Management Client :: Front Office Module :: Walk In Reserve ***\n");
+        System.out.println("*** Hotel Management Client :: Guest Operation Module :: Online Reserve ***\n");
         System.out.println("");
         List<Pair<ReservationEntity, List<String>>> listOfNewReservationPairs = new ArrayList<>();
 
@@ -261,13 +262,13 @@ public class GuestOperationModule {
             System.out.println("");
             System.out.println("------------------------");
             System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
-            System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+            System.out.printf("%5.5s%30.30s%30.30s%30.30s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
             List<RoomTypeEntity> roomTypeNameList = new ArrayList<>();
             int counter = 1;
             for (RoomTypeEntity roomType : listOfKeys) {
                 HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                 if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    System.out.printf("%5d%30.30s%30.30s%30.30s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                     counter += 1;
                     roomTypeNameList.add(roomType);
                 }
@@ -303,8 +304,6 @@ public class GuestOperationModule {
 
             numReservation += 1;
         }
-
-
 
         try {
             reservationEntitySessionBeanRemote.createNewReservationsForGuest(listOfNewReservationPairs, currentGuest);
@@ -428,9 +427,9 @@ public class GuestOperationModule {
                         return -1;
                     }
                 });
-                System.out.printf("%15.15s%25.25s%25.25s%20.20s%20.20s\n", "Reservation Id", "Reservation Start Date", "Reservation End Date", "Room Type Name", "Reservation Price");
+                System.out.printf("%15.15s%30.30s%30.30s%30.30s%30.30s\n", "Reservation Id", "Reservation Start Date", "Reservation End Date", "Room Type Name", "Reservation Price");
                 for (ReservationEntity reservationEntity : reservationEntities) {
-                    System.out.printf("%15.15s%25.25s%25.25s%20.20s%20.20s\n", reservationEntity.getReservationEntityId(), reservationEntity.getReservationStartDate().toLocalDate().toString(), reservationEntity.getReservationEndDate().toLocalDate().toString(), reservationEntity.getRoomTypeName(), reservationEntity.getReservationPrice());
+                    System.out.printf("%15.15s%30.30s%30.30s%30.30s%30.30s\n", reservationEntity.getReservationEntityId(), reservationEntity.getReservationStartDate().toLocalDate().toString(), reservationEntity.getReservationEndDate().toLocalDate().toString(), reservationEntity.getRoomTypeName(), reservationEntity.getReservationPrice());
                 }
                 System.out.print("Press any key to continue...> ");
                 scanner.nextLine();
