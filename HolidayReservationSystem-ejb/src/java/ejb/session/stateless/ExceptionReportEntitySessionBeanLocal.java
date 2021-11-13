@@ -12,6 +12,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.ExceptionReportNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.NoExceptionReportFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -22,15 +23,15 @@ import util.exception.UnknownPersistenceException;
 @Local
 public interface ExceptionReportEntitySessionBeanLocal {
 
-    public Long createNewExceptionReport(ExceptionReportEntity newExceptionReport) throws UnknownPersistenceException;
+    public Long createNewExceptionReport(ExceptionReportEntity newExceptionReport) throws UnknownPersistenceException, InputDataValidationException ;
 
     public List<ExceptionReportEntity> retrieveAllExceptionReport();
 
     public ExceptionReportEntity retrieveExceptionReportById(Long exceptionReportId) throws ExceptionReportNotFoundException;
 
-    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException;
-
-    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException;
+//    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException;
+//
+//    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException,InputDataValidationException;
 
     public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date);
 

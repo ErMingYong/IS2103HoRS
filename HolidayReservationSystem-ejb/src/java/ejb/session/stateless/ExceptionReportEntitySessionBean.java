@@ -9,17 +9,22 @@ import entity.ExceptionReportEntity;
 import entity.ReservationEntity;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.ExceptionReportTypeEnum;
 import util.exception.ExceptionReportNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.NoExceptionReportFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -42,14 +47,19 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
     }
 
     @Override
-    public Long createNewExceptionReport(ExceptionReportEntity newExceptionReport) throws UnknownPersistenceException {
-        try {
-            em.persist(newExceptionReport);
-            em.flush();
+    public Long createNewExceptionReport(ExceptionReportEntity newExceptionReport) throws UnknownPersistenceException, InputDataValidationException {
+        Set<ConstraintViolation<ExceptionReportEntity>> constraintViolations = validator.validate(newExceptionReport);
+        if (constraintViolations.isEmpty()) {
+            try {
+                em.persist(newExceptionReport);
+                em.flush();
 
-            return newExceptionReport.getExceptionReportId();
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
+                return newExceptionReport.getExceptionReportId();
+            } catch (PersistenceException ex) {
+                throw new UnknownPersistenceException(ex.getMessage());
+            }
+        } else {
+            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
     }
 
@@ -86,8 +96,7 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
             if (exceptionReportEntity.getReservationEntity().getRoomEntity() != null) {
                 exceptionReportEntity.getReservationEntity().getRoomEntity().getRoomTypeEntity();
             }
-            
-            
+
         }
         return listOfExceptionReportEntities;
     }
@@ -107,31 +116,45 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
         return exceptionReportEntity;
     }
 
-    //UNUSED
-    @Override
-    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException {
-        ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
+//    //UNUSED
+//    @Override
+//    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException {
+//        ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
+//
+//        if (exceptionReport != null) {
+//            em.remove(exceptionReport);
+//        } else {
+//            throw new ExceptionReportNotFoundException("Exception Report IDD " + exceptionReportId + " does not exist");
+//        }
+//    }
+//
+//    //UNUSED
+//    @Override
+//    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException,InputDataValidationException{
+//        try {
+//            ExceptionReportEntity oldExceptionReport = retrieveExceptionReportById(oldExceptionReportId);
+//            try {
+//                Long newExceptionReportId = createNewExceptionReport(newExceptionReport);
+//            } catch (InputDataValidationException ex) {
+//                throw new InputDataValidationException();
+//            }
+//
+//            newExceptionReport.setReservationEntity(oldExceptionReport.getReservationEntity());
+//            em.remove(oldExceptionReport);
+//        } catch (PersistenceException ex) {
+//            throw new UnknownPersistenceException(ex.getMessage());
+//        } catch (ExceptionReportNotFoundException ex) {
+//            throw new ExceptionReportNotFoundException("Exception Report ID " + oldExceptionReportId + " does not exist");
+//        }
+//    }
+    
+        private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ExceptionReportEntity>> constraintViolations) {
+        String msg = "Input data validation error!:";
 
-        if (exceptionReport != null) {
-            em.remove(exceptionReport);
-        } else {
-            throw new ExceptionReportNotFoundException("Exception Report IDD " + exceptionReportId + " does not exist");
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
         }
-    }
 
-    //UNUSED
-    @Override
-    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException {
-        try {
-            ExceptionReportEntity oldExceptionReport = retrieveExceptionReportById(oldExceptionReportId);
-            Long newExceptionReportId = createNewExceptionReport(newExceptionReport);
-
-            newExceptionReport.setReservationEntity(oldExceptionReport.getReservationEntity());
-            em.remove(oldExceptionReport);
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
-        } catch (ExceptionReportNotFoundException ex) {
-            throw new ExceptionReportNotFoundException("Exception Report ID " + oldExceptionReportId + " does not exist");
-        }
+        return msg;
     }
 }

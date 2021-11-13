@@ -101,14 +101,14 @@ public class MainApp {
                         System.out.println("Login successful!\n");
 
                         guestOperationModule = new GuestOperationModule(allocationReportSessionBeanRemote,
-                                employeeEntitySessionBeanRemote,
-                                exceptionReportEntitySessionBeanRemote,
+//                                employeeEntitySessionBeanRemote,
+//                                exceptionReportEntitySessionBeanRemote,
                                 guestEntitySessionBeanRemote,
-                                partnerEntitySessionBeanRemote,
+//                                partnerEntitySessionBeanRemote,
                                 reservationEntitySessionBeanRemote,
-                                roomEntitySessionBeanRemote,
-                                roomRateEntitySessionBeanRemote,
-                                roomTypeEntitySessionBeanRemote,
+//                                roomEntitySessionBeanRemote,
+//                                roomRateEntitySessionBeanRemote,
+//                                roomTypeEntitySessionBeanRemote,
                                 currentGuest);
                         mainMenu();
                     } catch (InvalidLoginCredentialException ex) {

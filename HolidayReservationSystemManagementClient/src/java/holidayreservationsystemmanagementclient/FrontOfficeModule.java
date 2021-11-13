@@ -44,30 +44,30 @@ import util.exception.UnknownPersistenceException;
 public class FrontOfficeModule {
 
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
-    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
+    //private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
     private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
+    //private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
+    //private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
     private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
-    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
-    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
-    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
+    //private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
+    //private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
+    //private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
 
     private EmployeeEntity currentEmployee;
 
     public FrontOfficeModule() {
     }
 
-    public FrontOfficeModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+    public FrontOfficeModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
-        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
+        //this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
+        //this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
+        //this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
         this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
-        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
-        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
-        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
+        //this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
+        //this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
+        //this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
 //        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
     }
@@ -311,13 +311,13 @@ public class FrontOfficeModule {
             System.out.println("");
             System.out.println("------------------------");
             System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
-            System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+            System.out.printf("%5.5s%30.30s%30.30s%30.30s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
             List<RoomTypeEntity> roomTypeNameList = new ArrayList<>();
             int counter = 1;
             for (RoomTypeEntity roomType : listOfKeys) {
                 HashMap<String, BigDecimal> roomTypeMap = map.get(roomType);
                 if (roomTypeMap.get("numRoomType").intValue() > 0) {
-                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    System.out.printf("%5d%30.30s%30.30s%30.30s\n", counter, roomType.getRoomTypeName(), roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                     counter += 1;
                     roomTypeNameList.add(roomType);
                 }

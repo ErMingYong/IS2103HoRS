@@ -82,131 +82,106 @@ public class DataInitializationSessionBean {
             RoomEntity e = new RoomEntity(1, 1);
             RoomTypeEntity roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName("Deluxe Room");
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             e = new RoomEntity(2, 1);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             e = new RoomEntity(3, 1);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             e = new RoomEntity(4, 1);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             e = new RoomEntity(5, 1);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName("Premier Room");
             e = new RoomEntity(1, 2);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(2, 2);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(3, 2);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(4, 2);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(5, 2);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName("Family Room");
             e = new RoomEntity(1, 3);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(2, 3);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(3, 3);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(4, 3);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(5, 3);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName("Junior Suite");
             e = new RoomEntity(1, 4);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(2, 4);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(3, 4);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(4, 4);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(5, 4);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             roomType = roomTypeEntitySessionBeanLocal.retrieveRoomTypeByName("Grand Suite");
             e = new RoomEntity(1, 5);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(2, 5);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(3, 5);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(4, 5);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
             
             e = new RoomEntity(5, 5);
             e.setRoomTypeEntity(roomType);
-//            roomType.getRoomEntities().add(e);
             roomEntitySessionBeanLocal.createNewRoom(e);
 
             RoomRateEntity roomRate = new RoomRateEntity("Deluxe Room Published", "Deluxe Room", BigDecimal.valueOf(100), LocalDateTime.of(LocalDate.of(2000, 1, 1), LocalTime.of(0, 0, 0)), LocalDateTime.of(LocalDate.of(2999, 12, 31), LocalTime.of(0, 0, 0)), RoomRateTypeEnum.PUBLISHED);

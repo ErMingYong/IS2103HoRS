@@ -179,10 +179,10 @@ public class PartnerEntityWebService {
     }
     //createNewReservationsForPartner(List<Pair<ReservationEntity, List<String>>> list, PartnerEntity partner)
 
-    @WebMethod(operationName = "allocationReportCheckTimerManual")
-    public void allocationReportCheckTimerManual() throws UnknownPersistenceException {
-
-        allocationReportSessionBeanLocal.allocationReportCheckTimerManual();
-
-    }
+//    @WebMethod(operationName = "allocationReportCheckTimerManual")
+//    public void allocationReportCheckTimerManual() throws UnknownPersistenceException {
+//
+//        allocationReportSessionBeanLocal.allocationReportCheckTimerManual();
+//
+//    }
 }

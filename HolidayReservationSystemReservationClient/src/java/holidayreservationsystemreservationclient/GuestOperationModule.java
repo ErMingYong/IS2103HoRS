@@ -6,14 +6,8 @@
 package holidayreservationsystemreservationclient;
 
 import ejb.session.stateless.AllocationReportSessionBeanRemote;
-import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
-import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
-import ejb.session.stateless.PartnerEntitySessionBeanRemote;
 import ejb.session.stateless.ReservationEntitySessionBeanRemote;
-import ejb.session.stateless.RoomEntitySessionBeanRemote;
-import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
-import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import entity.GuestEntity;
 import entity.ReservationEntity;
 import entity.RoomTypeEntity;
@@ -46,14 +40,14 @@ public class GuestOperationModule {
 
 //    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
-    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
-    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
+//    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
+//    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
+//    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
-    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
+//    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
     private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBean;
-    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
+//    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBean;
+//    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
 
     private GuestEntity currentGuest;
 
@@ -65,17 +59,17 @@ public class GuestOperationModule {
         this.validator = validatorFactory.getValidator();
     }
 
-    public GuestOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote rateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, GuestEntity currentGuest) {
+    public GuestOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, GuestEntity currentGuest) {
         this();
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
-        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
-        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
+//        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
+//        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
+//        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
         this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
-        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
+//        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
         this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-        this.exceptionReportEntitySessionBean = exceptionReportEntitySessionBean;
-        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
+//        this.exceptionReportEntitySessionBean = exceptionReportEntitySessionBeanRemote;
+//        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.currentGuest = currentGuest;
     }
 
@@ -333,25 +327,34 @@ public class GuestOperationModule {
         try {
             managedGuest = guestEntitySessionBeanRemote.retrieveGuestById(currentGuest.getUserEntityId());
             List<ReservationEntity> listOfReservations = managedGuest.getReservationEntities();
-            listOfReservations.sort((ReservationEntity x, ReservationEntity y) -> {
-                if (x.getReservationStartDate().isAfter(y.getReservationStartDate())) {
-                    return 1;
-                } else if (x.getReservationStartDate().isEqual(y.getReservationStartDate())) {
-                    return 0;
-                } else {
-                    return -1;
-                }
-            });
+//            listOfReservations.sort((ReservationEntity x, ReservationEntity y) -> {
+//                if (x.getReservationStartDate().isAfter(y.getReservationStartDate())) {
+//                    return 1;
+//                } else if (x.getReservationStartDate().isEqual(y.getReservationStartDate())) {
+//                    return 0;
+//                } else {
+//                    return -1;
+//                }
+//            });
             Integer option = 0;
             if (!listOfReservations.isEmpty()) {
+                listOfReservations.sort((ReservationEntity x, ReservationEntity y) -> {
+                    if (y.getReservationEntityId() > x.getReservationEntityId()) {
+                        return 1;
+                    } else if (y.getReservationEntityId() < x.getReservationEntityId()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
                 while (true) {
-                    System.out.println("----------------------------------------");
+                    System.out.println("--------------------------------------------------------------------");
                     for (int i = 0; i < listOfReservations.size(); i++) {
-                        System.out.println((i + 1) + " Reservation Id: " + listOfReservations.get(i).getReservationEntityId());
+                        System.out.println((i + 1) + ":               Reservation Id: " + listOfReservations.get(i).getReservationEntityId());
                     }
                     option = 0;
                     while (option < 1 || option > listOfReservations.size()) {
-                        System.out.println("----------------------------------------");
+                        System.out.println("--------------------------------------------------------------------");
                         System.out.println("Enter Reservation Number Option");
                         option = scanner.nextInt();
 
@@ -390,6 +393,7 @@ public class GuestOperationModule {
                     }
                     System.out.println("");
                     System.out.println("Continue to view Reservation? Press 'Y', to Exit Press any other key...");
+                    System.out.println("");
                     String response = scanner.nextLine();
                     if (response.equals("Y")) {
                         continue;
@@ -401,6 +405,7 @@ public class GuestOperationModule {
                 System.out.println("You do not have any Reservations!");
                 System.out.println("");
                 System.out.println("Press any key to go back...");
+                System.out.println("");
                 scanner.nextLine();
             }
         } catch (GuestNotFoundException ex) {

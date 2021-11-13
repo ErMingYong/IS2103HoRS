@@ -48,13 +48,13 @@ import util.exception.UpdateRoomException;
 public class HotelOperationModule {
 
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
-    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
+    //private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
     private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
-    private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
+    //private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
+    //private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
+    //private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
-    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
+    //private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
 //    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
@@ -68,16 +68,16 @@ public class HotelOperationModule {
         validator = validatorFactory.getValidator();
     }
 
-    public HotelOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+    public HotelOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
-        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
+        //this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
-        this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
+        //this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
+        //this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
+        //this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
         this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
-        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
+        //this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
 //        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
@@ -484,7 +484,7 @@ public class HotelOperationModule {
         roomToUpdate.setRoomTypeEntity(retrievedRoomType);
 
         while (true) {
-            System.out.print("Select Room Status> ");
+            System.out.println("Select Room Status> ");
             System.out.println("------------------------");
             System.out.println("1: Available");
             System.out.println("2: Not Available");

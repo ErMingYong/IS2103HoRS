@@ -7,20 +7,14 @@ package hotelreservationsystemjavaseclient;
 
 import java.math.BigDecimal;
 import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import javax.xml.datatype.XMLGregorianCalendar;
 import ws.client.CreateNewReservationException_Exception;
 import ws.client.InputDataValidationException_Exception;
 import ws.client.InsufficientRoomsAvailableException_Exception;
 import ws.client.InvalidDateRangeException_Exception;
-import ws.client.LocalDateTime;
 import ws.client.PartnerEntity;
 import ws.client.PartnerEntityWebService;
 import ws.client.PartnerNotFoundException_Exception;
@@ -178,12 +172,12 @@ public class PartnerOperationModule {
                 System.out.println("");
                 System.out.println("------------------------");
                 System.out.println("Available Rooms to book from " + reservationStartDate.toLocalDate().toString() + " to " + reservationEndDate.toLocalDate().toString());
-                System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+                System.out.printf("%5.5s%30.30s%30.30s%30.30s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
                 int counter = 1;
                 for (String roomType : listOfKeys) {
                     HashMap<String, Integer> roomTypeMap = map.get(roomType);
                     if (roomTypeMap.get("numRoomType") > 0) {
-                        System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                        System.out.printf("%5d%30.30s%30.30s%30.30s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                         counter += 1;
                     }
                 }
@@ -285,13 +279,13 @@ public class PartnerOperationModule {
             System.out.println("");
             System.out.println("------------------------");
             System.out.println("Available Rooms to book from " + startDay + ":" + startMonth + ":" + startYear + " to " + endDay + ":" + endMonth + ":" + endYear);
-            System.out.printf("%5.5s%20.20s%20.20s%20.20s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
+            System.out.printf("%5.5s%30.30s%30.30s%30.30s\n", "S/N", "Room Type", "Total Price of Stay", "Quantity Available");
             List<String> roomTypeNameList = new ArrayList<>();
             int counter = 1;
             for (String roomType : listOfKeys) {
                 HashMap<String, Integer> roomTypeMap = map.get(roomType);
                 if (roomTypeMap.get("numRoomType") > 0) {
-                    System.out.printf("%5d%20.20s%20.20s%20.20s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
+                    System.out.printf("%5d%30.30s%30.30s%30.30s\n", counter, roomType, roomTypeMap.get("bestPrice"), roomTypeMap.get("numRoomType"));
                     counter += 1;
                     roomTypeNameList.add(roomType);
                 }

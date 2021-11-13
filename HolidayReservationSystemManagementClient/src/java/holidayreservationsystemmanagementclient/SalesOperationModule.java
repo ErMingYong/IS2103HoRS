@@ -43,12 +43,12 @@ import util.exception.UpdateRoomRateException;
  */
 public class SalesOperationModule {
 
-    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
-    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
-    private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
-    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
+//    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
+//    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
+//    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
+//    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
+//    private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
+//    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
 //    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
@@ -63,14 +63,14 @@ public class SalesOperationModule {
         validator = validatorFactory.getValidator();
     }
 
-    public SalesOperationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
+    public SalesOperationModule(RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
-        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
-        this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
-        this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
-        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
+//        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
+//        this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
+//        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
+//        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
+//        this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
+//        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
         this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
 //        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
