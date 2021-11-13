@@ -13,7 +13,6 @@ import util.exception.InputDataValidationException;
 import util.exception.RoomTypeNameExistException;
 import util.exception.RoomTypeNotFoundException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateRoomTypeException;
 
 /**
  *

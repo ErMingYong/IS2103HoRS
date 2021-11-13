@@ -6,15 +6,8 @@
 package holidayreservationsystemreservationclient;
 
 import ejb.session.stateless.AllocationReportSessionBeanRemote;
-import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
-import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
-import ejb.session.stateless.PartnerEntitySessionBeanRemote;
 import ejb.session.stateless.ReservationEntitySessionBeanRemote;
-import ejb.session.stateless.RoomEntitySessionBeanRemote;
-import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
-import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.GuestEntity;
 import entity.RoomTypeEntity;
 import java.math.BigDecimal;
@@ -45,14 +38,8 @@ import util.exception.UnknownPersistenceException;
 public class MainApp {
 
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
-    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
-    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
-    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
     private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
 
     private GuestOperationModule guestOperationModule;
 
@@ -66,17 +53,11 @@ public class MainApp {
         this.validator = validatorFactory.getValidator();
     }
 
-    public MainApp(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote) {
+    public MainApp(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote) {
         this();
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
-        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
-        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
         this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
-        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
         this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-        this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
     }
 
     public void runApp() {
@@ -101,14 +82,8 @@ public class MainApp {
                         System.out.println("Login successful!\n");
 
                         guestOperationModule = new GuestOperationModule(allocationReportSessionBeanRemote,
-//                                employeeEntitySessionBeanRemote,
-//                                exceptionReportEntitySessionBeanRemote,
                                 guestEntitySessionBeanRemote,
-//                                partnerEntitySessionBeanRemote,
                                 reservationEntitySessionBeanRemote,
-//                                roomEntitySessionBeanRemote,
-//                                roomRateEntitySessionBeanRemote,
-//                                roomTypeEntitySessionBeanRemote,
                                 currentGuest);
                         mainMenu();
                     } catch (InvalidLoginCredentialException ex) {

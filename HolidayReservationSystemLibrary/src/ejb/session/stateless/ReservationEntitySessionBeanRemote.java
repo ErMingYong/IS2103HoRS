@@ -21,7 +21,6 @@ import util.exception.InputDataValidationException;
 import util.exception.InsufficientRoomsAvailableException;
 import util.exception.ReservationNotFoundException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateReservationException;
 
 /**
  *
@@ -32,19 +31,12 @@ public interface ReservationEntitySessionBeanRemote {
 
     public Long createNewReservation(ReservationEntity newReservation, List<String> listOfRoomRateNames) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
-    //public Long createNewReservationForUser(ReservationEntity newReservation, List<String> listOfRoomRateNames, UserEntity user) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
-
     public List<ReservationEntity> retrieveAllReservations();
 
     public ReservationEntity retrieveReservationById(Long reservationId) throws ReservationNotFoundException;
 
     public List<ReservationEntity> retrieveReservationByPassportNumber(String passportNumber);
 
-    public void deleteReservation(ReservationEntity reservationToDelete) throws ReservationNotFoundException;
-
-    public void updateReservation(ReservationEntity reservation) throws ReservationNotFoundException, UpdateReservationException, InputDataValidationException;
-
-//    public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypes(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
     public List<ReservationEntity> retrieveAllReservationsWithStartDate(LocalDateTime startDate);
 
     public void createNewReservations(List<Pair<ReservationEntity, List<String>>> list) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
@@ -56,9 +48,6 @@ public interface ReservationEntitySessionBeanRemote {
     public List<ReservationEntity> retrieveReservationByPassportNumberForCheckOut(String passportNumber);
 
     public void setReservationToCheckedOut(ReservationEntity reservationEntity);
-
-//    public HashMap<String, HashMap<String, BigDecimal>> retrieveAvailableRoomTypesOnline(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms) throws InsufficientRoomsAvailableException;
-    //public void createNewReservationsForUser(List<Pair<ReservationEntity, List<String>>> list, UserEntity user) throws CreateNewReservationException, UnknownPersistenceException, InputDataValidationException;
 
     public HashMap<RoomTypeEntity, HashMap<String, BigDecimal>> retrieveRoomTypeAvailabilities(LocalDateTime startDate, LocalDateTime endDate, Integer numRooms, Boolean isWalkIn) throws InsufficientRoomsAvailableException;
 

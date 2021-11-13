@@ -22,7 +22,6 @@ import util.exception.InvalidLoginCredentialException;
 import util.exception.PartnerNotFoundException;
 import util.exception.PartnerUsernameExistException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdatePartnerException;
 
 /**
  *
@@ -104,42 +103,6 @@ public class PartnerEntitySessionBean implements PartnerEntitySessionBeanRemote,
             return partner;
         } else {
             throw new PartnerNotFoundException("Partner Username " + username + " does not exist");
-        }
-    }
-
-    //UNUSED
-    @Override
-    public void deletePartner(Long partnerId) throws PartnerNotFoundException {
-        PartnerEntity partner = em.find(PartnerEntity.class, partnerId);
-
-        if (partner != null) {
-            em.remove(partner);
-        } else {
-            throw new PartnerNotFoundException("Partner ID " + partnerId + " does not exist");
-        }
-    }
-
-    //UNUSED
-    @Override
-    public void updatePartner(PartnerEntity partnerEntity) throws PartnerNotFoundException, UpdatePartnerException, InputDataValidationException {
-        if (partnerEntity != null && partnerEntity.getUserEntityId() != null) {
-            Set<ConstraintViolation<PartnerEntity>> constraintViolations = validator.validate(partnerEntity);
-
-            if (constraintViolations.isEmpty()) {
-                PartnerEntity partnerEntityToUpdate = retrievePartnerByPartnerId(partnerEntity.getUserEntityId());
-
-                if (partnerEntityToUpdate.getUserName().equals(partnerEntity.getUserName())) {
-                    partnerEntityToUpdate.setFirstName(partnerEntity.getFirstName());
-                    partnerEntityToUpdate.setLastName(partnerEntity.getLastName());
-                    // Username and password are deliberately NOT updated to demonstrate that client is not allowed to update account credential through this business method
-                } else {
-                    throw new UpdatePartnerException("Username of partner record to be updated does not match the existing record");
-                }
-            } else {
-                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-            }
-        } else {
-            throw new PartnerNotFoundException("Partner ID not provided for partner to be updated");
         }
     }
 

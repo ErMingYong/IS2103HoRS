@@ -10,8 +10,6 @@ import entity.ReservationEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -115,38 +113,6 @@ public class ExceptionReportEntitySessionBean implements ExceptionReportEntitySe
 
         return exceptionReportEntity;
     }
-
-//    //UNUSED
-//    @Override
-//    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException {
-//        ExceptionReportEntity exceptionReport = em.find(ExceptionReportEntity.class, exceptionReportId);
-//
-//        if (exceptionReport != null) {
-//            em.remove(exceptionReport);
-//        } else {
-//            throw new ExceptionReportNotFoundException("Exception Report IDD " + exceptionReportId + " does not exist");
-//        }
-//    }
-//
-//    //UNUSED
-//    @Override
-//    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException,InputDataValidationException{
-//        try {
-//            ExceptionReportEntity oldExceptionReport = retrieveExceptionReportById(oldExceptionReportId);
-//            try {
-//                Long newExceptionReportId = createNewExceptionReport(newExceptionReport);
-//            } catch (InputDataValidationException ex) {
-//                throw new InputDataValidationException();
-//            }
-//
-//            newExceptionReport.setReservationEntity(oldExceptionReport.getReservationEntity());
-//            em.remove(oldExceptionReport);
-//        } catch (PersistenceException ex) {
-//            throw new UnknownPersistenceException(ex.getMessage());
-//        } catch (ExceptionReportNotFoundException ex) {
-//            throw new ExceptionReportNotFoundException("Exception Report ID " + oldExceptionReportId + " does not exist");
-//        }
-//    }
     
         private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<ExceptionReportEntity>> constraintViolations) {
         String msg = "Input data validation error!:";

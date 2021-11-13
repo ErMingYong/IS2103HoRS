@@ -14,7 +14,6 @@ import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import javax.ejb.EJB;
 
 /**
@@ -26,8 +25,6 @@ public class Main {
     @EJB
     private static AllocationReportSessionBeanRemote allocationReportSessionBean;
 
-//    @EJB
-//    private static TransactionEntitySessionBeanRemote transactionEntitySessionBean;
     @EJB
     private static RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBean;
 
@@ -44,9 +41,6 @@ public class Main {
     private static PartnerEntitySessionBeanRemote partnerEntitySessionBean;
 
     @EJB
-    private static GuestEntitySessionBeanRemote guestEntitySessionBean;
-
-    @EJB
     private static ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBean;
 
     @EJB
@@ -60,7 +54,6 @@ public class Main {
         MainApp mainApp = new MainApp(allocationReportSessionBean,
                 employeeEntitySessionBean,
                 exceptionReportEntitySessionBean,
-                guestEntitySessionBean,
                 partnerEntitySessionBean,
                 reservationEntitySessionBean,
                 roomEntitySessionBean,

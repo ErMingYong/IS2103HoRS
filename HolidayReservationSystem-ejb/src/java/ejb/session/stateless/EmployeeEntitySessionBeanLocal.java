@@ -13,7 +13,6 @@ import util.exception.EmployeeUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateEmployeeException;
 
 /**
  *
@@ -29,10 +28,6 @@ public interface EmployeeEntitySessionBeanLocal {
     public EmployeeEntity retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException;
 
     public EmployeeEntity retrieveEmployeeByUsername(String employeeUsername) throws EmployeeNotFoundException;
-
-    public void deleteEmployee(Long employeeId) throws EmployeeNotFoundException;
-
-    public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException ;
 
     public EmployeeEntity employeeLogin(String employeeUsername, String employeePassword) throws InvalidLoginCredentialException ;
     

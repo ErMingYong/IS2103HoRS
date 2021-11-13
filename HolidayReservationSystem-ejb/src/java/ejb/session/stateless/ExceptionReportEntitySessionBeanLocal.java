@@ -29,10 +29,6 @@ public interface ExceptionReportEntitySessionBeanLocal {
 
     public ExceptionReportEntity retrieveExceptionReportById(Long exceptionReportId) throws ExceptionReportNotFoundException;
 
-//    public void deleteExceptionReport(Long exceptionReportId) throws ExceptionReportNotFoundException;
-//
-//    public void updateExceptionReport(Long oldExceptionReportId, ExceptionReportEntity newExceptionReport) throws ExceptionReportNotFoundException, UnknownPersistenceException,InputDataValidationException;
-
     public List<ExceptionReportEntity> retrieveExceptionReportsByTypeAndDate(ExceptionReportTypeEnum exceptionReportTypeEnum, LocalDateTime date);
 
     public ExceptionReportEntity retrieveExceptionReportByReservation(ReservationEntity res) throws NoExceptionReportFoundException;

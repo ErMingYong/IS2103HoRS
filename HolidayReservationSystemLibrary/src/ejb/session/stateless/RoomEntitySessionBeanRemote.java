@@ -10,7 +10,6 @@ import java.util.List;
 import javax.ejb.Remote;
 import util.exception.InputDataValidationException;
 import util.exception.RoomFloorAndNumberExistException;
-import util.exception.RoomTypeNameExistException;
 import util.exception.RoomNotFoundException;
 import util.exception.UnableToDisableRoomException;
 import util.exception.UnknownPersistenceException;

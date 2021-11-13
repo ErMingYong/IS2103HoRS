@@ -24,7 +24,6 @@ import util.exception.GuestUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateGuestException;
 
 /**
  *
@@ -105,43 +104,6 @@ public class GuestEntitySessionBean implements GuestEntitySessionBeanRemote, Gue
             return guest;
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new GuestNotFoundException("Staff Username " + guestUsername + " does not exist!");
-        }
-    }
-
-    @Override
-    public void deleteGuest(Long guestId) throws GuestNotFoundException {
-        GuestEntity guest = em.find(GuestEntity.class, guestId);
-
-        if (guest != null) {
-            em.remove(guest);
-        } else {
-            throw new GuestNotFoundException("Guest ID " + guestId + " does not exist");
-        }
-    }
-
-    @Override
-    public void updateGuest(GuestEntity guestEntity) throws GuestNotFoundException, UpdateGuestException, InputDataValidationException {
-        if (guestEntity != null && guestEntity.getUserEntityId() != null) {
-            Set<ConstraintViolation<GuestEntity>> constraintViolations = validator.validate(guestEntity);
-
-            if (constraintViolations.isEmpty()) {
-                GuestEntity guestEntityToUpdate = retrieveGuestById(guestEntity.getUserEntityId());
-
-                if (guestEntityToUpdate.getUserName().equals(guestEntity.getUserName())) {
-                    guestEntityToUpdate.setFirstName(guestEntity.getFirstName());
-                    guestEntityToUpdate.setLastName(guestEntity.getLastName());
-                    guestEntityToUpdate.setEmail(guestEntity.getEmail());
-                    guestEntityToUpdate.setContactNumber(guestEntity.getContactNumber());
-                    guestEntityToUpdate.setPassportNumber(guestEntity.getPassportNumber());
-                    // Username and password are deliberately NOT updated to demonstrate that client is not allowed to update account credential through this business method
-                } else {
-                    throw new UpdateGuestException("Username of guest record to be updated does not match the existing record");
-                }
-            } else {
-                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-            }
-        } else {
-            throw new GuestNotFoundException("Employee ID not provided for employee to be updated");
         }
     }
 

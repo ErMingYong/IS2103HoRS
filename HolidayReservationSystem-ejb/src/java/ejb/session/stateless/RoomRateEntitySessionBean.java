@@ -123,7 +123,6 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         RoomRateEntity roomRate = em.find(RoomRateEntity.class, roomRateId);
         //Get reservations that are ongoing where the roomrate is the name of the roomrate to be deleted
         //assume roomtype has more than 1 roomrate so that after you delete the ManyToOne is still preserved
-        //Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE :inName MEMBER OF r.roomRateEntity").setParameter("inName", roomRate);
         Query query = em.createQuery("SELECT r FROM ReservationEntity r WHERE :inName MEMBER OF r.roomRateEntities").setParameter("inName", roomRate);
         List<ReservationEntity> listOfReservationEntities = query.getResultList();
         boolean toDisable = false;
@@ -157,7 +156,6 @@ public class RoomRateEntitySessionBean implements RoomRateEntitySessionBeanRemot
         }
     }
 
-    //ISSUE HERE, MIGHT NOT BE ABLE TO UPDATE PROPERLY
     @Override
     public void updateRoomRate(RoomRateEntity roomRate) throws RoomRateNotFoundException, UpdateRoomRateException, InputDataValidationException {
         if (roomRate != null && roomRate.getRoomRateId() != null) {

@@ -5,8 +5,6 @@
  */
 package ejb.session.stateless;
 
-import entity.ReservationEntity;
-import entity.RoomEntity;
 import java.time.LocalDateTime;
 import javax.ejb.Local;
 import util.exception.UnknownPersistenceException;

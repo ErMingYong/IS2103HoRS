@@ -6,14 +6,7 @@
 package holidayreservationsystemmanagementclient;
 
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
-import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
-import ejb.session.stateless.GuestEntitySessionBeanRemote;
 import ejb.session.stateless.PartnerEntitySessionBeanRemote;
-import ejb.session.stateless.ReservationEntitySessionBeanRemote;
-import ejb.session.stateless.RoomEntitySessionBeanRemote;
-import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
-import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.PartnerEntity;
 import java.util.List;
@@ -40,14 +33,7 @@ public class SystemAdministrationModule {
     private final Validator validator;
 
     private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
-//    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-//    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
     private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
-//    private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
-//    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
-//    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
-//    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     private EmployeeEntity currentEmployee;
 
@@ -59,14 +45,7 @@ public class SystemAdministrationModule {
     public SystemAdministrationModule(EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
-//        this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-//        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
         this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
-//        this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
-//        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
-//        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
-//        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-//        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
     }
 
@@ -93,16 +72,12 @@ public class SystemAdministrationModule {
                 response = scanner.nextInt();
 
                 if (response == 1) {
-                    //CREATE NEW EMPLOYEE
                     doCreateNewEmployee();
                 } else if (response == 2) {
-                    //VIEW ALL EMPLOYEES
                     doViewAllEmployees();
                 } else if (response == 3) {
-                    //CREATE NEW PARTNER
                     doCreateNewPartner();
                 } else if (response == 4) {
-                    //VIEW ALL PARTNERS
                     doViewAllPartners();
                 } else if (response == 5) {
                     break;

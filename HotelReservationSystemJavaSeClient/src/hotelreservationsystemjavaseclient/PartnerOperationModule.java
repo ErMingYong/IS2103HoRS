@@ -243,7 +243,6 @@ public class PartnerOperationModule {
             }
         }
 
-        //unsure how to check if email is valid at the client side
         System.out.println("Enter Partner Guest's Email>");
         email = scanner.nextLine();
 

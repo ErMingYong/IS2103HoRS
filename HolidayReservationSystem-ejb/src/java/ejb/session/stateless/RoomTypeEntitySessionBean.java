@@ -205,8 +205,6 @@ public class RoomTypeEntitySessionBean implements RoomTypeEntitySessionBeanRemot
         RoomTypeEntity roomType = em.find(RoomTypeEntity.class, roomTypeId);
         List<RoomEntity> listOfRoomEntities = roomType.getRoomEntities();
         List<RoomRateEntity> listOfRoomRateEntities = roomType.getRoomRateEntities();
-        //Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomTypeEntity.roomTypeName = :inName").setParameter("inName", roomType.getRoomTypeName());
-        //if (query.getResultList().size() > 0) {
         if (listOfRoomEntities.size() > 0 || listOfRoomRateEntities.size() > 0) {
             try {
                 //means roomType still in use so you should disable it so no new rooms can be created with that room type

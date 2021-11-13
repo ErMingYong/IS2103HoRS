@@ -13,7 +13,6 @@ import util.exception.GuestUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateGuestException;
 
 /**
  *
@@ -29,10 +28,6 @@ public interface GuestEntitySessionBeanRemote {
     public GuestEntity retrieveGuestById(Long guestId) throws GuestNotFoundException;
 
     public GuestEntity retrieveGuestByUsername(String username) throws GuestNotFoundException;
-
-    public void deleteGuest(Long guestId) throws GuestNotFoundException;
-
-    public void updateGuest(GuestEntity guestEntity) throws GuestNotFoundException, UpdateGuestException, InputDataValidationException;
 
     public GuestEntity guestLogin(String guestUsername, String guestPassword) throws GuestNotFoundException, InvalidLoginCredentialException;
     

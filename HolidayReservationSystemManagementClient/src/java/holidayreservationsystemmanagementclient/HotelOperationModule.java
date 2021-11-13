@@ -6,13 +6,8 @@
 package holidayreservationsystemmanagementclient;
 
 import ejb.session.stateless.AllocationReportSessionBeanRemote;
-import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
-import ejb.session.stateless.GuestEntitySessionBeanRemote;
-import ejb.session.stateless.PartnerEntitySessionBeanRemote;
-import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
-import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import entity.ExceptionReportEntity;
@@ -48,15 +43,9 @@ import util.exception.UpdateRoomException;
 public class HotelOperationModule {
 
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
-    //private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
     private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-    //private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-    //private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
-    //private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
-    //private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     private EmployeeEntity currentEmployee;
 
@@ -71,15 +60,9 @@ public class HotelOperationModule {
     public HotelOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote, EmployeeEntity currentEmployee) {
         this();
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
-        //this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-        //this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-        //this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
-        //this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
         this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
-        //this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-//        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
         this.currentEmployee = currentEmployee;
     }
 
@@ -114,8 +97,6 @@ public class HotelOperationModule {
                 if (response == 1) {
                     doCreateNewRoomType();
                 } else if (response == 2) {
-                    //INCLUDES -> UPDATE ROOM TYPE
-                    //INCLUDES -> DELETE ROOM TYPE
                     doViewRoomTypeDetails();
                 } else if (response == 3) {
                     doViewAllRoomTypes();
@@ -132,7 +113,6 @@ public class HotelOperationModule {
                 } else if (response == 7) {
                     doViewAllRooms();
                 } else if (response == 8) {
-                    //VIEW ROOM ALLOCATION EXCEPTION REPORT
                     doViewRoomAllocationExceptionReport();
                 } else if (response == 9) {
                     doTriggerAllocationByDate();
@@ -195,7 +175,6 @@ public class HotelOperationModule {
         }
     }
 
-    //PROBLEM
     public void doViewRoomTypeDetails() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
@@ -384,8 +363,6 @@ public class HotelOperationModule {
 
         scanner.nextLine();
         System.out.println("-------------------------------");
-        //Cannot set disabled, by default in creation should be false for isDisabled
-        //Need to include room type
         RoomTypeEntity retrievedRoomType = null;
 
         while (true) {

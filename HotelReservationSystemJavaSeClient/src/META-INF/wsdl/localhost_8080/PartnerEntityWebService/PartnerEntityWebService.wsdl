@@ -4,17 +4,17 @@
 <xsd:import namespace="http://ws.session.ejb/" schemaLocation="http://localhost:8080/PartnerEntityWebService/PartnerEntityWebService?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="partnerLogin">
-<part name="parameters" element="tns:partnerLogin"/>
+<message name="retrieveRoomTypeAvailabilities">
+<part name="parameters" element="tns:retrieveRoomTypeAvailabilities"/>
 </message>
-<message name="partnerLoginResponse">
-<part name="parameters" element="tns:partnerLoginResponse"/>
+<message name="retrieveRoomTypeAvailabilitiesResponse">
+<part name="parameters" element="tns:retrieveRoomTypeAvailabilitiesResponse"/>
 </message>
-<message name="PartnerNotFoundException">
-<part name="fault" element="tns:PartnerNotFoundException"/>
+<message name="InsufficientRoomsAvailableException">
+<part name="fault" element="tns:InsufficientRoomsAvailableException"/>
 </message>
-<message name="InvalidLoginCredentialException">
-<part name="fault" element="tns:InvalidLoginCredentialException"/>
+<message name="InvalidDateRangeException">
+<part name="fault" element="tns:InvalidDateRangeException"/>
 </message>
 <message name="createNewReservationsForPartner">
 <part name="parameters" element="tns:createNewReservationsForPartner"/>
@@ -31,17 +31,17 @@
 <message name="InputDataValidationException">
 <part name="fault" element="tns:InputDataValidationException"/>
 </message>
-<message name="retrieveRoomTypeAvailabilities">
-<part name="parameters" element="tns:retrieveRoomTypeAvailabilities"/>
+<message name="partnerLogin">
+<part name="parameters" element="tns:partnerLogin"/>
 </message>
-<message name="retrieveRoomTypeAvailabilitiesResponse">
-<part name="parameters" element="tns:retrieveRoomTypeAvailabilitiesResponse"/>
+<message name="partnerLoginResponse">
+<part name="parameters" element="tns:partnerLoginResponse"/>
 </message>
-<message name="InsufficientRoomsAvailableException">
-<part name="fault" element="tns:InsufficientRoomsAvailableException"/>
+<message name="PartnerNotFoundException">
+<part name="fault" element="tns:PartnerNotFoundException"/>
 </message>
-<message name="InvalidDateRangeException">
-<part name="fault" element="tns:InvalidDateRangeException"/>
+<message name="InvalidLoginCredentialException">
+<part name="fault" element="tns:InvalidLoginCredentialException"/>
 </message>
 <message name="retrieveAllPartnerReservations">
 <part name="parameters" element="tns:retrieveAllPartnerReservations"/>
@@ -50,11 +50,11 @@
 <part name="parameters" element="tns:retrieveAllPartnerReservationsResponse"/>
 </message>
 <portType name="PartnerEntityWebService">
-<operation name="partnerLogin">
-<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginRequest" message="tns:partnerLogin"/>
-<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginResponse" message="tns:partnerLoginResponse"/>
-<fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/PartnerNotFoundException"/>
-<fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/InvalidLoginCredentialException"/>
+<operation name="retrieveRoomTypeAvailabilities">
+<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesRequest" message="tns:retrieveRoomTypeAvailabilities"/>
+<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesResponse" message="tns:retrieveRoomTypeAvailabilitiesResponse"/>
+<fault message="tns:InsufficientRoomsAvailableException" name="InsufficientRoomsAvailableException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InsufficientRoomsAvailableException"/>
+<fault message="tns:InvalidDateRangeException" name="InvalidDateRangeException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InvalidDateRangeException"/>
 </operation>
 <operation name="createNewReservationsForPartner">
 <input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartnerRequest" message="tns:createNewReservationsForPartner"/>
@@ -63,11 +63,11 @@
 <fault message="tns:UnknownPersistenceException" name="UnknownPersistenceException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/UnknownPersistenceException"/>
 <fault message="tns:InputDataValidationException" name="InputDataValidationException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/createNewReservationsForPartner/Fault/InputDataValidationException"/>
 </operation>
-<operation name="retrieveRoomTypeAvailabilities">
-<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesRequest" message="tns:retrieveRoomTypeAvailabilities"/>
-<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilitiesResponse" message="tns:retrieveRoomTypeAvailabilitiesResponse"/>
-<fault message="tns:InsufficientRoomsAvailableException" name="InsufficientRoomsAvailableException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InsufficientRoomsAvailableException"/>
-<fault message="tns:InvalidDateRangeException" name="InvalidDateRangeException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveRoomTypeAvailabilities/Fault/InvalidDateRangeException"/>
+<operation name="partnerLogin">
+<input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginRequest" message="tns:partnerLogin"/>
+<output wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLoginResponse" message="tns:partnerLoginResponse"/>
+<fault message="tns:PartnerNotFoundException" name="PartnerNotFoundException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/PartnerNotFoundException"/>
+<fault message="tns:InvalidLoginCredentialException" name="InvalidLoginCredentialException" wsam:Action="http://ws.session.ejb/PartnerEntityWebService/partnerLogin/Fault/InvalidLoginCredentialException"/>
 </operation>
 <operation name="retrieveAllPartnerReservations">
 <input wsam:Action="http://ws.session.ejb/PartnerEntityWebService/retrieveAllPartnerReservationsRequest" message="tns:retrieveAllPartnerReservations"/>
@@ -77,7 +77,7 @@
 </portType>
 <binding name="PartnerEntityWebServicePortBinding" type="tns:PartnerEntityWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="partnerLogin">
+<operation name="retrieveRoomTypeAvailabilities">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -85,11 +85,11 @@
 <output>
 <soap:body use="literal"/>
 </output>
-<fault name="PartnerNotFoundException">
-<soap:fault name="PartnerNotFoundException" use="literal"/>
+<fault name="InsufficientRoomsAvailableException">
+<soap:fault name="InsufficientRoomsAvailableException" use="literal"/>
 </fault>
-<fault name="InvalidLoginCredentialException">
-<soap:fault name="InvalidLoginCredentialException" use="literal"/>
+<fault name="InvalidDateRangeException">
+<soap:fault name="InvalidDateRangeException" use="literal"/>
 </fault>
 </operation>
 <operation name="createNewReservationsForPartner">
@@ -110,7 +110,7 @@
 <soap:fault name="InputDataValidationException" use="literal"/>
 </fault>
 </operation>
-<operation name="retrieveRoomTypeAvailabilities">
+<operation name="partnerLogin">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -118,11 +118,11 @@
 <output>
 <soap:body use="literal"/>
 </output>
-<fault name="InsufficientRoomsAvailableException">
-<soap:fault name="InsufficientRoomsAvailableException" use="literal"/>
+<fault name="PartnerNotFoundException">
+<soap:fault name="PartnerNotFoundException" use="literal"/>
 </fault>
-<fault name="InvalidDateRangeException">
-<soap:fault name="InvalidDateRangeException" use="literal"/>
+<fault name="InvalidLoginCredentialException">
+<soap:fault name="InvalidLoginCredentialException" use="literal"/>
 </fault>
 </operation>
 <operation name="retrieveAllPartnerReservations">

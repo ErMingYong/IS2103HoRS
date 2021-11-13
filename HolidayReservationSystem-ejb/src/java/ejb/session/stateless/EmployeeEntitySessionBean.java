@@ -24,7 +24,6 @@ import util.exception.EmployeeUsernameExistException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
-import util.exception.UpdateEmployeeException;
 
 /**
  *
@@ -83,7 +82,6 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
     public EmployeeEntity retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException {
         EmployeeEntity employee = em.find(EmployeeEntity.class, employeeId);
         if (employee != null) {
-            //DID NOT DO FETCHING FOR LIST OF RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
             return employee;
         } else {
             throw new EmployeeNotFoundException("Employee ID " + employeeId + " does not exist");
@@ -98,44 +96,6 @@ public class EmployeeEntitySessionBean implements EmployeeEntitySessionBeanRemot
             return (EmployeeEntity) query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException ex) {
             throw new EmployeeNotFoundException("Staff Username " + employeeUsername + " does not exist!");
-        }
-    }
-
-    //UNUSED
-    @Override
-    public void deleteEmployee(Long employeeId) throws EmployeeNotFoundException {
-        EmployeeEntity employee = em.find(EmployeeEntity.class, employeeId);
-
-        //DID NOT DO REMOVAL OF RELATIONSHIP TO RESERVATIONS AS RELATIONSHIP IS STILL UNDER CONSIDERATION
-        if (employee != null) {
-            em.remove(employee);
-        } else {
-            throw new EmployeeNotFoundException("Employee ID " + employeeId + " does not exist");
-        }
-    }
-
-    //UNUSED
-    @Override
-    public void updateEmployee(EmployeeEntity employeeEntity) throws EmployeeNotFoundException, UpdateEmployeeException, InputDataValidationException {
-        if (employeeEntity != null && employeeEntity.getUserEntityId() != null) {
-            Set<ConstraintViolation<EmployeeEntity>> constraintViolations = validator.validate(employeeEntity);
-
-            if (constraintViolations.isEmpty()) {
-                EmployeeEntity employeeEntityToUpdate = retrieveEmployeeByEmployeeId(employeeEntity.getUserEntityId());
-
-                if (employeeEntityToUpdate.getUserName().equals(employeeEntity.getUserName())) {
-                    employeeEntityToUpdate.setFirstName(employeeEntity.getFirstName());
-                    employeeEntityToUpdate.setLastName(employeeEntity.getLastName());
-                    employeeEntityToUpdate.setEmployeeAccessRightEnum(employeeEntity.getEmployeeAccessRightEnum());
-                    // Username and password are deliberately NOT updated to demonstrate that client is not allowed to update account credential through this business method
-                } else {
-                    throw new UpdateEmployeeException("Username of employee record to be updated does not match the existing record");
-                }
-            } else {
-                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-            }
-        } else {
-            throw new EmployeeNotFoundException("Employee ID not provided for employee to be updated");
         }
     }
 

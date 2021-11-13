@@ -6,15 +6,8 @@
 package holidayreservationsystemreservationclient;
 
 import ejb.session.stateless.AllocationReportSessionBeanRemote;
-import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
-import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
 import ejb.session.stateless.GuestEntitySessionBeanRemote;
-import ejb.session.stateless.PartnerEntitySessionBeanRemote;
 import ejb.session.stateless.ReservationEntitySessionBeanRemote;
-import ejb.session.stateless.RoomEntitySessionBeanRemote;
-import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
-import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import javax.ejb.EJB;
 
 /**
@@ -26,47 +19,19 @@ public class Main {
     @EJB
     private static AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
 
-//    @EJB
-//    private static TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
-
-    @EJB
-    private static RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-
-    @EJB
-    private static RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
-
-    @EJB
-    private static RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
-
     @EJB
     private static ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
 
     @EJB
-    private static PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
-
-    @EJB
     private static GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-
-    @EJB
-    private static ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-
-    @EJB
-    private static EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         MainApp mainApp = new MainApp(allocationReportSessionBeanRemote,
-                employeeEntitySessionBeanRemote,
-                exceptionReportEntitySessionBeanRemote,
-                guestEntitySessionBeanRemote,
-                partnerEntitySessionBeanRemote,
                 reservationEntitySessionBeanRemote,
-                roomEntitySessionBeanRemote,
-                roomRateEntitySessionBeanRemote,
-                roomTypeEntitySessionBeanRemote);
+                guestEntitySessionBeanRemote);
 
         mainApp.runApp();
     }

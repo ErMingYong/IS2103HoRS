@@ -8,18 +8,15 @@ package holidayreservationsystemmanagementclient;
 import ejb.session.stateless.AllocationReportSessionBeanRemote;
 import ejb.session.stateless.EmployeeEntitySessionBeanRemote;
 import ejb.session.stateless.ExceptionReportEntitySessionBeanRemote;
-import ejb.session.stateless.GuestEntitySessionBeanRemote;
 import ejb.session.stateless.PartnerEntitySessionBeanRemote;
 import ejb.session.stateless.ReservationEntitySessionBeanRemote;
 import ejb.session.stateless.RoomEntitySessionBeanRemote;
 import ejb.session.stateless.RoomRateEntitySessionBeanRemote;
 import ejb.session.stateless.RoomTypeEntitySessionBeanRemote;
-//import ejb.session.stateless.TransactionEntitySessionBeanRemote;
 import entity.EmployeeEntity;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import util.exception.EmployeeNotFoundException;
 import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
@@ -33,13 +30,11 @@ public class MainApp {
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
     private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
     private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote;
-    private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
     private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
     private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
     private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
     private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
 
     private SystemAdministrationModule systemAdministrationModule;
     private HotelOperationModule hotelOperationModule;
@@ -51,17 +46,15 @@ public class MainApp {
     public MainApp() {
     }
 
-    public MainApp(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote) {
+    public MainApp(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote, ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBeanRemote, PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, RoomEntitySessionBeanRemote roomEntitySessionBeanRemote, RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote, RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote) {
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
         this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.exceptionReportEntitySessionBeanRemote = exceptionReportEntitySessionBeanRemote;
-        this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
         this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
         this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
         this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
         this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
         this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-//        this.transactionEntitySessionBeanRemote = transactionEntitySessionBeanRemote;
     }
 
     public void runApp() {
@@ -84,42 +77,19 @@ public class MainApp {
                         System.out.println("Login successful!\n");
 
                         systemAdministrationModule = new SystemAdministrationModule(employeeEntitySessionBeanRemote,
-//                                exceptionReportEntitySessionBeanRemote,
-//                                guestEntitySessionBeanRemote,
                                 partnerEntitySessionBeanRemote,
-//                                reservationEntitySessionBeanRemote,
-//                                roomEntitySessionBeanRemote,
-//                                roomRateEntitySessionBeanRemote,
-//                                roomTypeEntitySessionBeanRemote,
                                 currentEmployee);
                         hotelOperationModule = new HotelOperationModule(allocationReportSessionBeanRemote,
-                                //employeeEntitySessionBeanRemote,
                                 exceptionReportEntitySessionBeanRemote,
-                                //guestEntitySessionBeanRemote,
-                                //partnerEntitySessionBeanRemote,
-                                //reservationEntitySessionBeanRemote,
                                 roomEntitySessionBeanRemote,
-                                //roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
                                 currentEmployee);
-                        salesOperationModule = new SalesOperationModule(//employeeEntitySessionBeanRemote,
-//                                exceptionReportEntitySessionBeanRemote,
-//                                guestEntitySessionBeanRemote,
-//                                partnerEntitySessionBeanRemote,
-//                                reservationEntitySessionBeanRemote,
-//                                roomEntitySessionBeanRemote,
-                                roomRateEntitySessionBeanRemote,
+                        salesOperationModule = new SalesOperationModule(roomRateEntitySessionBeanRemote,
                                 roomTypeEntitySessionBeanRemote,
                                 currentEmployee);
                         frontOfficeModule = new FrontOfficeModule(allocationReportSessionBeanRemote,
-                                //employeeEntitySessionBeanRemote,
                                 exceptionReportEntitySessionBeanRemote,
-                                //guestEntitySessionBeanRemote,
-                                //partnerEntitySessionBeanRemote,
                                 reservationEntitySessionBeanRemote,
-                                //roomEntitySessionBeanRemote,
-                                //roomRateEntitySessionBeanRemote,
-                                //roomTypeEntitySessionBeanRemote,
                                 currentEmployee);
                         mainMenu();
                     } catch (InvalidLoginCredentialException ex) {

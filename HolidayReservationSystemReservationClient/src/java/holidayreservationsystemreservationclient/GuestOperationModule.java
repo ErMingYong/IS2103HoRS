@@ -38,16 +38,9 @@ import util.exception.UnknownPersistenceException;
  */
 public class GuestOperationModule {
 
-//    private TransactionEntitySessionBeanRemote transactionEntitySessionBeanRemote;
     private AllocationReportSessionBeanRemote allocationReportSessionBeanRemote;
-//    private RoomTypeEntitySessionBeanRemote roomTypeEntitySessionBeanRemote;
-//    private RoomRateEntitySessionBeanRemote roomRateEntitySessionBeanRemote;
-//    private RoomEntitySessionBeanRemote roomEntitySessionBeanRemote;
     private ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote;
-//    private PartnerEntitySessionBeanRemote partnerEntitySessionBeanRemote;
     private GuestEntitySessionBeanRemote guestEntitySessionBeanRemote;
-//    private ExceptionReportEntitySessionBeanRemote exceptionReportEntitySessionBean;
-//    private EmployeeEntitySessionBeanRemote employeeEntitySessionBeanRemote;
 
     private GuestEntity currentGuest;
 
@@ -62,14 +55,8 @@ public class GuestOperationModule {
     public GuestOperationModule(AllocationReportSessionBeanRemote allocationReportSessionBeanRemote, GuestEntitySessionBeanRemote guestEntitySessionBeanRemote, ReservationEntitySessionBeanRemote reservationEntitySessionBeanRemote, GuestEntity currentGuest) {
         this();
         this.allocationReportSessionBeanRemote = allocationReportSessionBeanRemote;
-//        this.roomTypeEntitySessionBeanRemote = roomTypeEntitySessionBeanRemote;
-//        this.roomRateEntitySessionBeanRemote = roomRateEntitySessionBeanRemote;
-//        this.roomEntitySessionBeanRemote = roomEntitySessionBeanRemote;
         this.reservationEntitySessionBeanRemote = reservationEntitySessionBeanRemote;
-//        this.partnerEntitySessionBeanRemote = partnerEntitySessionBeanRemote;
         this.guestEntitySessionBeanRemote = guestEntitySessionBeanRemote;
-//        this.exceptionReportEntitySessionBean = exceptionReportEntitySessionBeanRemote;
-//        this.employeeEntitySessionBeanRemote = employeeEntitySessionBeanRemote;
         this.currentGuest = currentGuest;
     }
 
@@ -91,14 +78,10 @@ public class GuestOperationModule {
                 response = scanner.nextInt();
 
                 if (response == 1) {
-                    //SEARCH HOTEL ROOM
-                    //INCLUDES -> RESERVER HOTEL ROOM
                     doSearchHotelRoom();
                 } else if (response == 2) {
-                    //VIEW MY RESERVATION DETAILS
                     doViewMyReservationDetails();
                 } else if (response == 3) {
-                    //VIEW ALL MY RESERVATIONS
                     doViewAllMyReservation();
                 } else if (response == 4) {
                     break;
@@ -327,15 +310,6 @@ public class GuestOperationModule {
         try {
             managedGuest = guestEntitySessionBeanRemote.retrieveGuestById(currentGuest.getUserEntityId());
             List<ReservationEntity> listOfReservations = managedGuest.getReservationEntities();
-//            listOfReservations.sort((ReservationEntity x, ReservationEntity y) -> {
-//                if (x.getReservationStartDate().isAfter(y.getReservationStartDate())) {
-//                    return 1;
-//                } else if (x.getReservationStartDate().isEqual(y.getReservationStartDate())) {
-//                    return 0;
-//                } else {
-//                    return -1;
-//                }
-//            });
             Integer option = 0;
             if (!listOfReservations.isEmpty()) {
                 listOfReservations.sort((ReservationEntity x, ReservationEntity y) -> {
